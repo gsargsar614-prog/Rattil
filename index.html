@@ -71,7 +71,7 @@ textarea{min-height:130px;resize:vertical}
 const $=s=>document.querySelector(s),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const CODE='236126',ADMIN='28051769';
 /* ⚙️ الصقي هنا بيانات Supabase (Project Settings ← API): Project URL و anon/publishable key */
-const SB_URL='https://bjufepwlkdzowrntkhho.supabase.co',SB_KEY='sb_publishable_ErecoOjI0RyzTr8K5pcEWA_zwy_mCGK';
+const SB_URL='https://dpsjryfkkgnjgtxkakyn.supabase.co',SB_KEY='sb_publishable_2ALWoYgI9o2brnSp-D-QMg_VNd66OwU';
 const ls={g(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},s(k,x){try{localStorage.setItem(k,JSON.stringify(x))}catch(e){}}};
 const loc=ls.g('rt_students')||{};
 let S={teachers:ls.g('rt_teachers')||{},students:{...loc},payments:ls.g('rt_payments')||{},progress:{},reports:{},notifications:{}},me=ls.g('rt_me'),v='dash',av=null,cur=null,tm=null,photo='',taps=0,tt,tt2,PN=ls.g('rt_pend')||{},online=null,busy=0,sig='';
