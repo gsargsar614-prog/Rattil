@@ -94,7 +94,7 @@ const RATE={full:1.75,half:2.5,usd:10};
 const PK={full:{label:'الباقة الكاملة',currency:'LYD',price:90},half:{label:'الباقة النصفية',currency:'LYD',price:60},usd4:{label:'4 حصص شهريًا',currency:'USD',price:null,count:4},usd8:{label:'8 حصص شهريًا',currency:'USD',price:null,count:8},usd12:{label:'12 حصة شهريًا',currency:'USD',price:null,count:12}};
 const CUR={LYD:'دينار ليبي',USD:'دولار'};
 const DAYN={SA:'السبت',SU:'الأحد',MO:'الاثنين',TU:'الثلاثاء',WE:'الأربعاء',TH:'الخميس',FR:'الجمعة'},DOW=['SU','MO','TU','WE','TH','FR','SA'];
-const SS=['مجدولة','مكتملة','ملغاة','لم تحضر الطالب','لم يحضر المعلم'];
+const SS=['مجدولة','مكتملة','ملغاة','لم تحضر الطالب','غياب الطالب بعذر','لم يحضر المعلم','غياب المعلم بعذر'];
 const nm=s=>{s.pkg=PK[s.pkg]?s.pkg:'full';s.currency=PK[s.pkg]?PK[s.pkg].currency:'LYD';s.sub=s.sub||'active';s.fixedDays=s.fixedDays||'';s.fixedTime=s.fixedTime||'';s.sessions=(s.sessions||[]).filter(x=>x.date||x.time||x.notes||x.st).map(x=>({date:'',time:'',notes:'',st:'مجدولة',kind:'عادية',pkg:s.pkg,...x}));s.summary=s.summary||'';s.archived=!!s.archived;s.subsHistory=Array.isArray(s.subsHistory)?s.subsHistory:[];return s};
 const MNAMES=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 const monthLabel=ym=>{if(!ym)return'—';const[y,m]=ym.split('-').map(Number);return(MNAMES[m-1]||ym)+' '+y};
