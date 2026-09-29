@@ -217,7 +217,7 @@ async function sLoad(){
   if(!sSession||!sSession.access_token){sMe=null;render();return}
   sMe=sSession.user;
   try{
-    const rows=await pgReq('students?select=*',sSession.access_token);
+    const rows=await pgReq('students?select=*&auth_uid=eq.'+encodeURIComponent(sMe.id),sSession.access_token);
     if(!rows||!rows.length){sRow=null;render();return}
     sRow=fromRow('students',rows[0]);
     let pg=null;try{const pr=await pgReq('progress?select=*&student_id=eq.'+encodeURIComponent(sRow.id),sSession.access_token);pg=pr&&pr[0]}catch(e){}
