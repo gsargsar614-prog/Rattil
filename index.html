@@ -63,6 +63,8 @@ textarea{min-height:130px;resize:vertical}
 .nvb{flex:1;background:none;border:0;display:grid;justify-items:center;gap:2px;font-size:19px;color:var(--mut);padding:4px 0;cursor:pointer}.nvb small{font-size:11px}.nvb.on{color:var(--gt)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 <body>
 <div id="app"></div><div id="adm" hidden></div><div id="ov2"></div><div id="toast" role="alert"></div>
@@ -123,7 +125,7 @@ const cn=(s,k)=>s.sessions.filter(x=>x.st===k).length,done=s=>cn(s,'مكتملة
 const r2=x=>Math.round(x*100)/100,fmt=x=>r2(x)+' د.ل',ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'),today=()=>ymd(new Date()),mon=()=>today().slice(0,7);
 const dl=s=>Math.ceil((new Date(s.end)-new Date(new Date().toDateString()))/864e5);
 const minutesTo=(date,time)=>time?(new Date(date+'T'+time)-new Date())/60000:9999;
-const imminent=x=>x.st==='مجدولة'&&x.date===today()&&x.time&&minutesTo(x.date,x.time)>=0&&minutesTo(x.date,x.time)<=15;
+const imminent=x=>x.st==='مجدولة'&&x.date===today()&&x.time&&minutesTo(x.date,x.time)>=0&&minutesTo(x.date,x.time)<=10;
 const subSt=s=>s.sub==='paused'?['⚪','متوقف']:!s.end?['🟢','نشط']:dl(s)<0?['🔴','منتهي']:dl(s)<=3?['🟡','ينتهي قريبًا']:['🟢','نشط'];
 function calc(t,m){let f=0,hf=0,us=0;Object.values(S.students).forEach(s=>{if(s.teacherId===t)s.sessions.forEach(x=>{if(x.st==='مكتملة'&&(x.date||'').slice(0,7)===m){if(x.pkg==='half')hf++;else if(x.pkg==='full')f++;else if(/^usd/.test(x.pkg))us++}})});
   const dueL=r2(f*RATE.full+hf*RATE.half),dueU=r2(us*RATE.usd);
@@ -224,9 +226,9 @@ async function sLoad(){
     sProg=pg?fromRow('progress',pg):null;
     const rp=await pgReq('reports?select=*&student_id=eq.'+encodeURIComponent(sRow.id)+'&order=created_at.desc',sSession.access_token).catch(()=>[]);
     sReports=(rp||[]).map(r=>fromRow('reports',r));
-    try{await pgReq('rpc/check_my_expiry_notice',sSession.access_token,{method:'POST',body:'{}'})}catch(e){}
     const nt=await pgReq('notifications?select=*&student_id=eq.'+encodeURIComponent(sRow.id)+'&order=created_at.desc',sSession.access_token).catch(()=>[]);
     sNoti=(nt||[]).map(r=>fromRow('notifications',r));
+    expCheck();
     try{const tr=await pgReq('teachers?select=name,whats&id=eq.'+encodeURIComponent(sRow.teacherId),sSession.access_token);sTeacher=tr&&tr[0]?{name:tr[0].name,whats:tr[0].whats}:null}catch(e){sTeacher=null}
     sv2='home';render()
   }catch(err){sRow=null;render()}}
@@ -236,7 +238,7 @@ function tcBtn(){return sTeacher&&sTeacher.whats?`<a class="b1 full" style="disp
 function sHome(st){
   const sb1=subSt(st),days=dl(st),up=[...st.sessions].filter(x=>x.st==='مجدولة'&&x.date&&x.date>=today()).sort((a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||''))[0];
   const al=st.sub==='paused'?'':days<0?`<div class="panel" style="border-color:var(--err)"><b style="color:var(--err)">انتهى اشتراكك بتاريخ ${esc(st.end)}</b></div>`:(st.end&&days<=3)?`<div class="panel" style="border-color:var(--gold)"><b>تنبيه 🌷 ينتهي اشتراكك خلال ${days} ${days===1?'يوم':'أيام'} (${esc(st.end)})</b></div>`:'';
-  return `<h2>السلام عليكم ورحمة الله وبركاته 🌷</h2><p class="sv" style="margin-top:-10px">أهلًا بك في أكاديمية رتل</p>
+  return pushBtn()+`<h2>السلام عليكم ورحمة الله وبركاته 🌷</h2><p class="sv" style="margin-top:-10px">أهلًا بك في أكاديمية رتل</p>
 ${tcBtn()}
 <div class="panel"><div class="kv"><span>نوع الاشتراك</span><b>${PK[st.pkg][0]}</b></div><div class="kv"><span>حالة الاشتراك</span><b>${sb1[0]} ${sb1[1]}</b></div><div class="kv"><span>بداية الاشتراك</span><b>${esc(st.start)||'—'}</b></div><div class="kv"><span>نهاية الاشتراك</span><b>${esc(st.end)||'—'}</b></div><div class="kv"><span>الأيام المتبقية</span><b>${days>=0?days:0}</b></div></div>${al}
 ${up&&imminent(up)?`<div class="panel" style="border-color:var(--gold)"><b>🔔 تذكير: لديك حصة قرآن بعد ${Math.max(0,Math.round(minutesTo(up.date,up.time)))} دقيقة، الساعة ${esc(up.time)}</b></div>`:''}
@@ -343,8 +345,8 @@ function render(){
   if(v==='det'&&cur)b=bk("go('dash')",'رجوع لقائمة الطلاب')+'<h2>سجل الطالب للحصص القرآن الكريم</h2>'+det(cur,0);
   else{v='dash';const L=Object.values(S.students).filter(s=>s.teacherId===me.id&&!s.archived).sort((a,b)=>a.id.localeCompare(b.id));
     const rem=L.flatMap(s=>s.sessions.filter(imminent).map(x=>({s,x})));
-    const remH=rem.length?`<div class="panel" style="border-color:var(--gold)"><b>🔔 حصص قريبة (خلال 15 دقيقة)</b>${rem.map(o=>`<div class="kv"><span>${esc(o.s.name)} — ${esc(o.x.time)}</span>${o.s.phone?`<a class="lk" href="https://wa.me/${norm(o.s.phone)}?text=${encodeURIComponent('🔔 تذكير: لديك حصة قرآن بعد 15 دقيقة، موعد الحصة اليوم الساعة '+o.x.time+'.')}" target="_blank" rel="noopener">فتح واتساب</a>`:''}</div>`).join('')}</div>`:'';
-    b=remH+`<h2>طلابي ${N(L.length)}</h2>`+(L.length?L.map((s,i)=>cd(s.name,[s.riwaya,s.city].filter(Boolean).join(' · '),`openS('${esc(s.id)}')`,i+1)).join(''):'<div class="emp">لا يوجد طلاب بعد. اضغط على + لإضافة طالب جديد.</div>')}
+    const remH=rem.length?`<div class="panel" style="border-color:var(--gold)"><b>🔔 حصص قريبة (خلال 10 دقائق)</b>${rem.map(o=>`<div class="kv"><span>${esc(o.s.name)} — ${esc(o.x.time)}</span>${o.s.phone?`<a class="lk" href="https://wa.me/${norm(o.s.phone)}?text=${encodeURIComponent('🔔 تذكير: لديك حصة قرآن بعد 10 دقائق، موعد الحصة اليوم الساعة '+o.x.time+'.')}" target="_blank" rel="noopener">فتح واتساب</a>`:''}</div>`).join('')}</div>`:'';
+    b=pushBtn()+remH+fuPanel(L)+`<h2>طلابي ${N(L.length)}</h2>`+(L.length?L.map((s,i)=>cd(s.name,[s.riwaya,s.city].filter(Boolean).join(' · '),`openS('${esc(s.id)}')`,i+1)).join(''):'<div class="emp">لا يوجد طلاب بعد. اضغط على + لإضافة طالب جديد.</div>')}
   A.innerHTML=`<header><button class="ic" onclick="tap()" aria-label="أكاديمية رتل">${icon()}</button>${me.photo?`<img class="av" src="${esc(me.photo)}" alt="">`:'<span class="av">👤</span>'}<div class="nm"><b>${esc(me.name)}</b><small>معلم القرآن الكريم</small></div><small class="st"></small><button class="lo" onclick="logout()">خروج</button></header><main>${b}</main>`+(v==='det'?'':'<button class="fab" onclick="sheet()" aria-label="إضافة طالب جديد">+</button>')}
 function pkgOpts(cur1){return Object.entries(PK).filter(([k,v])=>v.currency===cur1).map(([k,v])=>`<option value="${k}">${v.label}${k==='full'?' (يوميًا عدا الجمعة)':''}</option>`).join('')}
 function dayChecks(sel){const set=new Set((sel||'').split(',').filter(Boolean));return DOW.map(d=>`<label style="display:inline-flex;align-items:center;gap:4px;width:auto;margin-left:10px"><input type="checkbox" value="${d}" ${set.has(d)?'checked':''} class="fd">${DAYN[d]}</label>`).join('')}
@@ -437,11 +439,63 @@ function refresh(){if(me&&v!=='det')render();if(av&&av.n!=='D'&&!$('#ov2').inner
 if(me){const id=tid(me.whats);if(me.id!==id){adopt(me.id,id,me.name);me.id=id;ls.s('rt_me',me)}
   put('teachers',id,{id,teacherId:id,name:me.name,whats:me.whats,photo:me.photo||'',updatedAt:Date.now()});
   if(!ls.g('rt_seed')){ls.s('rt_seed',1);Object.values(S.students).filter(s=>s.teacherId===id).forEach(s=>{PN['students:'+s.id]=1});ls.s('rt_pend',PN)}}
+const dayTxt=n=>n<=0?'اليوم':n===1?'يوم واحد':n===2?'يومان':n+' أيام';
+function bNotify(t,m){try{if(ls.g('rt_push_ok'))return;if('Notification' in window&&Notification.permission==='granted')new Notification(t,{body:m})}catch(e){}}
+function sAdd(id,type,title,message){
+  if(!sRow||sNoti.some(n=>n.id===id))return false;
+  put('notifications',id,{id,studentId:sRow.id,type,title,message,read:false,updatedAt:Date.now()});
+  sNoti=[{id,studentId:sRow.id,type,title,message,read:false,createdAt:Date.now()},...sNoti];bNotify(title,message);return true}
+function expCheck(){
+  if(!sMe||!sRow||!sRow.end||sRow.sub==='paused')return;
+  const d=dl(sRow),e=sRow.end;
+  if(d<0)sAdd('x0_'+sRow.id+'_'+e,'expired','انتهى اشتراكك 🌷','السلام عليكم ورحمة الله، نشكرك على رفقتك الطيبة معنا في أكاديمية رتل. لقد انتهى اشتراكك بتاريخ '+e+'، ويسعدنا أن تتواصل مع المعلمة لتجديده ومواصلة رحلتك مع كتاب الله. بارك الله فيك وفي وقتك.');
+  else if(d<=3)sAdd('x3_'+sRow.id+'_'+e,'expiry_soon','تنبيه لطيف 🌷','السلام عليكم ورحمة الله، نودّ إخبارك بلطف أنه '+(d<=0?'ينتهي اشتراكك اليوم ('+e+')':'تبقّى على انتهاء اشتراكك '+dayTxt(d)+' (بتاريخ '+e+')')+'. يُرجى التواصل مع المعلمة لتجديده حتى تستمر رحلتك مع القرآن دون انقطاع. جزاكم الله خيرًا.')}
+const VAPID='BFEq_tRlMTAnCA3juTFALpAYSwGX5Rt5fZ7ILD_Igj20r5Cys3hLmsf92I9qOozOPFhvYKqQCwH4CxWxTHh60t8';
+const u8=b=>{const s=(b+'='.repeat((4-b.length%4)%4)).replace(/-/g,'+').replace(/_/g,'/'),r=atob(s);return Uint8Array.from(r,c=>c.charCodeAt(0))};
+const pushOK=()=>'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+const standalone=()=>(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone;
+let pushSynced='';
+function pushWho(){return sMe&&sRow?{role:'student',owner:sRow.id}:me?{role:'teacher',owner:me.id}:null}
+function pushBtn(){
+  if(pushOK()&&ls.g('rt_push_ok')&&Notification.permission==='granted')return '';
+  if(!pushOK())return isIOS&&!standalone()?`<div class="panel"><b>🔔 للإشعارات على الآيفون</b><p class="sv">اضغطي زر المشاركة في Safari ثم «إضافة إلى الشاشة الرئيسية»، وافتحي الموقع من الأيقونة ثم فعّلي الإشعارات.</p></div>`:'';
+  if(Notification.permission==='denied')return `<div class="panel"><b>🔔 الإشعارات محظورة</b><p class="sv">فعّليها من إعدادات المتصفح للموقع ثم حدّثي الصفحة.</p></div>`;
+  return `<div class="panel" style="border-color:var(--gold)"><b>🔔 فعّلي الإشعارات</b><p class="sv">لتصلك تذكيرات الحصص وتنبيهات الاشتراك حتى لو كان الموقع مغلقًا.</p><button class="b1" onclick="pushEnable()">تفعيل الإشعارات</button></div>`}
+async function pushSave(sub){
+  const w=pushWho();if(!w)return false;const j=sub.toJSON();
+  const body=JSON.stringify({p_role:w.role,p_owner:w.owner,p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth});
+  if(w.role==='student')await pgReq('rpc/rt_save_push',sSession.access_token,{method:'POST',body});
+  else await rq('rpc/rt_save_push',{method:'POST',body});
+  pushSynced=w.role+w.owner;return true}
+async function pushEnable(){
+  try{
+    if(!pushOK()){toast('هذا المتصفح لا يدعم الإشعارات');return}
+    if(!pushWho()){toast('سجّلي الدخول أولًا');return}
+    const perm=await Notification.requestPermission();
+    if(perm!=='granted'){toast('لم يتم السماح بالإشعارات');render();return}
+    const reg=await navigator.serviceWorker.register('sw.js');await navigator.serviceWorker.ready;
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(VAPID)});
+    await pushSave(sub);ls.s('rt_push_ok',1);toast('تم تفعيل الإشعارات ✅');render()
+  }catch(e){toast('تعذّر تفعيل الإشعارات')}}
+async function pushSync(){
+  try{const w=pushWho();if(!w||!pushOK()||!ls.g('rt_push_ok')||Notification.permission!=='granted'||pushSynced===w.role+w.owner)return;
+    const reg=await navigator.serviceWorker.getRegistration();if(!reg)return;const sub=await reg.pushManager.getSubscription();if(sub)await pushSave(sub)}catch(e){}}
+function fuPanel(L){
+  const fu=L.filter(s=>'🔴🟡'.includes(subSt(s)[0]));
+  if(!fu.length)return '';
+  const msg=s=>{const d=dl(s);return d<0?'السلام عليكم ورحمة الله، نشكرك على رفقتك الطيبة معنا في أكاديمية رتل. لقد انتهى اشتراكك بتاريخ '+s.end+'، ويسعدنا أن نجدده لك لتواصل رحلتك مع كتاب الله 🌷':'السلام عليكم ورحمة الله، نودّ إخبارك بلطف أنه '+(d<=0?'ينتهي اشتراكك اليوم':'تبقّى على انتهاء اشتراكك '+dayTxt(d))+' (بتاريخ '+s.end+'). يسعدنا تجديده لتستمر رحلتك مع القرآن دون انقطاع 🌷'};
+  return `<div class="panel" style="border-color:var(--gold)"><b>📌 اشتراكات تحتاج متابعة</b>${fu.map(s=>`<div class="kv"><span>${subSt(s)[0]} ${esc(s.name)} — ${subSt(s)[1]}</span>${s.phone?`<a class="lk" href="https://wa.me/${norm(s.phone)}?text=${encodeURIComponent(msg(s))}" target="_blank" rel="noopener">واتساب</a>`:''}</div>`).join('')}</div>`}
 function remCheck(){
   if(sMe&&sRow){const up=[...sRow.sessions].filter(x=>x.st==='مجدولة'&&x.date>=today()).sort((a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||''))[0];
-    if(up&&imminent(up)){const k='rt_remsent_'+sRow.id+'_'+up.date+'_'+up.time;if(!ls.g(k)){ls.s(k,1);notify(sRow.id,'reminder','🔔 تذكير','لديك حصة قرآن بعد 15 دقيقة تقريبًا. موعد الحصة: اليوم الساعة '+up.time+'.')}}
-    if(sv2==='home')render()}
+    if(up&&imminent(up)){const k='rt_remsent_'+sRow.id+'_'+up.date+'_'+up.time;if(!ls.g(k)){ls.s(k,1);sAdd('rem_'+sRow.id+'_'+up.date+'_'+up.time,'reminder','🔔 تذكير بالحصة','السلام عليكم ورحمة الله، نذكّرك بلطف بأن حصتك القرآنية ستبدأ بعد 10 دقائق تقريبًا، في تمام الساعة '+up.time+'. نسأل الله أن يفتح عليك ويبارك في وقتك.')}}
+    expCheck();
+    if(sv2==='home'||sv2==='noti')render()}
+  if(me){Object.values(S.students).filter(s=>s.teacherId===me.id&&!s.archived).forEach(s=>(s.sessions||[]).filter(imminent).forEach(x=>{const k='rt_trem_'+s.id+'_'+x.date+'_'+x.time;if(!ls.g(k)){ls.s(k,1);const m='حصة '+s.name+' ستبدأ بعد '+Math.max(1,Math.round(minutesTo(x.date,x.time)))+' دقائق تقريبًا (الساعة '+x.time+'). بارك الله في جهدك 🌷';toast('🔔 '+m);bNotify('🔔 تذكير بالحصة',m)}}))}
+  pushSync();
   if(me&&v==='dash')render()}
+try{if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 render();pull();setInterval(pull,6000);setInterval(remCheck,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
 if(sSession&&sSession.access_token){sLoad()}else{sBooting=false;if(!me)render()}
 </script>
