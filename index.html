@@ -94,7 +94,7 @@ const RATE={full:1.75,half:2.5,usd:10};
 const PK={full:{label:'الباقة الكاملة',currency:'LYD',price:90},half:{label:'الباقة النصفية',currency:'LYD',price:60},usd4:{label:'4 حصص شهريًا',currency:'USD',price:null,count:4},usd8:{label:'8 حصص شهريًا',currency:'USD',price:null,count:8},usd12:{label:'12 حصة شهريًا',currency:'USD',price:null,count:12}};
 const CUR={LYD:'دينار ليبي',USD:'دولار'};
 const DAYN={SA:'السبت',SU:'الأحد',MO:'الاثنين',TU:'الثلاثاء',WE:'الأربعاء',TH:'الخميس',FR:'الجمعة'},DOW=['SU','MO','TU','WE','TH','FR','SA'];
-const SS=['مجدولة','مكتملة','ملغاة','لم تحضر الطالب','غياب الطالب بعذر','لم يحضر المعلم','غياب المعلم بعذر'];
+const SS=['مجدولة','مكتملة','ملغاة','لم تحضر الطالب','لم يحضر المعلم'];
 const nm=s=>{s.pkg=PK[s.pkg]?s.pkg:'full';s.currency=PK[s.pkg]?PK[s.pkg].currency:'LYD';s.sub=s.sub||'active';s.fixedDays=s.fixedDays||'';s.fixedTime=s.fixedTime||'';s.sessions=(s.sessions||[]).filter(x=>x.date||x.time||x.notes||x.st).map(x=>({date:'',time:'',notes:'',st:'مجدولة',kind:'عادية',pkg:s.pkg,...x}));s.summary=s.summary||'';s.archived=!!s.archived;s.subsHistory=Array.isArray(s.subsHistory)?s.subsHistory:[];return s};
 const MNAMES=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 const monthLabel=ym=>{if(!ym)return'—';const[y,m]=ym.split('-').map(Number);return(MNAMES[m-1]||ym)+' '+y};
@@ -124,7 +124,8 @@ const r2=x=>Math.round(x*100)/100,fmt=x=>r2(x)+' د.ل',ymd=d=>d.getFullYear()+'
 const dl=s=>Math.ceil((new Date(s.end)-new Date(new Date().toDateString()))/864e5);
 const minutesTo=(date,time)=>time?(new Date(date+'T'+time)-new Date())/60000:9999;
 const imminent=x=>x.st==='مجدولة'&&x.date===today()&&x.time&&minutesTo(x.date,x.time)>=0&&minutesTo(x.date,x.time)<=15;
-const subSt=s=>s.sub==='paused'?['⚪','متوقف']:!s.end?['🟢','نشط']:dl(s)<0?['🔴','منتهي']:dl(s)<=3?['🟡','ينتهي قريبًا']:['🟢','نشط'];
+const subCol=s=>{const c=subSt(s)[0];return c==='🔴'?'color:#d93025;font-weight:700':c==='🟡'?'color:#b8860b;font-weight:700':''};
+const subSt=s=>s.sub==='paused'?['⚪','متوقف']:!s.end?['🟢','نشط']:dl(s)<0?['🔴','منتهي']:dl(s)<=2?['🟡','ينتهي قريبًا']:['🟢','نشط'];
 function calc(t,m){let f=0,hf=0,us=0;Object.values(S.students).forEach(s=>{if(s.teacherId===t)s.sessions.forEach(x=>{if(x.st==='مكتملة'&&(x.date||'').slice(0,7)===m){if(x.pkg==='half')hf++;else if(x.pkg==='full')f++;else if(/^usd/.test(x.pkg))us++}})});
   const dueL=r2(f*RATE.full+hf*RATE.half),dueU=r2(us*RATE.usd);
   const P=Object.values(S.payments).filter(p=>p.teacherId===t&&p.month===m);
@@ -157,7 +158,7 @@ async function push(){
     if(!d){delete PN[k];continue}
     try{const row=toRow(c,d);
       try{await post(c,row)}catch(e){
-        if(/PGRST204|column|schema/i.test(e.message)){const r2={...row};let le=e,ok=false;for(let n=0;n<15&&le;n++){const m=/'([^']+)' column/.exec(le.message)||/column \"?([a-z_]+)\"?/i.exec(le.message);if(!m||!(m[1] in r2))break;delete r2[m[1]];DBG.miss=true;try{await post(c,r2);ok=true;le=null}catch(e2){le=e2}}if(!ok)throw le||e}else throw e}
+        if(OPT[c]&&/column|PGRST|schema|400/i.test(e.message)){const r2={...row};OPT[c].forEach(x=>delete r2[x]);DBG.miss=true;await post(c,r2)}else throw e}
       delete PN[k];RECENT[k]=Date.now()}
     catch(e){failed.add(k);errs.push(c+': '+e.message)}}
   ls.s('rt_pend',PN);DBG.err=errs.join(' | ');stat(!errs.length);
@@ -217,28 +218,45 @@ async function sLoad(){
   if(!sSession||!sSession.access_token){sMe=null;render();return}
   sMe=sSession.user;
   try{
-    const rows=await pgReq('students?select=*&auth_uid=eq.'+encodeURIComponent(sMe.id),sSession.access_token);
-    if(!rows||!rows.length){sRow=null;render();return}
-    sRow=fromRow('students',rows[0]);
+    const rows=await pgReq('students?select=*',sSession.access_token);
+    const myPhone=norm(String((sSession.user&&sSession.user.email)||'').split('@')[0]);
+    const mine=(rows||[]).filter(r=>norm(r.phone||'')===myPhone);
+    if(!mine.length){sRow=null;render();return}
+    sRow=fromRow('students',mine[0]);
     let pg=null;try{const pr=await pgReq('progress?select=*&student_id=eq.'+encodeURIComponent(sRow.id),sSession.access_token);pg=pr&&pr[0]}catch(e){}
     sProg=pg?fromRow('progress',pg):null;
     const rp=await pgReq('reports?select=*&student_id=eq.'+encodeURIComponent(sRow.id)+'&order=created_at.desc',sSession.access_token).catch(()=>[]);
     sReports=(rp||[]).map(r=>fromRow('reports',r));
     try{await pgReq('rpc/check_my_expiry_notice',sSession.access_token,{method:'POST',body:'{}'})}catch(e){}
-    const nt=await pgReq('notifications?select=*&student_id=eq.'+encodeURIComponent(sRow.id)+'&order=created_at.desc',sSession.access_token).catch(()=>[]);
-    sNoti=(nt||[]).map(r=>fromRow('notifications',r));
+    try{await sLoadNoti(true);
+      const dd=sRow.end?dl(sRow):null;
+      if(sRow.sub!=='paused'&&dd!==null&&dd<=2){
+        const ended=dd<0,has=sNoti.some(n=>(n.message||'').includes(sRow.end)&&/اشتراك/.test((n.title||'')+(n.message||''))&&(ended?/انتهى/.test(n.message||''):/ينتهي/.test(n.message||'')));
+        if(!has){const m=ended?'انتهى اشتراكك بتاريخ '+sRow.end+'. تواصلي مع المعلمة للتجديد.':'ينتهي اشتراكك بتاريخ '+sRow.end+(dd===0?' (اليوم)':' (خلال '+dd+(dd===1?' يوم':' يومين')+')')+'. تواصلي مع المعلمة للتجديد.';
+          notify(sRow.id,'expiry','⏰ تنبيه الاشتراك',m);
+          sNoti=[{id:'lx'+Date.now(),studentId:sRow.id,type:'expiry',title:'⏰ تنبيه الاشتراك',message:m,read:false},...sNoti];
+          try{if('Notification' in window&&Notification.permission==='granted')new Notification('⏰ تنبيه الاشتراك',{body:m})}catch(e){}}}}catch(e){}
     try{const tr=await pgReq('teachers?select=name,whats&id=eq.'+encodeURIComponent(sRow.teacherId),sSession.access_token);sTeacher=tr&&tr[0]?{name:tr[0].name,whats:tr[0].whats}:null}catch(e){sTeacher=null}
     sv2='home';render()
   }catch(err){sRow=null;render()}}
+
+let sSeen=null;
+async function sLoadNoti(first){
+  if(!sSession||!sRow)return;
+  try{const nt=await pgReq('notifications?select=*&student_id=eq.'+encodeURIComponent(sRow.id)+'&order=created_at.desc',sSession.access_token);
+    const arr=(nt||[]).map(r=>fromRow('notifications',r));
+    if(sSeen===null||first){sSeen=new Set(arr.map(n=>n.id))}
+    else{arr.filter(n=>!n.read&&!sSeen.has(n.id)).forEach(n=>{sSeen.add(n.id);try{if('Notification' in window&&Notification.permission==='granted')new Notification(n.title,{body:n.message})}catch(e){}})}
+    sNoti=arr;if(sMe&&sRow&&(sv2==='noti'||sv2==='home'))render()}catch(e){}}
 async function studentLogout(){sSession=null;ls.s('rt_ssession',null);sMe=null;sRow=null;sProg=null;sReports=[];sNoti=[];sTeacher=null;render()}
 function nvIc(k,ic,t){return `<button class="nvb${sv2===k?' on':''}" onclick="sv2='${k}';render()">${ic}<small>${esc(t)}</small></button>`}
 function tcBtn(){return sTeacher&&sTeacher.whats?`<a class="b1 full" style="display:block;text-align:center;text-decoration:none;margin:14px 0;font-size:17px" href="https://wa.me/${norm(sTeacher.whats)}" target="_blank" rel="noopener">💬 تواصل مع معلمك${sTeacher.name?' — '+esc(sTeacher.name):''}</a>`:''}
 function sHome(st){
   const sb1=subSt(st),days=dl(st),up=[...st.sessions].filter(x=>x.st==='مجدولة'&&x.date&&x.date>=today()).sort((a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||''))[0];
-  const al=st.sub==='paused'?'':days<0?`<div class="panel" style="border-color:var(--err)"><b style="color:var(--err)">انتهى اشتراكك بتاريخ ${esc(st.end)}</b></div>`:(st.end&&days<=3)?`<div class="panel" style="border-color:var(--gold)"><b>تنبيه 🌷 ينتهي اشتراكك خلال ${days} ${days===1?'يوم':'أيام'} (${esc(st.end)})</b></div>`:'';
+  const al=st.sub==='paused'?'':days<0?`<div class="panel" style="border-color:var(--err)"><b style="color:var(--err)">انتهى اشتراكك بتاريخ ${esc(st.end)}</b></div>`:(st.end&&days<=2)?`<div class="panel" style="border-color:#e0b000;background:#fff8dc"><b style="color:#8a6d00">تنبيه 🌷 ينتهي اشتراكك خلال ${days} ${days===1?'يوم':'أيام'} (${esc(st.end)})</b></div>`:'';
   return `<h2>السلام عليكم ورحمة الله وبركاته 🌷</h2><p class="sv" style="margin-top:-10px">أهلًا بك في أكاديمية رتل</p>
 ${tcBtn()}
-<div class="panel"><div class="kv"><span>نوع الاشتراك</span><b>${PK[st.pkg][0]}</b></div><div class="kv"><span>حالة الاشتراك</span><b>${sb1[0]} ${sb1[1]}</b></div><div class="kv"><span>بداية الاشتراك</span><b>${esc(st.start)||'—'}</b></div><div class="kv"><span>نهاية الاشتراك</span><b>${esc(st.end)||'—'}</b></div><div class="kv"><span>الأيام المتبقية</span><b>${days>=0?days:0}</b></div></div>${al}
+<div class="panel"><div class="kv"><span>نوع الاشتراك</span><b>${PK[st.pkg][0]}</b></div><div class="kv"><span>حالة الاشتراك</span><b style="${subCol(st)}">${sb1[0]} ${sb1[1]}</b></div><div class="kv"><span>بداية الاشتراك</span><b>${esc(st.start)||'—'}</b></div><div class="kv"><span>نهاية الاشتراك</span><b>${esc(st.end)||'—'}</b></div><div class="kv"><span>الأيام المتبقية</span><b>${days>=0?days:0}</b></div></div>${al}
 ${up&&imminent(up)?`<div class="panel" style="border-color:var(--gold)"><b>🔔 تذكير: لديك حصة قرآن بعد ${Math.max(0,Math.round(minutesTo(up.date,up.time)))} دقيقة، الساعة ${esc(up.time)}</b></div>`:''}
 <h3>الحصة القادمة</h3>${up?`<div class="panel"><div class="kv"><span>التاريخ</span><b>${esc(up.date)}</b></div><div class="kv"><span>الوقت</span><b>${esc(up.time)||'—'}</b></div><div class="kv"><span>الحالة</span><b>${up.st}</b></div></div>`:'<div class="emp">لا توجد حصة مجدولة حاليًا</div>'}`}
 function sSched(st){const L=[...st.sessions].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
@@ -413,7 +431,7 @@ function ra(){
   const T=Object.values(S.teachers).sort((a,b)=>(a.name||'').localeCompare(b.name||'','ar')),ST=Object.values(S.students).filter(s=>!s.archived).sort((a,b)=>a.id.localeCompare(b.id)),cnt=id=>ST.filter(s=>s.teacherId===id).length,m=av.m||mon(),H=bk("am('home')",'رجوع للوحة الرئيسية للإدارة'),tn=id=>(S.teachers[id]||{}).name||'';let b='';
   const cardB=(ic,t,n,sub,a)=>`<${a?'button':'div'} class="cd big"${a?` onclick="${a}"`:''}><span class="tx">${ic} <b>${t}</b><small>${sub||''}</small></span>${N(n)}${a?'<i>‹</i>':''}</${a?'button':'div'}>`;
   if(av.n==='home'){const act=ST.filter(s=>'🟢🟡'.includes(subSt(s)[0])).length,fu=ST.filter(s=>'🔴🟡'.includes(subSt(s)[0])).length,dues=T.reduce((a,t)=>a+calc(t.id,mon()).due,0);
-    b=`<h2>لوحة إدارة أكاديمية رتل</h2><div class="panel"><div class="kv"><span>حالة الاتصال بالقاعدة</span><b>${online?'🟢 متصل':'🔴 غير متصل'}</b></div><div class="kv"><span>معلمون في القاعدة</span><b>${DBG.t}</b></div><div class="kv"><span>طلاب في القاعدة</span><b>${DBG.s}</b></div><div class="kv"><span>بانتظار الرفع من الأجهزة</span><b>${Object.keys(PN).length}</b></div>${DBG.miss?'<p class="er">⚠️ قاعدة البيانات تحتاج تنفيذ ملف SQL (rattil-migration-3.sql)</p>':''}${DBG.err?`<p class="er" style="word-break:break-all">${esc(DBG.err)}</p>`:''}<button class="lk" onclick="pull().then(()=>ra())">تحديث الآن</button>${DBG.pull?`<p class="er" style="word-break:break-all">⚠️ تعذّر جلب: ${esc(DBG.pull)}</p>`:''}${DBG.payLocal?`<p class="er">⚠️ ${DBG.payLocal} دفعة محفوظة على هذا الجهاز فقط ولا تُرجعها قاعدة البيانات — نفّذي ملف rattil-migration-2.sql</p>`:''}</div>${cardB('👩🏻‍🏫','المعلمون',T.length,'',"am('T')")}${cardB('👩🏻‍🎓','الطلاب',ST.length,'',"am('S')")}${cardB('📚','الحصص المكتملة',ST.reduce((a,s)=>a+done(s),0))}${cardB('💰','المستحقات (هذا الشهر)',fmt(dues),'',"am('P')")}${cardB('💳','الاشتراكات',act,'نشط: '+act+' · منتهٍ/متوقف: '+(ST.length-act),"am('F')")}${cardB('🔔','اشتراكات تحتاج متابعة',fu,'',"am('F')")}`}
+    b=`<h2>لوحة إدارة أكاديمية رتل</h2><div class="panel"><div class="kv"><span>حالة الاتصال بالقاعدة</span><b>${online?'🟢 متصل':'🔴 غير متصل'}</b></div><div class="kv"><span>معلمون في القاعدة</span><b>${DBG.t}</b></div><div class="kv"><span>طلاب في القاعدة</span><b>${DBG.s}</b></div><div class="kv"><span>بانتظار الرفع من الأجهزة</span><b>${Object.keys(PN).length}</b></div>${DBG.miss?'<p class="er">⚠️ قاعدة البيانات تحتاج تنفيذ ملف SQL (rattil-migration.sql)</p>':''}${DBG.err?`<p class="er" style="word-break:break-all">${esc(DBG.err)}</p>`:''}<button class="lk" onclick="pull().then(()=>ra())">تحديث الآن</button>${DBG.pull?`<p class="er" style="word-break:break-all">⚠️ تعذّر جلب: ${esc(DBG.pull)}</p>`:''}${DBG.payLocal?`<p class="er">⚠️ ${DBG.payLocal} دفعة محفوظة على هذا الجهاز فقط ولا تُرجعها قاعدة البيانات — نفّذي ملف rattil-migration-2.sql</p>`:''}</div>${cardB('👩🏻‍🏫','المعلمون',T.length,'',"am('T')")}${cardB('👩🏻‍🎓','الطلاب',ST.length,'',"am('S')")}${cardB('📚','الحصص المكتملة',ST.reduce((a,s)=>a+done(s),0))}${cardB('💰','المستحقات (هذا الشهر)',fmt(dues),'',"am('P')")}${cardB('💳','الاشتراكات',act,'نشط: '+act+' · منتهٍ/متوقف: '+(ST.length-act),"am('F')")}${cardB('🔔','اشتراكات تحتاج متابعة',fu,'',"am('F')")}`}
   else if(av.n==='T')b=H+`<h2>المعلمون ${N(T.length)}</h2>`+(T.length?T.map((t,i)=>`<div class="panel" style="padding:10px 14px">${cd(t.name,`${t.whats||'—'} · الطلاب: ${cnt(t.id)} · الحصص المكتملة: ${ST.filter(s=>s.teacherId===t.id).reduce((a,s)=>a+done(s),0)} · المستحق: ${fmt(calc(t.id,mon()).due)}`,`am('TS',{t:'${esc(t.id)}'})`,i+1)}<button class="lk" style="color:var(--err)" onclick="delTeacherFlow('${esc(t.id)}')">حذف المعلم</button></div>`).join(''):'<div class="emp">لا يوجد معلمون بعد.</div>');
   else if(av.n==='TS'){const t=S.teachers[av.t]||{},L=ST.filter(s=>s.teacherId===av.t);b=bk("am('T')",'رجوع لقائمة المعلمين')+`<h2>طلاب المعلم ${N(L.length)}</h2><p class="sv">${esc(t.name)} · ${esc(t.whats)}</p>`+(L.length?L.map((s,i)=>cd(s.name,`${PK[s.pkg][0]} · ${subSt(s)[0]} ${subSt(s)[1]} · المكتملة: ${done(s)} · المتبقية: ${cn(s,'مجدولة')}`,`am('D',{id:'${esc(s.id)}',from:'TS',t:'${esc(av.t)}'})`,i+1)).join(''):'<div class="emp">لا يوجد طلاب لهذا المعلم بعد.</div>')}
   else if(av.n==='S'){const FL=sfApply(ST);
@@ -424,7 +442,7 @@ function ra(){
 <label>الباقة<select onchange="sfUpd('p',this.value)"><option value="">الكل</option>${Object.entries(PK).map(([k,v])=>`<option value="${k}"${SF.p===k?' selected':''}>${v.label}</option>`).join('')}</select></label>
 <label>العملة<select onchange="sfUpd('c',this.value)"><option value="">الكل</option><option value="LYD"${SF.c==='LYD'?' selected':''}>دينار ليبي</option><option value="USD"${SF.c==='USD'?' selected':''}>دولار</option></select></label>
 <label>حالة الاشتراك<select onchange="sfUpd('st',this.value)"><option value="">الكل</option><option value="active"${SF.st==='active'?' selected':''}>🟢 نشط</option><option value="soon"${SF.st==='soon'?' selected':''}>🟡 ينتهي قريبًا</option><option value="ended"${SF.st==='ended'?' selected':''}>🔴 منتهي</option><option value="paused"${SF.st==='paused'?' selected':''}>⚪ متوقف</option></select></label>
-</div>`+(FL.length?`<div class="tw"><table style="min-width:520px"><thead><tr><th>#</th><th>اسم الطالب</th><th>اسم المعلم</th><th>الباقة</th><th>الاشتراك</th></tr></thead><tbody>${FL.map((s,i)=>`<tr class="ck" onclick="am('D',{id:'${esc(s.id)}',from:'S'})"><td>${i+1}</td><td>${esc(s.name)}</td><td>${esc(s.teacherName)}</td><td>${esc(PK[s.pkg]?PK[s.pkg].label:'—')}</td><td>${subSt(s)[0]} ${subSt(s)[1]}</td></tr>`).join('')}</tbody></table></div>`:'<div class="emp">لا نتائج مطابقة لبحثك/فلاترك.</div>')}
+</div>`+(FL.length?`<div class="tw"><table style="min-width:520px"><thead><tr><th>#</th><th>اسم الطالب</th><th>اسم المعلم</th><th>الباقة</th><th>الاشتراك</th></tr></thead><tbody>${FL.map((s,i)=>`<tr class="ck" onclick="am('D',{id:'${esc(s.id)}',from:'S'})"><td>${i+1}</td><td>${esc(s.name)}</td><td>${esc(s.teacherName)}</td><td>${esc(PK[s.pkg]?PK[s.pkg].label:'—')}</td><td style="${subCol(s)}">${subSt(s)[0]} ${subSt(s)[1]}</td></tr>`).join('')}</tbody></table></div>`:'<div class="emp">لا نتائج مطابقة لبحثك/فلاترك.</div>')}
   else if(av.n==='P')b=H+`<h2>💰 مستحقات المعلمين</h2><label>الشهر<input type="month" value="${m}" onchange="am('P',{m:this.value||mon()})"></label><div style="height:12px"></div>`+(T.length?T.map(t=>{const c=calc(t.id,m),L=ST.filter(s=>s.teacherId===t.id);return `<div class="panel"><b>${esc(t.name)}</b>${[['طلاب الباقة الكاملة',L.filter(s=>s.pkg==='full').length],['طلاب الباقة النصفية',L.filter(s=>s.pkg==='half').length],['الحصص المكتملة للكاملة',c.f],['الحصص المكتملة للنصفية',c.h],['مستحق الكاملة',fmt(c.f*RATE.full)],['مستحق النصفية',fmt(c.h*RATE.half)],['إجمالي المستحق',fmt(c.due)],['المدفوع',fmt(c.paid)],['المتبقي',fmt(c.rem)],['الحالة',c.st],...(c.us||c.paidU?[['حصص الدولار المكتملة',c.us],['المستحق بالدولار',r2(c.dueU)+' $'],['المدفوع بالدولار',r2(c.paidU)+' $'],['المتبقي بالدولار',r2(c.remU)+' $'],['حالة الدولار',c.stU]]:[])].map(r=>`<div class="kv"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')}<button class="b1" onclick="payM('${esc(t.id)}')">تسجيل الدفع</button> <button class="lk" onclick="am('PH',{t:'${esc(t.id)}',m:'${m}'})">سجل رواتب المعلم</button></div>`}).join(''):'<div class="emp">لا يوجد معلمون بعد.</div>');
   else if(av.n==='PH'){const P=Object.values(S.payments).filter(p=>p.teacherId===av.t),ms=[...new Set([...P.map(p=>p.month),...ST.filter(s=>s.teacherId===av.t).flatMap(s=>s.sessions.map(x=>(x.date||'').slice(0,7)))].filter(Boolean))].sort().reverse();
     b=bk(`am('P',{m:'${m}'})`,'رجوع للمستحقات')+`<h2>سجل رواتب ${esc(tn(av.t))}</h2>`+(ms.length?`<div class="tw"><table style="min-width:420px"><thead><tr><th>الشهر</th><th>المستحق</th><th>المدفوع</th><th>المتبقي</th><th>الحالة</th></tr></thead><tbody>${ms.map(x=>{const c=calc(av.t,x);return `<tr><td>${x}</td><td>${c.due}${c.dueU?' + '+c.dueU+' $':''}</td><td>${c.paid}${c.paidU?' + '+c.paidU+' $':''}</td><td>${c.rem}${c.dueU||c.paidU?' + '+c.remU+' $':''}</td><td>${c.st}</td></tr>`}).join('')}</tbody></table></div>`:'<div class="emp">لا توجد سجلات بعد.</div>')}
@@ -439,10 +457,10 @@ if(me){const id=tid(me.whats);if(me.id!==id){adopt(me.id,id,me.name);me.id=id;ls
   if(!ls.g('rt_seed')){ls.s('rt_seed',1);Object.values(S.students).filter(s=>s.teacherId===id).forEach(s=>{PN['students:'+s.id]=1});ls.s('rt_pend',PN)}}
 function remCheck(){
   if(sMe&&sRow){const up=[...sRow.sessions].filter(x=>x.st==='مجدولة'&&x.date>=today()).sort((a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||''))[0];
-    if(up&&imminent(up)){const k='rt_remsent_'+sRow.id+'_'+up.date+'_'+up.time;if(!ls.g(k)){ls.s(k,1);notify(sRow.id,'reminder','🔔 تذكير','لديك حصة قرآن بعد 15 دقيقة تقريبًا. موعد الحصة: اليوم الساعة '+up.time+'.')}}
+    if(up&&imminent(up)){const k='rt_remsent_'+sRow.id+'_'+up.date+'_'+up.time;if(!ls.g(k)){ls.s(k,1);const m='لديك حصة قرآن بعد 15 دقيقة تقريبًا. موعد الحصة: اليوم الساعة '+up.time+'.';notify(sRow.id,'reminder','🔔 تذكير',m);sNoti=[{id:'loc'+Date.now(),studentId:sRow.id,type:'reminder',title:'🔔 تذكير',message:m,read:false,createdAt:Date.now()},...sNoti];try{if('Notification' in window&&Notification.permission==='granted')new Notification('🔔 تذكير',{body:m})}catch(e){}}}
     if(sv2==='home')render()}
   if(me&&v==='dash')render()}
-render();pull();setInterval(pull,6000);setInterval(remCheck,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
+render();pull();setInterval(pull,6000);setInterval(remCheck,60000);setInterval(()=>{if(sMe&&sRow)sLoadNoti()},20000);document.addEventListener('click',()=>{try{if(sMe&&'Notification' in window&&Notification.permission==='default')Notification.requestPermission()}catch(e){}},{once:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
 if(sSession&&sSession.access_token){sLoad()}else{sBooting=false;if(!me)render()}
 </script>
 </body>
