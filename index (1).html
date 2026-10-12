@@ -136,6 +136,44 @@ textarea{min-height:130px;resize:vertical}
 .stu .rise:nth-child(2){animation-delay:.05s}.stu .rise:nth-child(3){animation-delay:.1s}.stu .rise:nth-child(4){animation-delay:.15s}.stu .rise:nth-child(5){animation-delay:.2s}.stu .rise:nth-child(6){animation-delay:.25s}
 @keyframes stuUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.stu .rise{animation:none}.stu .tile,.stu .nvb{transition:none}}
+
+.stu .aya{position:relative;border-radius:22px;padding:18px 18px 14px;margin-bottom:14px;text-align:center;background:linear-gradient(160deg,#fffaf0,#f8ecc9);border:1.5px solid #ead9a3;box-shadow:0 4px 18px rgba(201,162,75,.18)}
+.stu .aya small{color:#8a6a1f;font-weight:700;font-size:12.5px}
+.stu .aya p{font-family:Amiri,Cairo,serif;font-size:23px;line-height:2;margin:6px 0 4px;color:#3a2b05}
+.stu .aya span{font-size:12.5px;color:#7a5b10;font-weight:700}
+.stu .abn{display:flex;align-items:center;gap:12px;width:100%;border:2.5px solid #8fd0b3;background:#e8f4ee;border-radius:24px 24px 24px 10px;padding:10px 14px;margin-bottom:14px;font:inherit;color:var(--ink);cursor:pointer;text-align:start;box-shadow:0 4px 0 rgba(14,107,79,.12)}
+.stu .abn .ab-m{flex:none;display:grid}
+.stu .abn .ab-t{flex:1;min-width:0}.stu .abn b{display:block;color:var(--emd);font-size:15.5px}.stu .abn small{color:var(--mu);font-size:12.5px}
+.stu .abn i{font-style:normal;font-size:22px;color:var(--em)}
+.stu .toon{text-align:center;border-radius:30px;padding:18px 14px 16px;margin-bottom:6px;background:radial-gradient(circle at 20% 15%,#fff7de,transparent 45%),radial-gradient(circle at 85% 85%,#dff1e8,transparent 45%),#f4fbf7;border:2.5px solid #9ed6bd;box-shadow:0 6px 0 rgba(14,107,79,.10)}
+.stu .toon .mas{display:grid;place-items:center;animation:stuBob 3.2s ease-in-out infinite}
+.stu .toon h2{margin:2px 0 2px;font-family:Amiri,Cairo,serif;font-size:30px}
+.stu .toon p{margin:0;color:var(--em);font-weight:700}
+@keyframes stuBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.stu .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.stu .fc{border:2.5px solid;border-radius:26px 26px 26px 10px;padding:14px 12px 12px;box-shadow:0 5px 0 rgba(0,0,0,.07)}
+.stu .fc:nth-child(odd){transform:rotate(-1.2deg)}.stu .fc:nth-child(even){transform:rotate(1.2deg)}
+.stu .fc .em{width:54px;height:54px;border-radius:50% 50% 50% 18%;display:grid;place-items:center;font-size:28px;background:#fff;margin-bottom:8px;box-shadow:0 3px 0 rgba(0,0,0,.08)}
+.stu .fc b{display:block;font-size:15px;color:#1d2b27;margin-bottom:3px}
+.stu .fc p{margin:0;font-size:12.5px;color:#4a5651;line-height:1.75}
+.stu .crow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px dashed var(--ln)}
+.stu .crow:last-child{border-bottom:0}
+.stu .ci{flex:none;width:44px;height:44px;border-radius:15px;display:grid;place-items:center;color:#fff}
+.stu .ci.cwa{background:#25a463}.stu .ci.fbk{background:#1877f2;font-size:22px;font-family:Georgia,serif}.stu .ci.ig{background:linear-gradient(135deg,#f9a03f,#e1306c 55%,#833ab4)}
+.stu .cm{flex:1;min-width:0}.stu .cm b{display:block;color:var(--ink);font-size:15px}.stu .cm small{color:var(--mu);font-size:12.5px}
+.stu .cbtn{flex:none;padding:8px 16px;border-radius:99px;font-weight:800;font-size:13.5px;text-decoration:none;color:#fff}
+.stu .cbtn.cwa{background:#25a463}.stu .cbtn.fb{background:#1877f2}.stu .cbtn.ig{background:linear-gradient(135deg,#f58529,#dd2a7b 55%,#8134af)}
+.stu .cbtn.off{background:#e8e5da;color:#8b8a80}
+@media (prefers-reduced-motion:reduce){.stu .toon .mas{animation:none}}
+.rsh{position:fixed;inset:0;z-index:300;background:#2b2f3a;overflow:auto;-webkit-overflow-scrolling:touch}
+.rsb{position:sticky;top:0;z-index:2;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:calc(8px + env(safe-area-inset-top,0px)) 10px 8px;background:#152039}
+.rsb button{padding:8px 12px;font-size:14px}
+.rsc{display:flex;justify-content:center;padding:10px}
+.rsp{position:relative;width:min(100%,640px);aspect-ratio:853/1280;container-type:inline-size;background:#fff;direction:ltr}
+.rsp img{position:absolute;inset:0;width:100%;height:100%;user-select:none;pointer-events:none}
+.rsp input,.rsp textarea{position:absolute;box-sizing:border-box;border:0;outline:0;background:transparent;color:#1a2f6b;font-family:Cairo,Tahoma,sans-serif;font-weight:600;font-size:2.6cqw;direction:rtl;padding:0 .5cqw;resize:none;overflow:hidden}
+.rsp input:focus,.rsp textarea:focus{background:rgba(255,235,150,.35)}
+.stu-on a.wa[aria-label]{display:none}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -145,7 +183,7 @@ textarea{min-height:130px;resize:vertical}
 <a class="wa" href="https://wa.me/218929173517" target="_blank" rel="noopener" aria-label="تواصل معنا عبر واتساب"><svg width="32" height="32" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.2 15.2l-.3-.2-2.9.8.8-2.8-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path d="M8.6 7.4c.3-.5.8-.4 1 0l.8 1.7c.1.3 0 .6-.3.9l-.5.6c.6 1.2 1.6 2.2 2.9 2.9l.6-.5c.3-.2.6-.3.9-.1l1.7.8c.4.2.5.7.1 1-.6.7-1.4 1.1-2.3 1-3-.4-5.4-2.8-6-5.4-.1-.8.2-1.5 1.1-2.9z"/></svg></a>
 <script>
 const $=s=>document.querySelector(s),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const CODE='236126',ADMIN='28051769';
+const CODE='236126';let ADM_CODE='';
 /* ⚙️ الصقي هنا بيانات Supabase (Project Settings ← API): Project URL و anon/publishable key */
 const SB_URL='https://dpsjryfkkgnjgtxkakyn.supabase.co',SB_KEY='sb_publishable_2ALWoYgI9o2brnSp-D-QMg_VNd66OwU';
 const ls={g(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},s(k,x){try{localStorage.setItem(k,JSON.stringify(x))}catch(e){}}};
@@ -214,6 +252,152 @@ const logo=()=>`<div class="lg">${icon(84,95)}<div class="rt">Rattil</div><div c
 const cd=(t,s,a,i)=>`<button class="cd" onclick="${a}">${i?`<span class="ix">${i}</span>`:''}<span class="tx"><b>${esc(t)}</b><small>${esc(s)}</small></span><i>‹</i></button>`;
 const bk=(a,t)=>`<button class="bk" onclick="${a}">→ ${t}</button>`;
 function toast(m){const t=$('#toast');t.textContent=m;t.className='on';clearTimeout(tt2);tt2=setTimeout(()=>t.className='',3200)}
+/* ===== الصحيفة الشهرية: تصميم مرسوم بالكود (بدون صور) ===== */
+const SH_W=853,SH_H=1280,SH_INK='#1a2f6b';
+const SH_F=[
+ {k:'d1',l:595,r:742,by:63,a:'c',dir:'ltr'},
+ {k:'name',l:442,r:696,by:370},{k:'teacher',l:442,r:715,by:424},{k:'riwaya',l:442,r:745,by:479},
+ {k:'nat',l:48,r:312,by:362},{k:'surah',l:48,r:190,by:424},
+ {k:'d2',l:558,r:745,by:1103,a:'c',dir:'ltr'}
+];
+const SH_ROWS=[658,711,765,819];
+SH_ROWS.forEach((cy,i)=>{SH_F.push({k:'g'+i,l:405,r:543,cy,a:'c',dir:'ltr'},{k:'t'+i,l:273,r:400,cy,a:'c',dir:'ltr'},{k:'n'+i,l:50,r:268,cy,ml:1})});
+function shLeaf(c,x,y,a,l,col){c.save();c.translate(x,y);c.rotate(a);c.fillStyle=col;c.beginPath();c.moveTo(0,0);c.quadraticCurveTo(l*.5,-l*.3,l,0);c.quadraticCurveTo(l*.5,l*.3,0,0);c.fill();c.restore()}
+function shRR(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+function shDots(c,x1,x2,y){c.save();c.strokeStyle='#8c9a8e';c.lineWidth=1.3;c.setLineDash([1.5,3.6]);c.beginPath();c.moveTo(x1,y);c.lineTo(x2,y);c.stroke();c.restore()}
+function shIcon(c,t,x,y){c.save();c.translate(x,y);c.strokeStyle=c.fillStyle='#fff';c.lineWidth=2;c.lineCap='round';
+ if(t==='person'){c.beginPath();c.arc(0,-5,5,0,7);c.fill();c.beginPath();c.arc(0,11,9,Math.PI,0);c.fill()}
+ else if(t==='clip'){shRR(c,-8,-10,16,21,3);c.stroke();c.beginPath();c.moveTo(-4,-2);c.lineTo(4,-2);c.moveTo(-4,3);c.lineTo(4,3);c.stroke()}
+ else{c.beginPath();c.moveTo(-8,9);c.quadraticCurveTo(-9,-8,8,-9);c.quadraticCurveTo(9,6,-8,9);c.fill();c.beginPath();c.moveTo(-9,10);c.lineTo(3,-2);c.strokeStyle='#3f7a50';c.stroke()}
+ c.restore()}
+function shIcon2(c,t,x,y){c.save();c.translate(x,y);c.strokeStyle='#3f7a50';c.fillStyle='#3f7a50';c.lineWidth=2;c.lineCap='round';
+ if(t==='book'){c.beginPath();c.moveTo(0,-7);c.quadraticCurveTo(-8,-11,-15,-8);c.lineTo(-15,9);c.quadraticCurveTo(-8,6,0,10);c.quadraticCurveTo(8,6,15,9);c.lineTo(15,-8);c.quadraticCurveTo(8,-11,0,-7);c.moveTo(0,-7);c.lineTo(0,10);c.stroke()}
+ else if(t==='sound'){c.beginPath();c.moveTo(-12,-4);c.lineTo(-6,-4);c.lineTo(1,-10);c.lineTo(1,10);c.lineTo(-6,4);c.lineTo(-12,4);c.closePath();c.fill();c.beginPath();c.arc(2,0,6,-1,1);c.stroke();c.beginPath();c.arc(2,0,11,-1,1);c.stroke()}
+ else if(t==='refresh'){c.beginPath();c.arc(0,0,10,.4,Math.PI*1.3);c.stroke();c.beginPath();c.moveTo(-9,-12);c.lineTo(-8,-5);c.lineTo(-15,-6);c.closePath();c.fill();c.beginPath();c.arc(0,0,10,Math.PI*1.4,Math.PI*2.3);c.stroke();c.beginPath();c.moveTo(9,12);c.lineTo(8,5);c.lineTo(15,6);c.closePath();c.fill()}
+ else{shRR(c,-12,-10,24,22,4);c.stroke();c.beginPath();c.moveTo(-12,-3);c.lineTo(12,-3);c.stroke();[[-6,3],[0,3],[6,3],[-6,8],[0,8]].forEach(p=>c.fillRect(p[0]-1.5,p[1]-1.5,3,3))}
+ c.restore()}
+function shPill(c,x,y,w,h,txt,ic){c.fillStyle='#3f7a50';shRR(c,x,y,w,h,h/2);c.fill();c.fillStyle='#fff';c.font='700 24px Cairo,Tahoma,sans-serif';c.direction='rtl';c.textAlign='right';c.textBaseline='middle';c.fillText(txt,x+w-52,y+h/2+1);shIcon(c,ic,x+w-27,y+h/2);c.textBaseline='alphabetic'}
+async function shTpl(K){
+ K=K||2;try{await Promise.all([document.fonts.load('700 50px Amiri'),document.fonts.load('600 22px Cairo'),document.fonts.load('700 22px Cairo')])}catch(e){}
+ const cv=document.createElement('canvas');cv.width=SH_W*K;cv.height=SH_H*K;const c=cv.getContext('2d');c.scale(K,K);
+ const FN='Cairo,Tahoma,Arial,sans-serif';
+ c.fillStyle='#f8f7ee';c.fillRect(0,0,SH_W,SH_H);
+ /* مآذن وقباب خفيفة */
+ c.fillStyle='rgba(70,120,90,.09)';
+ [[330,60,1],[420,70,2],[500,64,1],[590,86,2],[690,58,1],[760,50,2]].forEach(([x,h,d],i)=>{
+  if(d===2){c.beginPath();c.arc(x,1262,h,Math.PI,0);c.fill()}else{c.fillRect(x-7,1262-h*2.2,14,h*2.2);c.beginPath();c.arc(x,1262-h*2.2,9,Math.PI,0);c.fill();c.fillRect(x-1,1262-h*2.2-26,2,18)}});
+ 
+ /* إطار وأوراق */
+ c.strokeStyle='#4f8a5e';c.lineWidth=3;c.strokeRect(9,9,835,1262);c.lineWidth=1;c.strokeRect(17,17,819,1246);
+ [[1,1,0,0],[-1,1,SH_W,0],[1,-1,0,SH_H],[-1,-1,SH_W,SH_H]].forEach(([sx,sy,tx,ty])=>{c.save();c.transform(sx,0,0,sy,tx,ty);
+  for(let i=0;i<7;i++)shLeaf(c,20,20,.12+i*.22,36+(i*13)%24,i%2?'#6aa377':'#3f7a50');c.restore()});
+ /* العنوان */
+ c.direction='rtl';c.textAlign='center';c.fillStyle='#1f5a35';c.font='700 52px Amiri,serif';c.fillText('الصحيفة الشهرية',478,126);
+ c.fillStyle='#2e6a45';c.font='600 33px '+FN;c.fillText('لطالب القرآن الكريم',478,190);
+ c.strokeStyle='#6a9a76';c.lineWidth=1.5;c.beginPath();c.moveTo(334,238);c.lineTo(452,238);c.moveTo(496,238);c.lineTo(614,238);c.stroke();
+ c.fillStyle='#c9a24a';c.save();c.translate(474,238);c.rotate(Math.PI/4);c.fillRect(-7,-7,14,14);c.restore();c.beginPath();c.arc(454,238,3,0,7);c.arc(494,238,3,0,7);c.fill();
+ /* الشعار */
+ const g=c.createLinearGradient(0,40,0,165);g.addColorStop(0,'#26397a');g.addColorStop(1,'#0f1a45');
+ c.fillStyle=g;c.strokeStyle='#c9a24a';c.lineWidth=3;c.beginPath();c.moveTo(138,162);c.lineTo(138,95);c.quadraticCurveTo(138,42,180,36);c.quadraticCurveTo(222,42,222,95);c.lineTo(222,162);c.closePath();c.fill();c.stroke();
+ c.fillStyle='#f3d98a';c.beginPath();c.arc(170,82,17,0,7);c.fill();c.fillStyle='#1a2a64';c.beginPath();c.arc(177,78,15,0,7);c.fill();
+ c.fillStyle='#f3d98a';c.beginPath();c.arc(194,70,3,0,7);c.fill();
+ c.fillStyle='#4a5fa8';[[152,150,10,34],[166,150,8,20],[190,150,8,26],[204,150,10,38]].forEach(([x,y,w,h])=>c.fillRect(x-w/2,y-h+10,w,h));c.beginPath();c.arc(180,152,14,Math.PI,0);c.fill();
+ c.fillStyle='#14224f';c.strokeStyle='#c9a24a';c.lineWidth=2.5;
+ [[1,0],[-1,0]].forEach(([s])=>{c.save();c.translate(180,176);c.scale(s,1);c.beginPath();c.moveTo(0,-2);c.quadraticCurveTo(30,-14,66,-6);c.lineTo(70,8);c.quadraticCurveTo(32,2,0,12);c.closePath();c.fill();c.stroke();c.restore()});
+ c.fillStyle='#1a2a64';c.textAlign='center';c.font='700 40px Georgia,serif';c.fillText('RATTIL',180,222);
+ c.fillStyle='#b8902c';c.font='700 13px Georgia,serif';c.fillText('ACADEMY',180,242);c.fillRect(104,237,40,1.4);c.fillRect(216,237,40,1.4);
+ c.fillStyle='#1a2a64';c.font='600 15px '+FN;c.fillText('نرتل القرآن .. فترتقي بها',180,266);
+ /* التاريخ العلوي */
+ c.fillStyle='#2c3a30';c.textAlign='right';c.font='600 21px '+FN;c.fillText('التاريخ:',803,71);shDots(c,595,742,66);
+ /* الأقسام */
+ c.strokeStyle='#5c8f69';c.lineWidth=1.6;
+ [[283,227],[523,342],[878,174]].forEach(([y,h])=>{c.fillStyle='rgba(255,255,255,.55)';shRR(c,30,y,795,h,22);c.fill();c.stroke()});
+ shPill(c,578,293,244,42,'بيانات الطالب','person');shPill(c,566,531,256,46,'تقييم الحصص','clip');shPill(c,598,886,224,38,'ملاحظات المعلم','feather');
+ c.fillStyle='#2c3a30';c.font='600 21px '+FN;c.textAlign='right';
+ c.font='600 19px '+FN;c.fillText('اسم الطالب:',808,372);c.font='600 21px '+FN;shDots(c,442,712,373);
+ c.fillText('المعلم:',808,426);shDots(c,442,712,427);
+ c.fillText('الرواية:',808,481);shDots(c,442,745,482);
+ c.fillText('الجنسية:',400,361);shDots(c,48,312,365);
+ c.font='600 18px '+FN;c.fillText('آخر سورة وصل إليها الطالب:',405,421);shDots(c,48,190,427);
+ c.strokeStyle='#cdb773';c.lineWidth=1.4;c.beginPath();c.moveTo(420,322);c.lineTo(420,488);c.stroke();c.fillStyle='#c9a24a';c.save();c.translate(420,405);c.rotate(Math.PI/4);c.fillRect(-5,-5,10,10);c.restore();
+ /* الجدول */
+ c.fillStyle='#e3eddf';c.fillRect(47,583,762,49);c.fillStyle='rgba(255,255,255,.7)';c.fillRect(47,632,762,214);
+ c.strokeStyle='#7aa386';c.lineWidth=1.3;c.strokeRect(47,583,762,263);
+ [632,684,738,792].forEach(y=>{c.beginPath();c.moveTo(47,y);c.lineTo(809,y);c.stroke()});
+ [545,402,270].forEach(x=>{c.beginPath();c.moveTo(x,583);c.lineTo(x,846);c.stroke()});
+ c.fillStyle='#264a35';c.textAlign='center';c.font='700 20px '+FN;
+ [['المعيار',676],['الدرجة',473],['الدرجة الكلية',336],['الملاحظات',158]].forEach(([t,x])=>c.fillText(t,x,615));
+ c.textAlign='right';c.fillStyle='#2c3a30';c.font='600 20px '+FN;
+ [['جودة التلاوة','book'],['تطبيق أحكام التجويد','sound'],['مراجعة وتثبيت','refresh'],['الالتزام بالحضور','cal']].forEach(([t,ic],i)=>{c.fillStyle='#2c3a30';c.fillText(t,752,SH_ROWS[i]+7);shIcon2(c,ic,783,SH_ROWS[i])});
+ for(let i=0;i<4;i++)shDots(c,48,805,945+23.3*i);
+ /* التاريخ السفلي */
+ c.fillStyle='#2c3a30';c.textAlign='right';c.font='600 21px '+FN;c.fillText('التاريخ:',803,1110);shDots(c,558,745,1106);
+ /* الختم */
+ const sg=c.createRadialGradient(150,1080,10,165,1100,92);sg.addColorStop(0,'#fbe9a3');sg.addColorStop(.6,'#d9a93a');sg.addColorStop(1,'#a97a14');
+ c.fillStyle=sg;c.beginPath();c.arc(165,1100,90,0,7);c.fill();c.strokeStyle='#8a6508';c.lineWidth=2;c.stroke();
+ c.strokeStyle='#fff3c0';c.lineWidth=2;c.beginPath();c.arc(165,1100,76,0,7);c.stroke();c.strokeStyle='#b88a1e';c.lineWidth=1.5;c.beginPath();c.arc(165,1100,70,0,7);c.stroke();
+ c.fillStyle='#1a2a64';c.beginPath();c.moveTo(145,1085);c.lineTo(145,1060);c.quadraticCurveTo(145,1040,165,1036);c.quadraticCurveTo(185,1040,185,1060);c.lineTo(185,1085);c.closePath();c.fill();
+ c.fillStyle='#f3d98a';c.beginPath();c.arc(162,1056,8,0,7);c.fill();c.fillStyle='#1a2a64';c.beginPath();c.arc(166,1054,7,0,7);c.fill();
+ c.textAlign='center';c.font='700 24px Georgia,serif';c.fillStyle='#4a3200';c.fillText('Rattil',165,1115);c.font='700 9px Georgia,serif';c.fillText('ACADEMY',165,1128);
+ c.save();c.translate(165,1160);c.rotate(-.06);c.fillStyle='#8f6a10';c.fillRect(-98,-17,196,34);c.fillStyle='#b8902c';c.fillRect(-98,-17,196,4);c.fillStyle='#fff3c8';c.font='700 19px '+FN;c.direction='rtl';c.fillText('أكاديمية رتل',0,6);c.restore();
+ return cv}
+let shSid=null;
+async function reportSheet(sid){
+ const st=S.students[sid];if(!st)return;shSid=sid;
+ const tn=(S.teachers[st.teacherId]||{}).name||(me&&me.name)||'';
+ const dt=new Date().toLocaleDateString('en-CA').replace(/-/g,'/');
+ const V={name:st.name||'',teacher:tn,riwaya:st.riwaya||'',d1:dt,d2:dt};
+ const pc=x=>(x/SH_W*100).toFixed(3)+'%',pv=y=>(y/SH_H*100).toFixed(3)+'%';
+ const fld=f=>{
+  if(f.ml){const t=f.cy-23;return `<textarea data-k="${f.k}" style="left:${pc(f.l)};width:${pc(f.r-f.l)};top:${pv(t)};height:${pv(46)};font-size:2.1cqw;line-height:2.6cqw;padding-top:.5cqw" aria-label="ملاحظات"></textarea>`}
+  const t=f.cy?f.cy-22:f.by-26,h=f.cy?44:30;
+  return `<input data-k="${f.k}" value="${esc(V[f.k]||'')}" ${f.dir?'dir="ltr"':''} style="left:${pc(f.l)};width:${pc(f.r-f.l)};top:${pv(t)};height:${pv(h)};text-align:${f.a==='c'?'center':'right'}">`};
+ $('#ov2').innerHTML=`<div class="rsh"><div class="rsb"><button class="b2" onclick="shut()">✕ إغلاق</button><button class="b1" onclick="shPdf('dl')">📄 تحميل PDF</button><button class="b1" onclick="shPdf('send')">📤 إرسال للطالبة</button></div>
+ <div class="rsc"><div class="rsp" id="rsp"><img id="shbg" alt="" draggable="false">${SH_F.map(fld).join('')}<textarea data-k="notes" aria-label="ملاحظات المعلم" style="left:${pc(50)};width:${pc(755)};top:${pv(924.5)};height:${pv(99)};font-size:2.2cqw;line-height:2.73cqw;padding-top:0"></textarea></div></div></div>`;
+ try{const cv=await shTpl(1.5);const im=document.getElementById('shbg');if(im)im.src=cv.toDataURL('image/jpeg',.9)}catch(e){}
+}
+function shVals(){const o={};document.querySelectorAll('#rsp [data-k]').forEach(e=>o[e.dataset.k]=e.value.trim());return o}
+function shWrap(c,t,w){const out=[];let line='';for(const wd of String(t).split(/\s+/)){const x=line?line+' '+wd:wd;if(c.measureText(x).width>w&&line){out.push(line);line=wd}else line=x}if(line)out.push(line);return out}
+async function shRender(){
+ const V=shVals(),cv=await shTpl(2),c=cv.getContext('2d');
+ c.fillStyle=SH_INK;c.textBaseline='alphabetic';
+ const FN='Cairo,Tahoma,Arial,sans-serif';
+ const one=(t,f)=>{if(!t)return;let sz=22;c.font='600 '+sz+'px '+FN;const w=f.r-f.l-8;while(c.measureText(t).width>w&&sz>11){sz--;c.font='600 '+sz+'px '+FN}
+  c.direction=f.dir||'rtl';c.textAlign=f.a==='c'?'center':'right';c.fillText(t,f.a==='c'?(f.l+f.r)/2:f.r-4,f.by)};
+ SH_F.forEach(f=>{const t=V[f.k];if(!t)return;
+  if(f.ml){c.direction='rtl';c.textAlign='right';let sz=19;let L;for(;sz>=11;sz--){c.font='600 '+sz+'px '+FN;L=shWrap(c,t,f.r-f.l-8);if(L.length<=2)break}
+   L=L.slice(0,2);const y0=f.cy-(L.length-1)*(sz+3)/2+sz*.35;L.forEach((x,i)=>c.fillText(x,f.r-4,y0+i*(sz+3)))}
+  else if(f.cy){one(t,{...f,by:f.cy+8})}else one(t,f)});
+ if(V.notes){c.direction='rtl';c.textAlign='right';let sz=18,L;for(;sz>=12;sz--){c.font='600 '+sz+'px '+FN;L=shWrap(c,V.notes,745);if(L.length<=4)break}
+  L.slice(0,4).forEach((x,i)=>c.fillText(x,801,943+i*23.3))}
+ return cv.toDataURL('image/jpeg',.92)
+}
+function shPdfBytes(jpgDataUrl){
+ const b=atob(jpgDataUrl.split(',')[1]),jb=new Uint8Array(b.length);for(let i=0;i<b.length;i++)jb[i]=b.charCodeAt(i);
+ const W=595,H=Math.round(595*SH_H/SH_W),enc=new TextEncoder(),parts=[],off=[];let len=0;
+ const add=x=>{const u=typeof x==='string'?enc.encode(x):x;parts.push(u);len+=u.length};
+ add('%PDF-1.4\n');
+ const obj=(n,body,stream)=>{off[n]=len;add(n+' 0 obj\n'+body);if(stream){add('\nstream\n');add(stream);add('\nendstream')}add('\nendobj\n')};
+ obj(1,'<< /Type /Catalog /Pages 2 0 R >>');
+ obj(2,'<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+ obj(3,`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`);
+ obj(4,`<< /Type /XObject /Subtype /Image /Width ${SH_W*2} /Height ${SH_H*2} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jb.length} >>`,jb);
+ const cs=`q ${W} 0 0 ${H} 0 0 cm /Im0 Do Q`;obj(5,`<< /Length ${cs.length} >>`,cs);
+ const xr=len;let x='xref\n0 6\n0000000000 65535 f \n';for(let i=1;i<=5;i++)x+=String(off[i]).padStart(10,'0')+' 00000 n \n';
+ add(x+`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xr}\n%%EOF`);
+ const out=new Uint8Array(len);let p=0;parts.forEach(u=>{out.set(u,p);p+=u.length});return out
+}
+async function shPdf(mode){
+ try{toast('جارٍ تجهيز الملف…');const V=shVals(),jpg=await shRender(),pdf=shPdfBytes(jpg);
+  const fn='صحيفة-'+(V.name||'طالب').replace(/[\\/:*?"<>|]/g,'')+'-'+(V.d1||'').replace(/\//g,'-')+'.pdf',file=new File([pdf],fn,{type:'application/pdf'});
+  const dl=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=fn;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)};
+  if(mode==='send'){
+   if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'الصحيفة الشهرية — أكاديمية رتل'});return}catch(e){if(e&&e.name==='AbortError')return}}
+   dl();const st=S.students[shSid];if(st&&st.phone)window.open('https://wa.me/'+norm(st.phone)+'?text='+encodeURIComponent('السلام عليكم، تجدين مرفقًا الصحيفة الشهرية 🌷'),'_blank');toast('تم تحميل الملف، أرفقيه في المحادثة')
+  }else{dl();toast('تم تحميل الملف')}
+ }catch(e){toast('تعذّر إنشاء الملف')}
+}
+
 function shut(){$('#ov2').innerHTML=''}
 const cfg=()=>SB_URL&&SB_KEY;
 const rq=(p,o={})=>fetch(SB_URL+'/rest/v1/'+p,{...o,headers:{apikey:SB_KEY,...(SB_KEY.startsWith('eyJ')?{Authorization:'Bearer '+SB_KEY}:{}),'Content-Type':'application/json',...(o.headers||{})}}).then(async r=>{if(!r.ok){let t='';try{t=await r.text()}catch(e){}throw new Error(r.status+' '+t.slice(0,180))}return r.status===204?null:r.text().then(t=>t?JSON.parse(t):null)});
@@ -326,13 +510,32 @@ function stuRing(days,total,cls){
   const p=total>0?Math.max(0,Math.min(1,days/total)):0;
   return `<div class="ring" role="img" aria-label="${days>0?days+' يومًا متبقيًا':'انتهى الاشتراك'}"><svg width="104" height="104" viewBox="0 0 104 104"><circle cx="52" cy="52" r="44" fill="none" stroke="#efe9d6" stroke-width="9"/>${total>0&&days>0?`<circle cx="52" cy="52" r="44" fill="none" stroke="${col}" stroke-width="9" stroke-linecap="round" stroke-dasharray="${(p*C).toFixed(1)} ${C.toFixed(1)}"/>`:''}</svg><div class="num"><b>${days>0?days:0}</b><small>${days>0?'يوم متبقٍ':'منتهٍ'}</small></div></div>`}
 function stuDate(d){try{const x=new Date(d+'T00:00:00');return{day:x.getDate(),mon:x.toLocaleDateString('ar',{month:'long'}),wk:x.toLocaleDateString('ar',{weekday:'long'})}}catch(e){return{day:'',mon:'',wk:''}}}
+const ACAD={wa:'218929173517',waShow:'+218 92 917 3517',fb:'',ig:'https://instagram.com/academy.rattil'};
+const AYAT=[['وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا','سورة المزمل: ٤'],['وَلَقَدْ يَسَّرْنَا الْقُرْآنَ لِلذِّكْرِ فَهَلْ مِن مُّدَّكِرٍ','سورة القمر: ١٧'],['إِنَّ هَٰذَا الْقُرْآنَ يَهْدِي لِلَّتِي هِيَ أَقْوَمُ','سورة الإسراء: ٩'],['الَّذِينَ آتَيْنَاهُمُ الْكِتَابَ يَتْلُونَهُ حَقَّ تِلَاوَتِهِ','سورة البقرة: ١٢١'],['وَنُنَزِّلُ مِنَ الْقُرْآنِ مَا هُوَ شِفَاءٌ وَرَحْمَةٌ لِّلْمُؤْمِنِينَ','سورة الإسراء: ٨٢'],['خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ','حديث شريف — رواه البخاري']];
+const ayaDay=()=>AYAT[Math.floor(Date.now()/864e5)%AYAT.length];
+function stuAya(){const a=ayaDay();return `<section class="aya rise" aria-label="آية اليوم"><small>✨ آية اليوم</small><p>${a[0]}</p><span>${a[1]}</span></section>`}
+function mascot(w){return `<svg viewBox="0 0 160 150" width="${w||150}" height="${Math.round((w||150)*.94)}" role="img" aria-label="شعار أكاديمية رتل"><ellipse cx="80" cy="141" rx="46" ry="6" fill="#0a4d39" opacity=".13"/><path d="M24 52c18-9 40-9 56 4 16-13 38-13 56-4v70c-18-9-40-9-56 4-16-13-38-13-56-4Z" fill="#0e6b4f" stroke="#0a4d39" stroke-width="4" stroke-linejoin="round"/><path d="M32 58c15-6 31-5 48 6v58c-17-10-33-11-48-6Z" fill="#fff8e7"/><path d="M128 58c-15-6-31-5-48 6v58c17-10 33-11 48-6Z" fill="#fffdf3"/><circle cx="62" cy="92" r="6" fill="#1d2b27"/><circle cx="98" cy="92" r="6" fill="#1d2b27"/><circle cx="64" cy="90" r="2" fill="#fff"/><circle cx="100" cy="90" r="2" fill="#fff"/><path d="M68 106q12 12 24 0" fill="none" stroke="#1d2b27" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="105" r="6" fill="#f7a8a0" opacity=".75"/><circle cx="110" cy="105" r="6" fill="#f7a8a0" opacity=".75"/><path d="M82 14a17 17 0 1 0 12 28 14 14 0 1 1-12-28Z" fill="#c9a24b"/><path d="m116 20 3.200 7 7.500 1-5.500 5 1.500 7.500-6.700-3.800-6.700 3.800 1.500-7.500-5.500-5 7.500-1Z" fill="#c9a24b"/></svg>`}
+const FEATS=[['👩‍🏫','معلمات مجازات متقنات','معلمات حاصلات على الإجازة، متقنات للقراءة والأداء','#e8f4ee','#8fd0b3'],['🧑‍🤝‍🧑','حصص فردية بالكامل','اهتمام كامل بك وحدك، وخطة تناسب مستواك','#fff0e0','#f3be8a'],['⏰','مرونة في الوقت','تختار الموعد الذي يناسب يومك','#eaf3ff','#9cc4f2'],['📖','القرآن الكريم','حفظ وتلاوة ومراجعة بإشراف متقن','#f3ecff','#c4a9f0'],['🎙️','أحكام التجويد','تطبيق عملي للأحكام حتى يتقن الأداء','#fff6d8','#e9cf7a'],['📜','المتون','تعلّم المتون العلمية بتدرّج وفهم','#ffe9ee','#f2a9b8'],['🎓','التجهيز للإجازة','إعداد وتهيئة للحصول على الإجازة','#e6f7f7','#8bd3d3'],['🌟','إتقان القرآن','هدفنا أن تتلو القرآن كما أُنزل','#f0f6e0','#b6d77a']];
+function sAbout(){
+  const fb=ACAD.fb?`<a class="cbtn fb" href="${esc(ACAD.fb)}" target="_blank" rel="noopener">متابعة</a>`:`<span class="cbtn off">قريبًا</span>`;
+  return `<section class="toon rise"><div class="mas">${mascot(150)}</div><h2>أكاديمية رتل</h2><p>نرتّل القرآن .. فنرتقي به 🌙</p></section>
+<h3>${sic('star',18)} لماذا أكاديمية رتل؟</h3>
+<div class="fgrid">${FEATS.map((f,i)=>`<div class="fc rise" style="background:${f[3]};border-color:${f[4]};animation-delay:${i*.05}s"><div class="em">${f[0]}</div><b>${f[1]}</b><p>${f[2]}</p></div>`).join('')}</div>
+${stuAya()}
+<h3>${sic('chat',18)} تواصل مع الأكاديمية</h3>
+<div class="card rise"><div class="crow"><span class="ci cwa">${sic('chat',20)}</span><div class="cm"><b>واتساب</b><small dir="ltr">${ACAD.waShow}</small></div><a class="cbtn cwa" href="https://wa.me/${ACAD.wa}" target="_blank" rel="noopener">تواصل</a></div>
+<div class="crow"><span class="ci fbk"><b>f</b></span><div class="cm"><b>صفحة فيسبوك</b><small>أخبار الأكاديمية</small></div>${fb}</div>
+<div class="crow"><span class="ci ig"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" aria-hidden="true"><rect x="3.500" y="3.500" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r="1" fill="#fff"/></svg></span><div class="cm"><b>صفحة إنستغرام</b><small dir="ltr">@academy.rattil</small></div><a class="cbtn ig" href="${esc(ACAD.ig)}" target="_blank" rel="noopener">متابعة</a></div></div>
+<button class="b1 full rise" style="padding:13px;margin:6px 0 14px" onclick="shareAcad()">💚 شارك أكاديمية رتل مع من تحب</button>`}
+function shareAcad(){const u=location.origin+location.pathname,t='أكاديمية رتل لتعليم القرآن الكريم — حصص فردية مع معلمات مجازات 🌙';
+  if(navigator.share){navigator.share({title:'أكاديمية رتل',text:t,url:u}).catch(()=>{})}else window.open('https://wa.me/?text='+encodeURIComponent(t+'\n'+u),'_blank')}
 function sHome(st){
   const sb1=subSt(st),days=dl(st),paused=st.sub==='paused',cls=paused?'gr':sb1[0]==='🔴'?'er':sb1[0]==='🟡'?'wn':'ok';
   const up=[...st.sessions].filter(x=>x.st==='مجدولة'&&x.date&&x.date>=today()).sort((a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||''))[0];
   const total=(st.start&&st.end&&!isNaN(new Date(st.start))&&!isNaN(new Date(st.end)))?Math.max(1,Math.ceil((new Date(st.end)-new Date(st.start))/864e5)):0;
   const first=String(st.name||'').trim().split(/\s+/)[0]||'';
-  const al=paused||!st.end?'':days<0?`<div class="note er rise">${sic('bell',20)}<span>انتهى اشتراكك بتاريخ ${esc(st.end)}. يسعدنا تواصلك مع معلمتك لتجديده ومواصلة رحلتك مع كتاب الله 🌷</span></div>`:days<=3?`<div class="note wn rise">${sic('bell',20)}<span>تنبيه لطيف: ${days===0?'ينتهي اشتراكك اليوم':'ينتهي اشتراكك خلال '+dayTxt(days)} (${esc(st.end)}). يُرجى التواصل مع معلمتك للتجديد 🌷</span></div>`:'';
-  const imm=up&&imminent(up)?`<div class="note gd rise">${sic('clock',20)}<span>تبدأ حصتك بعد ${Math.max(0,Math.round(minutesTo(up.date,up.time)))} دقيقة، الساعة ${esc(up.time)}. نسأل الله أن يفتح عليك.</span></div>`:'';
+  const al=paused||!st.end?'':days<0?`<div class="note er rise">${sic('bell',20)}<span>انتهى اشتراكك بتاريخ ${esc(st.end)}. يسعدنا تواصلك مع الإدارة لتجديده ومواصلة رحلتك مع كتاب الله 🌷</span></div>`:days<=3?`<div class="note wn rise">${sic('bell',20)}<span>إشعار: ${days===0?'ينتهي اشتراكك اليوم':'ينتهي اشتراكك خلال '+dayTxt(days)} (${esc(st.end)}). يُرجى التواصل مع الإدارة لتجديد الاشتراك 🌷</span></div>`:'';
+  const imm=up&&imminent(up)?`<div class="note gd rise">${sic('clock',20)}<span>تبدأ حصتك بعد ${Math.max(0,Math.round(minutesTo(up.date,up.time)))} دقيقة، الساعة ${esc(up.time)}. نسأل الله أن يفتح عليك ويبارك في وقتك.</span></div>`:'';
   const ud=up?stuDate(up.date):null;
   const sess=up?`<div class="sess"><div class="day"><b>${ud.day}</b><small>${esc(ud.mon)}</small></div><div class="meta"><div class="t">${esc(up.time)||'—'}</div><div class="d">${esc(ud.wk)} · ${esc(up.date)}</div></div><span class="chip ok">${esc(up.st)}</span></div>`:`<div class="emp" style="padding:20px 14px">لا توجد حصة مجدولة حاليًا.<br><small>تواصلي مع معلمتك لتحديد موعد الحصة القادمة.</small></div>`;
   const p=sProg||{},pr=[['book','الحفظ',[p.hifzSurah,(p.hifzFrom&&p.hifzTo)?'(الآيات '+p.hifzFrom+'–'+p.hifzTo+')':''].filter(Boolean).join(' ')],['leaf','المراجعة',p.reviewSurahs],['star','التجويد',p.tajweedLevel],['clock','التلاوة',p.tilawaLevel]].filter(r=>r[2]);
@@ -345,6 +548,8 @@ ${al}${imm}
 <div class="subrow"><div class="subinfo"><div class="pk">${esc(PK[st.pkg][0])}</div><div class="dt">البداية: <b>${esc(st.start)||'—'}</b><br>النهاية: <b>${esc(st.end)||'—'}</b></div></div>${paused||!st.end?'':stuRing(days,total,cls)}</div></section>
 <section class="card rise" aria-label="الحصة القادمة"><div class="hd"><b>${sic('cal',18)} الحصة القادمة</b><button class="lk" onclick="sv2='sched';render()">جدولي ‹</button></div>${sess}</section>
 <section class="card rise" aria-label="تقدمي"><div class="hd"><b>${sic('book',18)} تقدمي في القرآن</b><button class="lk" onclick="sv2='prog';render()">التفاصيل ‹</button></div>${prog}</section>
+${stuAya()}
+<button class="abn rise" onclick="sv2='about';render()"><span class="ab-m">${mascot(54)}</span><span class="ab-t"><b>تعرّف على أكاديمية رتل</b><small>مميزاتنا وطرق التواصل معنا</small></span><i>‹</i></button>
 <div class="tiles rise"><button class="tile" onclick="sv2='sched';render()"><span class="ti">${sic('cal',22)}</span><b>جدولي</b><small>الحصص وسجلها</small></button><button class="tile" onclick="sv2='prog';render()"><span class="ti">${sic('book',22)}</span><b>تقدمي وسجلي</b><small>الحفظ والتقارير</small></button><button class="tile" onclick="sv2='noti';render()">${unread?`<span class="bdg">${unread}</span>`:''}<span class="ti">${sic('bell',22)}</span><b>الإشعارات</b><small>${unread?unread+' جديد':'لا جديد'}</small></button><button class="tile" onclick="sv2='prof';render()"><span class="ti">${sic('user',22)}</span><b>ملفي</b><small>بياناتي الشخصية</small></button></div>
 <div class="cta rise">${tw?`<a class="t1" href="https://wa.me/${tw}" target="_blank" rel="noopener">${sic('chat',19)} معلمتي${sTeacher.name?' — '+esc(sTeacher.name):''}</a>`:''}<a class="${tw?'t2':'t1 one'}" href="https://wa.me/218929173517" target="_blank" rel="noopener">${sic('chat',19)} ${tw?'الأكاديمية':'تواصل مع الأكاديمية'}</a></div>`}
 function sSched(st){const L=[...st.sessions].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
@@ -361,9 +566,9 @@ async function sMarkRead(){if(!sSession)return;try{await pgReq('rpc/mark_my_noti
 function sProfH(st){return `<h2>ملفي</h2><div class="panel"><label>الاسم الثلاثي<input id="pn1" value="${esc(st.name)}"></label><label>العمر<input id="pn2" value="${esc(st.age)}"></label><label>الدولة والمدينة<input id="pn3" value="${esc(st.city)}"></label><label>الدولة الأم<input id="pn4" value="${esc(st.mother)}"></label><div class="kv"><span>رقم الواتساب</span><b>${esc(st.phone)||'—'}</b></div><div class="kv"><span>الرواية</span><b>${esc(st.riwaya)||'—'}</b></div><div class="kv"><span>تاريخ التسجيل</span><b>${st.start?esc(st.start):'—'}</b></div><button class="b1" onclick="sSaveProfile()">حفظ التعديلات</button></div>${tcBtn()}<a class="b2 full" style="display:block;text-align:center;text-decoration:none;margin:10px 0" href="https://wa.me/218929173517" target="_blank" rel="noopener">تواصل مع الأكاديمية 💬</a><button class="b2 full" onclick="studentLogout()">تسجيل الخروج</button>`}
 async function sSaveProfile(){if(!sSession)return;const g=i=>$('#'+i).value.trim();try{await pgReq('rpc/update_my_profile',sSession.access_token,{method:'POST',body:JSON.stringify({p_name:g('pn1'),p_age:g('pn2'),p_city:g('pn3'),p_country:g('pn4')})})}catch(e){return toast('تعذّر حفظ التعديلات')}toast('تم الحفظ');await sLoad()}
 function srender(){const A=$('#app'),st=sRow;
-  const body=sv2==='sched'?sSched(st):sv2==='prog'?sProgH():sv2==='noti'?sNotiH():sv2==='prof'?sProfH(st):sHome(st);
+  const body=sv2==='sched'?sSched(st):sv2==='prog'?sProgH():sv2==='noti'?sNotiH():sv2==='prof'?sProfH(st):sv2==='about'?sAbout():sHome(st);
   const unread=sNoti.filter(n=>!n.read).length;
-  A.innerHTML=`<div class="stu"><header><span class="ic">${icon()}</span><div class="nm"><b>${esc(st.name)}</b><small>${esc(PK[st.pkg][0])}</small></div><small class="st"></small></header><main>${body}</main><nav class="bn" aria-label="التنقل">${nvIc('home','home','الرئيسية')}${nvIc('sched','cal','جدولي')}${nvIc('prog','book','تقدمي')}${nvIc('noti','bell','الإشعارات',unread>9?'9+':unread||'')}${nvIc('prof','user','ملفي')}</nav></div>`;sts()}
+  A.innerHTML=`<div class="stu"><header><span class="ic">${icon()}</span><div class="nm"><b>${esc(st.name)}</b><small>${esc(PK[st.pkg][0])}</small></div><small class="st"></small></header><main>${body}</main><nav class="bn" aria-label="التنقل">${nvIc('home','home','الرئيسية')}${nvIc('sched','cal','جدولي')}${nvIc('prog','book','تقدمي')}${nvIc('noti','bell','الإشعارات',unread>9?'9+':unread||'')}${nvIc('about','star','عن رتل')}${nvIc('prof','user','ملفي')}</nav></div>`;sts()}
 function pick(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=128;const s=Math.min(im.width,im.height);c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,128,128);photo=c.toDataURL('image/jpeg',.75);$('#pv').innerHTML=`<img src="${photo}" alt="">`};im.src=r.result};r.readAsDataURL(f)}
 async function login(){
   const n=$('#ln').value.trim(),w=$('#lw').value.trim(),c=$('#lc').value.trim(),e=$('#le');
@@ -382,7 +587,20 @@ function flush(){if(tm){clearTimeout(tm);saveCur()}if(tm2){clearTimeout(tm2);sav
 async function saveCur(){tm=null;if(!cur)return;cur.updatedAt=Date.now();await put('students',cur.id,cur);const s=$('#sv');if(s)s.textContent='تم الحفظ تلقائيًا'}
 function ed(el){if(!cur)return;const f=el.dataset.f;if(f==='summary')cur.summary=el.value;else{const x=cur.sessions[el.dataset.i];x[f]=el.value;if(f==='date'&&el.value&&new Date(el.value).getDay()===5&&x.pkg==='full')toast('تنبيه: الجمعة ليست من أيام الدراسة في الباقة الكاملة');if(f==='st'&&el.value==='ملغاة')notify(cur.id,'cancel','إلغاء حصة','تم إلغاء إحدى حصصك بتاريخ '+(x.date||'—')+'.')}
   const s=$('#sv'),k=$('#cnt');if(k)k.innerHTML=cntH(cur);if(s)s.textContent='جارٍ الحفظ…';clearTimeout(tm);tm=setTimeout(saveCur,700)}
-function notify(sid,type,title,message){const id='n'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);put('notifications',id,{id,studentId:sid,type,title,message,read:false,updatedAt:Date.now()})}
+async function tRemind(sid,date,time,btn){
+  if(!me)return;try{if(btn){btn.disabled=true;btn.textContent='جارٍ الإرسال…'}
+    await rq('rpc/rt_teacher_remind',{method:'POST',body:JSON.stringify({p_teacher:me.id,p_student:sid,p_date:date,p_time:time})});
+    toast('تم إشعار الطالبة ✓');if(btn)btn.textContent='تم الإرسال ✓'}
+  catch(e){toast('تعذّر الإرسال');if(btn){btn.disabled=false;btn.textContent='إشعار الطالبة'}}}
+async function admNotice(id,btn){
+  if(!ADM_CODE)return toast('أعيدي الدخول للإدارة');const st=S.students[id];if(!st)return;
+  if(!confirm('إرسال إشعار الاشتراك إلى '+st.name+'؟'))return;
+  try{if(btn){btn.disabled=true;btn.textContent='جارٍ الإرسال…'}
+    await rq('rpc/rt_admin_notice',{method:'POST',body:JSON.stringify({p_code:ADM_CODE,p_student:id})});
+    toast('تم إرسال الإشعار ✓');if(btn)btn.textContent='تم ✓'}
+  catch(e){toast('تعذّر الإرسال');if(btn){btn.disabled=false;btn.textContent='إرسال'}}}
+function admNoticePanel(L){return `<div class="panel" style="border-color:var(--gold)"><b>📣 إشعارات الاشتراك للطالبات</b><p class="sv">تُرسل من الإدارة وحدها، بصيغة رسمية مهذّبة.</p>${L.map(s=>`<div class="kv"><span>${subSt(s)[0]} ${esc(s.name)}</span><button class="lk" onclick="admNotice('${esc(s.id)}',this)">إرسال</button></div>`).join('')}</div>`}
+function notify(sid,type,title,message){if(!av&&type!=='reminder')return;const id='n'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);put('notifications',id,{id,studentId:sid,type,title,message,read:false,updatedAt:Date.now()})}
 function edP(el){if(!progCur)return;progCur[el.dataset.f]=el.value;const s=$('#psv');if(s)s.textContent='جارٍ الحفظ…';clearTimeout(tm2);tm2=setTimeout(saveProg,700)}
 async function saveProg(){tm2=null;if(!progCur)return;progCur.updatedAt=Date.now();await put('progress',progCur.id,progCur);const s=$('#psv');if(s)s.textContent='تم الحفظ تلقائيًا'}
 function recordsOf(sid){return Object.values(S.reports).filter(r=>r.studentId===sid).sort((a,b)=>(b.month||'').localeCompare(a.month||''))}
@@ -438,7 +656,7 @@ ${PI('tilawaLevel','مستوى التلاوة')}${PI('tilawaErrors','أخطاء 
 ${PI('makharijNotes','ملاحظات المخارج')}</div>`}
 function repB(st,ro){const L=Object.values(S.reports).filter(r=>r.studentId===st.id).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   return `<h3>التقارير</h3>${ro?'':`<button class="b2" onclick="reportSheet('${esc(st.id)}')">+ إضافة تقرير</button>`}${L.length?L.map(r=>`<div class="panel"><b>${esc(r.date)}</b>${[['مستوى الحفظ',r.hifzLevel],['مستوى المراجعة',r.reviewLevel],['مستوى التجويد',r.tajweedLevel],['مستوى التلاوة',r.tilawaLevel],['نقاط القوة',r.strengths],['تحتاج تحسين',r.improve],['التوصية',r.recommendation],['ملاحظات',r.notes]].filter(x=>x[1]).map(x=>`<div class="kv"><span>${x[0]}</span><b>${esc(x[1])}</b></div>`).join('')}</div>`).join(''):'<div class="emp">لا توجد تقارير بعد.</div>'}`}
-function render(){
+function render(){document.body.classList.toggle('stu-on',!!(sMe&&sRow));
   const wa=document.querySelector('.wa');if(wa)wa.style.bottom=(sMe&&sRow)?'calc(78px + env(safe-area-inset-bottom,0px))':'calc(20px + env(safe-area-inset-bottom,0px))';
   if(sMe&&sRow)return srender();
   if(sMe&&!sRow)return void($('#app').innerHTML=`<div class="lgn"><div class="cl">${logo()}<p class="er" style="text-align:center">تعذّر العثور على بياناتك. تواصلي مع الأكاديمية.</p><a class="b1 full" style="display:block;text-align:center;text-decoration:none" href="https://wa.me/218929173517" target="_blank" rel="noopener">تواصلي معنا عبر واتساب</a><button class="bk" onclick="studentLogout()">رجوع</button></div></div>`);
@@ -448,9 +666,9 @@ function render(){
   let b;
   if(v==='det'&&cur)b=bk("go('dash')",'رجوع لقائمة الطلاب')+'<h2>سجل الطالب للحصص القرآن الكريم</h2>'+det(cur,0);
   else{v='dash';const L=Object.values(S.students).filter(s=>s.teacherId===me.id&&!s.archived).sort((a,b)=>a.id.localeCompare(b.id));
-    const rem=L.flatMap(s=>s.sessions.filter(imminent).map(x=>({s,x})));
-    const remH=rem.length?`<div class="panel" style="border-color:var(--gold)"><b>🔔 حصص قريبة (خلال 10 دقائق)</b>${rem.map(o=>`<div class="kv"><span>${esc(o.s.name)} — ${esc(o.x.time)}</span>${o.s.phone?`<a class="lk" href="https://wa.me/${norm(o.s.phone)}?text=${encodeURIComponent('🔔 تذكير: لديك حصة قرآن بعد 10 دقائق، موعد الحصة اليوم الساعة '+o.x.time+'.')}" target="_blank" rel="noopener">فتح واتساب</a>`:''}</div>`).join('')}</div>`:'';
-    b=pushBtn()+remH+fuPanel(L)+`<h2>طلابي ${N(L.length)}</h2>`+(L.length?L.map((s,i)=>cd(s.name,[s.riwaya,s.city].filter(Boolean).join(' · '),`openS('${esc(s.id)}')`,i+1)).join(''):'<div class="emp">لا يوجد طلاب بعد. اضغط على + لإضافة طالب جديد.</div>')}
+    const rem=L.flatMap(s=>(s.sessions||[]).filter(x=>x.st==='مجدولة'&&x.date===today()&&x.time&&minutesTo(x.date,x.time)>=-5&&minutesTo(x.date,x.time)<=240).map(x=>({s,x}))).sort((a,b)=>a.x.time.localeCompare(b.x.time)).slice(0,12);
+    const remH=rem.length?`<div class="panel" style="border-color:var(--gold)"><b>🔔 حصص اليوم القادمة</b><p class="sv">يمكنك إشعار الطالبة بالوقت المتبقي على حصتها.</p>${rem.map(o=>{const m=Math.round(minutesTo(o.x.date,o.x.time));return `<div class="kv"><span>${esc(o.s.name)} — ${esc(o.x.time)} <small>(${m>0?'بعد '+m+' دقيقة':'الآن'})</small></span><button class="lk" onclick="tRemind('${esc(o.s.id)}','${esc(o.x.date)}','${esc(o.x.time)}',this)">إشعار الطالبة</button></div>`}).join('')}</div>`:'';
+    b=pushBtn()+remH+`<h2>طلابي ${N(L.length)}</h2>`+(L.length?L.map((s,i)=>cd(s.name,[s.riwaya,s.city].filter(Boolean).join(' · '),`openS('${esc(s.id)}')`,i+1)).join(''):'<div class="emp">لا يوجد طلاب بعد. اضغط على + لإضافة طالب جديد.</div>')}
   A.innerHTML=`<header><button class="ic" onclick="tap()" aria-label="أكاديمية رتل">${icon()}</button>${me.photo?`<img class="av" src="${esc(me.photo)}" alt="">`:'<span class="av">👤</span>'}<div class="nm"><b>${esc(me.name)}</b><small>معلم القرآن الكريم</small></div><small class="st"></small><button class="lo" onclick="logout()">خروج</button></header><main>${b}</main>`+(v==='det'?'':'<button class="fab" onclick="sheet()" aria-label="إضافة طالب جديد">+</button>')}
 function pkgOpts(cur1){return Object.entries(PK).filter(([k,v])=>v.currency===cur1).map(([k,v])=>`<option value="${k}">${v.label}${k==='full'?' (يوميًا عدا الجمعة)':''}</option>`).join('')}
 function dayChecks(sel){const set=new Set((sel||'').split(',').filter(Boolean));return DOW.map(d=>`<label style="display:inline-flex;align-items:center;gap:4px;width:auto;margin-left:10px"><input type="checkbox" value="${d}" ${set.has(d)?'checked':''} class="fd">${DAYN[d]}</label>`).join('')}
@@ -507,9 +725,13 @@ async function doReassignAndDelete(tid){
 async function doDeleteTeacher(tid){await delRow('teachers',tid);shut();toast('تم حذف المعلم ✓');am('T')}
 function tap(){taps++;clearTimeout(tt);tt=setTimeout(()=>taps=0,1500);if(taps>=5){taps=0;gate()}}
 function gate(){$('#ov2').innerHTML=`<div class="sh mid"><div class="bx" role="dialog" aria-modal="true"><h3>أدخل رمز الإدارة</h3><input id="ac" type="password" inputmode="numeric" autocomplete="off" aria-label="رمز الإدارة" onkeydown="event.key==='Enter'&&chk()"><p class="er" id="ae"></p><div class="bt"><button class="b2" onclick="shut()">إلغاء</button><button class="b1" onclick="chk()">دخول</button></div></div></div>`;setTimeout(()=>$('#ac').focus(),60)}
-function chk(){if($('#ac').value.trim()!==ADMIN)return $('#ae').textContent='رمز غير صحيح';shut();am('home');pull()}
+async function chk(){const c=$('#ac').value.trim(),e=$('#ae');if(!c)return;e.textContent='جارٍ التحقق…';
+  try{const ok=await rq('rpc/rt_admin_check',{method:'POST',body:JSON.stringify({p_code:c})});
+    if(ok===true){ADM_CODE=c;shut();am('home');pull();return}
+    e.textContent='رمز غير صحيح'}
+  catch(x){e.textContent=/locked/.test(String(x&&x.message))?'محاولات كثيرة، حاولي بعد 10 دقائق':'تعذّر التحقق، تأكدي من الاتصال بالإنترنت'}}
 function am(n,o){if(!(n==='D'&&av&&av.n==='D'&&o&&o.id===av.id)){repOpenMonth=null;repCur=null}av={n,...o};ra();$('#adm').scrollTop=0}
-function closeA(){av=null;ra()}
+function closeA(){av=null;ADM_CODE='';ra()}
 function payM(t){const m=av.m||mon();
   $('#ov2').innerHTML=`<div class="sh mid"><div class="bx" role="dialog" aria-modal="true"><h3>تسجيل الدفع — ${m}</h3><label>العملة<select id="pc" onchange="payCur('${esc(t)}','${m}')"><option value="LYD">دينار ليبي</option><option value="USD">دولار</option></select></label><p class="sv" id="pinfo"></p><label>المبلغ المدفوع<input id="pa" type="number" step="0.01"></label><label>تاريخ الدفع<input id="pd" type="date" value="${today()}"></label><label>ملاحظات<input id="pn"></label><div class="bt"><button class="b2" onclick="shut()">إلغاء</button><button class="b1" onclick="savePay('${esc(t)}','${m}')">تأكيد الدفع</button></div></div></div>`;payCur(t,m)}
 function payCur(t,m){const c=calc(t,m),u=$('#pc').value==='USD',due=u?c.dueU:c.due,rem=u?c.remU:c.rem,sym=u?' $':' د.ل';$('#pinfo').innerHTML='المبلغ المستحق: <b>'+r2(due)+sym+'</b> · المتبقي: <b>'+r2(rem)+sym+'</b>';$('#pa').value=Math.max(rem,0)}
@@ -519,7 +741,7 @@ function ra(){
   const T=Object.values(S.teachers).sort((a,b)=>(a.name||'').localeCompare(b.name||'','ar')),ST=Object.values(S.students).filter(s=>!s.archived).sort((a,b)=>a.id.localeCompare(b.id)),cnt=id=>ST.filter(s=>s.teacherId===id).length,m=av.m||mon(),H=bk("am('home')",'رجوع للوحة الرئيسية للإدارة'),tn=id=>(S.teachers[id]||{}).name||'';let b='';
   const cardB=(ic,t,n,sub,a)=>`<${a?'button':'div'} class="cd big"${a?` onclick="${a}"`:''}><span class="tx">${ic} <b>${t}</b><small>${sub||''}</small></span>${N(n)}${a?'<i>‹</i>':''}</${a?'button':'div'}>`;
   if(av.n==='home'){const act=ST.filter(s=>'🟢🟡'.includes(subSt(s)[0])).length,fu=ST.filter(s=>'🔴🟡'.includes(subSt(s)[0])).length,dues=T.reduce((a,t)=>a+calc(t.id,mon()).due,0);
-    b=`<h2>لوحة إدارة أكاديمية رتل</h2><div class="panel"><div class="kv"><span>حالة الاتصال بالقاعدة</span><b>${online?'🟢 متصل':'🔴 غير متصل'}</b></div><div class="kv"><span>معلمون في القاعدة</span><b>${DBG.t}</b></div><div class="kv"><span>طلاب في القاعدة</span><b>${DBG.s}</b></div><div class="kv"><span>بانتظار الرفع من الأجهزة</span><b>${Object.keys(PN).length}</b></div>${DBG.miss?'<p class="er">⚠️ قاعدة البيانات تحتاج تنفيذ ملف SQL (rattil-migration.sql)</p>':''}${DBG.err?`<p class="er" style="word-break:break-all">${esc(DBG.err)}</p>`:''}<button class="lk" onclick="pull().then(()=>ra())">تحديث الآن</button>${DBG.pull?`<p class="er" style="word-break:break-all">⚠️ تعذّر جلب: ${esc(DBG.pull)}</p>`:''}${DBG.payLocal?`<p class="er">⚠️ ${DBG.payLocal} دفعة محفوظة على هذا الجهاز فقط ولا تُرجعها قاعدة البيانات — نفّذي ملف rattil-migration-2.sql</p>`:''}</div>${cardB('👩🏻‍🏫','المعلمون',T.length,'',"am('T')")}${cardB('👩🏻‍🎓','الطلاب',ST.length,'',"am('S')")}${cardB('📚','الحصص المكتملة',ST.reduce((a,s)=>a+done(s),0))}${cardB('💰','المستحقات (هذا الشهر)',fmt(dues),'',"am('P')")}${cardB('💳','الاشتراكات',act,'نشط: '+act+' · منتهٍ/متوقف: '+(ST.length-act),"am('F')")}${cardB('🔔','اشتراكات تحتاج متابعة',fu,'',"am('F')")}`}
+    b=`<h2>لوحة إدارة أكاديمية رتل</h2>${pushBtn()}<div class="panel"><div class="kv"><span>حالة الاتصال بالقاعدة</span><b>${online?'🟢 متصل':'🔴 غير متصل'}</b></div><div class="kv"><span>معلمون في القاعدة</span><b>${DBG.t}</b></div><div class="kv"><span>طلاب في القاعدة</span><b>${DBG.s}</b></div><div class="kv"><span>بانتظار الرفع من الأجهزة</span><b>${Object.keys(PN).length}</b></div>${DBG.miss?'<p class="er">⚠️ قاعدة البيانات تحتاج تنفيذ ملف SQL (rattil-migration.sql)</p>':''}${DBG.err?`<p class="er" style="word-break:break-all">${esc(DBG.err)}</p>`:''}<button class="lk" onclick="pull().then(()=>ra())">تحديث الآن</button>${DBG.pull?`<p class="er" style="word-break:break-all">⚠️ تعذّر جلب: ${esc(DBG.pull)}</p>`:''}${DBG.payLocal?`<p class="er">⚠️ ${DBG.payLocal} دفعة محفوظة على هذا الجهاز فقط ولا تُرجعها قاعدة البيانات — نفّذي ملف rattil-migration-2.sql</p>`:''}</div>${cardB('👩🏻‍🏫','المعلمون',T.length,'',"am('T')")}${cardB('👩🏻‍🎓','الطلاب',ST.length,'',"am('S')")}${cardB('📚','الحصص المكتملة',ST.reduce((a,s)=>a+done(s),0))}${cardB('💰','المستحقات (هذا الشهر)',fmt(dues),'',"am('P')")}${cardB('💳','الاشتراكات',act,'نشط: '+act+' · منتهٍ/متوقف: '+(ST.length-act),"am('F')")}${cardB('🔔','اشتراكات تحتاج متابعة',fu,'',"am('F')")}`}
   else if(av.n==='T')b=H+`<h2>المعلمون ${N(T.length)}</h2>`+(T.length?T.map((t,i)=>`<div class="panel" style="padding:10px 14px">${cd(t.name,`${t.whats||'—'} · الطلاب: ${cnt(t.id)} · الحصص المكتملة: ${ST.filter(s=>s.teacherId===t.id).reduce((a,s)=>a+done(s),0)} · المستحق: ${fmt(calc(t.id,mon()).due)}`,`am('TS',{t:'${esc(t.id)}'})`,i+1)}<button class="lk" style="color:var(--err)" onclick="delTeacherFlow('${esc(t.id)}')">حذف المعلم</button></div>`).join(''):'<div class="emp">لا يوجد معلمون بعد.</div>');
   else if(av.n==='TS'){const t=S.teachers[av.t]||{},L=ST.filter(s=>s.teacherId===av.t);b=bk("am('T')",'رجوع لقائمة المعلمين')+`<h2>طلاب المعلم ${N(L.length)}</h2><p class="sv">${esc(t.name)} · ${esc(t.whats)}</p>`+(L.length?L.map((s,i)=>cd(s.name,`${PK[s.pkg][0]} · ${subSt(s)[0]} ${subSt(s)[1]} · المكتملة: ${done(s)} · المتبقية: ${cn(s,'مجدولة')}`,`am('D',{id:'${esc(s.id)}',from:'TS',t:'${esc(av.t)}'})`,i+1)).join(''):'<div class="emp">لا يوجد طلاب لهذا المعلم بعد.</div>')}
   else if(av.n==='S'){const FL=sfApply(ST);
@@ -534,7 +756,7 @@ function ra(){
   else if(av.n==='P')b=H+`<h2>💰 مستحقات المعلمين</h2><label>الشهر<input type="month" value="${m}" onchange="am('P',{m:this.value||mon()})"></label><div style="height:12px"></div>`+(T.length?T.map(t=>{const c=calc(t.id,m),L=ST.filter(s=>s.teacherId===t.id);return `<div class="panel"><b>${esc(t.name)}</b>${[['طلاب الباقة الكاملة',L.filter(s=>s.pkg==='full').length],['طلاب الباقة النصفية',L.filter(s=>s.pkg==='half').length],['الحصص المكتملة للكاملة',c.f],['الحصص المكتملة للنصفية',c.h],['مستحق الكاملة',fmt(c.f*RATE.full)],['مستحق النصفية',fmt(c.h*RATE.half)],['إجمالي المستحق',fmt(c.due)],['المدفوع',fmt(c.paid)],['المتبقي',fmt(c.rem)],['الحالة',c.st],...(c.us||c.paidU?[['حصص الدولار المكتملة',c.us],['المستحق بالدولار',r2(c.dueU)+' $'],['المدفوع بالدولار',r2(c.paidU)+' $'],['المتبقي بالدولار',r2(c.remU)+' $'],['حالة الدولار',c.stU]]:[])].map(r=>`<div class="kv"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')}<button class="b1" onclick="payM('${esc(t.id)}')">تسجيل الدفع</button> <button class="lk" onclick="am('PH',{t:'${esc(t.id)}',m:'${m}'})">سجل رواتب المعلم</button></div>`}).join(''):'<div class="emp">لا يوجد معلمون بعد.</div>');
   else if(av.n==='PH'){const P=Object.values(S.payments).filter(p=>p.teacherId===av.t),ms=[...new Set([...P.map(p=>p.month),...ST.filter(s=>s.teacherId===av.t).flatMap(s=>s.sessions.map(x=>(x.date||'').slice(0,7)))].filter(Boolean))].sort().reverse();
     b=bk(`am('P',{m:'${m}'})`,'رجوع للمستحقات')+`<h2>سجل رواتب ${esc(tn(av.t))}</h2>`+(ms.length?`<div class="tw"><table style="min-width:420px"><thead><tr><th>الشهر</th><th>المستحق</th><th>المدفوع</th><th>المتبقي</th><th>الحالة</th></tr></thead><tbody>${ms.map(x=>{const c=calc(av.t,x);return `<tr><td>${x}</td><td>${c.due}${c.dueU?' + '+c.dueU+' $':''}</td><td>${c.paid}${c.paidU?' + '+c.paidU+' $':''}</td><td>${c.rem}${c.dueU||c.paidU?' + '+c.remU+' $':''}</td><td>${c.st}</td></tr>`}).join('')}</tbody></table></div>`:'<div class="emp">لا توجد سجلات بعد.</div>')}
-  else if(av.n==='F'){const L=ST.filter(s=>'🔴🟡'.includes(subSt(s)[0]));b=H+`<h2>اشتراكات تحتاج متابعة ${N(L.length)}</h2>`+(L.length?L.map((s,i)=>cd(s.name,dl(s)<0?`انتهى الاشتراك منذ ${-dl(s)} يوم`:`ينتهي الاشتراك بعد ${dl(s)} يوم`,`am('D',{id:'${esc(s.id)}',from:'S'})`,i+1)).join(''):'<div class="emp">لا توجد اشتراكات تحتاج متابعة.</div>')}
+  else if(av.n==='F'){const L=ST.filter(s=>'🔴🟡'.includes(subSt(s)[0]));b=H+`<h2>اشتراكات تحتاج متابعة ${N(L.length)}</h2>`+(L.length?L.map((s,i)=>cd(s.name,dl(s)<0?`انتهى الاشتراك منذ ${-dl(s)} يوم`:`ينتهي الاشتراك بعد ${dl(s)} يوم`,`am('D',{id:'${esc(s.id)}',from:'S'})`,i+1)).join(''):'<div class="emp">لا توجد اشتراكات تحتاج متابعة.</div>')+admNoticePanel(L)}
   else{const s=S.students[av.id],back=av.from==='S'?bk("am('S')",'رجوع لجدول الطلاب'):bk(`am('TS',{t:'${esc(av.t)}'})`,'رجوع لقائمة طلاب المعلم');
     b=s?back+'<h2>سجل الطالب</h2><p class="sv">المعلم: <b>'+esc(s.teacherName)+'</b></p>'+det(s,1):back+'<div class="emp">تعذّر العثور على الطالب.</div>'}
   A.innerHTML=`<header><button class="lo" style="margin:0" onclick="closeA()">إغلاق</button><b>لوحة الإدارة</b><small class="st"></small></header><main>${b}</main>`}
@@ -549,54 +771,47 @@ function sAdd(id,type,title,message){
   if(!sRow||sNoti.some(n=>n.id===id))return false;
   put('notifications',id,{id,studentId:sRow.id,type,title,message,read:false,updatedAt:Date.now()});
   sNoti=[{id,studentId:sRow.id,type,title,message,read:false,createdAt:Date.now()},...sNoti];bNotify(title,message);return true}
-function expCheck(){
-  if(!sMe||!sRow||!sRow.end||sRow.sub==='paused')return;
-  const d=dl(sRow),e=sRow.end;
-  if(d<0)sAdd('x0_'+sRow.id+'_'+e,'expired','انتهى اشتراكك 🌷','السلام عليكم ورحمة الله، نشكرك على رفقتك الطيبة معنا في أكاديمية رتل. لقد انتهى اشتراكك بتاريخ '+e+'، ويسعدنا أن تتواصل مع المعلمة لتجديده ومواصلة رحلتك مع كتاب الله. بارك الله فيك وفي وقتك.');
-  else if(d<=3)sAdd('x3_'+sRow.id+'_'+e,'expiry_soon','تنبيه لطيف 🌷','السلام عليكم ورحمة الله، نودّ إخبارك بلطف أنه '+(d<=0?'ينتهي اشتراكك اليوم ('+e+')':'تبقّى على انتهاء اشتراكك '+dayTxt(d)+' (بتاريخ '+e+')')+'. يُرجى التواصل مع المعلمة لتجديده حتى تستمر رحلتك مع القرآن دون انقطاع. جزاكم الله خيرًا.')}
+function expCheck(){}
 const VAPID='BFEq_tRlMTAnCA3juTFALpAYSwGX5Rt5fZ7ILD_Igj20r5Cys3hLmsf92I9qOozOPFhvYKqQCwH4CxWxTHh60t8';
 const u8=b=>{const s=(b+'='.repeat((4-b.length%4)%4)).replace(/-/g,'+').replace(/_/g,'/'),r=atob(s);return Uint8Array.from(r,c=>c.charCodeAt(0))};
 const pushOK=()=>'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
 const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
 const standalone=()=>(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone;
 let pushSynced='';
-function pushWho(){return sMe&&sRow?{role:'student',owner:sRow.id}:me?{role:'teacher',owner:me.id}:null}
+function pushWho(){return av&&ADM_CODE?{role:'admin',owner:'admin'}:sMe&&sRow?{role:'student',owner:sRow.id}:me?{role:'teacher',owner:me.id}:null}
 function pushBtn(){
-  if(pushOK()&&ls.g('rt_push_ok')&&Notification.permission==='granted')return '';
+  const w0=pushWho();if(pushOK()&&w0&&ls.g('rt_push_ok')===w0.role+w0.owner&&Notification.permission==='granted')return '';
   if(!pushOK())return isIOS&&!standalone()?`<div class="panel"><b>🔔 للإشعارات على الآيفون</b><p class="sv">اضغطي زر المشاركة في Safari ثم «إضافة إلى الشاشة الرئيسية»، وافتحي الموقع من الأيقونة ثم فعّلي الإشعارات.</p></div>`:'';
   if(Notification.permission==='denied')return `<div class="panel"><b>🔔 الإشعارات محظورة</b><p class="sv">فعّليها من إعدادات المتصفح للموقع ثم حدّثي الصفحة.</p></div>`;
   return `<div class="panel" style="border-color:var(--gold)"><b>🔔 فعّلي الإشعارات</b><p class="sv">لتصلك تذكيرات الحصص وتنبيهات الاشتراك حتى لو كان الموقع مغلقًا.</p><button class="b1" onclick="pushEnable()">تفعيل الإشعارات</button></div>`}
 async function pushSave(sub){
   const w=pushWho();if(!w)return false;const j=sub.toJSON();
   const body=JSON.stringify({p_role:w.role,p_owner:w.owner,p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth});
-  if(w.role==='student')await pgReq('rpc/rt_save_push',sSession.access_token,{method:'POST',body});
+  if(w.role==='admin')await rq('rpc/rt_save_push_admin',{method:'POST',body:JSON.stringify({p_code:ADM_CODE,p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth})});
+  else if(w.role==='student')await pgReq('rpc/rt_save_push',sSession.access_token,{method:'POST',body});
   else await rq('rpc/rt_save_push',{method:'POST',body});
   pushSynced=w.role+w.owner;return true}
 async function pushEnable(){
   try{
     if(!pushOK()){toast('هذا المتصفح لا يدعم الإشعارات');return}
-    if(!pushWho()){toast('سجّلي الدخول أولًا');return}
+    const w=pushWho();if(!w){toast('سجّلي الدخول أولًا');return}
     const perm=await Notification.requestPermission();
     if(perm!=='granted'){toast('لم يتم السماح بالإشعارات');render();return}
     const reg=await navigator.serviceWorker.register('sw.js');await navigator.serviceWorker.ready;
     let sub=await reg.pushManager.getSubscription();
     if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(VAPID)});
-    await pushSave(sub);ls.s('rt_push_ok',1);toast('تم تفعيل الإشعارات ✅');render()
+    await pushSave(sub);ls.s('rt_push_ok',w.role+w.owner);toast('تم تفعيل الإشعارات ✅');render()
   }catch(e){toast('تعذّر تفعيل الإشعارات')}}
 async function pushSync(){
-  try{const w=pushWho();if(!w||!pushOK()||!ls.g('rt_push_ok')||Notification.permission!=='granted'||pushSynced===w.role+w.owner)return;
+  try{const w=pushWho();if(!w||!pushOK()||ls.g('rt_push_ok')!==w.role+w.owner||Notification.permission!=='granted'||pushSynced===w.role+w.owner)return;
     const reg=await navigator.serviceWorker.getRegistration();if(!reg)return;const sub=await reg.pushManager.getSubscription();if(sub)await pushSave(sub)}catch(e){}}
-function fuPanel(L){
-  const fu=L.filter(s=>'🔴🟡'.includes(subSt(s)[0]));
-  if(!fu.length)return '';
-  const msg=s=>{const d=dl(s);return d<0?'السلام عليكم ورحمة الله، نشكرك على رفقتك الطيبة معنا في أكاديمية رتل. لقد انتهى اشتراكك بتاريخ '+s.end+'، ويسعدنا أن نجدده لك لتواصل رحلتك مع كتاب الله 🌷':'السلام عليكم ورحمة الله، نودّ إخبارك بلطف أنه '+(d<=0?'ينتهي اشتراكك اليوم':'تبقّى على انتهاء اشتراكك '+dayTxt(d))+' (بتاريخ '+s.end+'). يسعدنا تجديده لتستمر رحلتك مع القرآن دون انقطاع 🌷'};
-  return `<div class="panel" style="border-color:var(--gold)"><b>📌 اشتراكات تحتاج متابعة</b>${fu.map(s=>`<div class="kv"><span>${subSt(s)[0]} ${esc(s.name)} — ${subSt(s)[1]}</span>${s.phone?`<a class="lk" href="https://wa.me/${norm(s.phone)}?text=${encodeURIComponent(msg(s))}" target="_blank" rel="noopener">واتساب</a>`:''}</div>`).join('')}</div>`}
+
 function remCheck(){
   if(sMe&&sRow){const up=[...sRow.sessions].filter(x=>x.st==='مجدولة'&&x.date>=today()).sort((a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||''))[0];
-    if(up&&imminent(up)){const k='rt_remsent_'+sRow.id+'_'+up.date+'_'+up.time;if(!ls.g(k)){ls.s(k,1);sAdd('rem_'+sRow.id+'_'+up.date+'_'+up.time,'reminder','🔔 تذكير بالحصة','السلام عليكم ورحمة الله، نذكّرك بلطف بأن حصتك القرآنية ستبدأ بعد 10 دقائق تقريبًا، في تمام الساعة '+up.time+'. نسأل الله أن يفتح عليك ويبارك في وقتك.')}}
+    if(up&&imminent(up)){const k='rt_remsent_'+sRow.id+'_'+up.date+'_'+up.time;if(!ls.g(k)){ls.s(k,1);sAdd('rem_'+sRow.id+'_'+up.date+'_'+up.time,'reminder','🔔 حصتك القرآنية تقترب','السلام عليكم ورحمة الله وبركاته، تبقّى 10 دقائق على موعد حصتك القرآنية (الساعة '+up.time+'). نسأل الله أن يفتح عليك ويبارك في وقتك.')}}
     expCheck();
     if(sv2==='home'||sv2==='noti')render()}
-  if(me){Object.values(S.students).filter(s=>s.teacherId===me.id&&!s.archived).forEach(s=>(s.sessions||[]).filter(imminent).forEach(x=>{const k='rt_trem_'+s.id+'_'+x.date+'_'+x.time;if(!ls.g(k)){ls.s(k,1);const m='حصة '+s.name+' ستبدأ بعد '+Math.max(1,Math.round(minutesTo(x.date,x.time)))+' دقائق تقريبًا (الساعة '+x.time+'). بارك الله في جهدك 🌷';toast('🔔 '+m);bNotify('🔔 تذكير بالحصة',m)}}))}
+  if(me){Object.values(S.students).filter(s=>s.teacherId===me.id&&!s.archived).forEach(s=>(s.sessions||[]).filter(imminent).forEach(x=>{const k='rt_trem_'+s.id+'_'+x.date+'_'+x.time;if(!ls.g(k)){ls.s(k,1);const m='تبقّى '+Math.max(1,Math.round(minutesTo(x.date,x.time)))+' دقائق على حصة '+s.name+' (الساعة '+x.time+'). بارك الله في جهدك.';toast('🔔 '+m);bNotify('🔔 حصة قريبة',m)}}))}
   pushSync();
   if(me&&v==='dash')render()}
 try{if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
