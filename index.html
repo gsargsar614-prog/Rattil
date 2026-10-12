@@ -449,7 +449,7 @@ function expCheck(){
   if(!sMe||!sRow||!sRow.end||sRow.sub==='paused')return;
   const d=dl(sRow),e=sRow.end;
   if(d<0)sAdd('x0_'+sRow.id+'_'+e,'expired','انتهى اشتراكك 🌷','السلام عليكم ورحمة الله، نشكرك على رفقتك الطيبة معنا في أكاديمية رتل. لقد انتهى اشتراكك بتاريخ '+e+'، ويسعدنا أن تتواصل مع المعلمة لتجديده ومواصلة رحلتك مع كتاب الله. بارك الله فيك وفي وقتك.');
-  else if(d<=3)sAdd('x3_'+sRow.id+'_'+e,'expiry_soon','تنبيه لطيف 🌷','السلام عليكم ورحمة الله، نودّ إخبارك بلطف أنه '+(d<=0?'ينتهي اشتراكك اليوم ('+e+')':'تبقّى على انتهاء اشتراكك '+dayTxt(d)+' (بتاريخ '+e+')')+'. يُرجى التواصل مع المعلمة لتجديده حتى تستمر رحلتك مع القرآن دون انقطاع. جزاكم الله خيرًا.')}
+  else if(d<=3)sAdd('x3_'+sRow.id+'_'+e,'expiry_soon','تنبيه 🌷','السلام عليكم ورحمة الله، نودّ إخبارك بلطف أنه '+(d<=0?'ينتهي اشتراكك اليوم ('+e+')':'تبقّى على انتهاء اشتراكك '+dayTxt(d)+' (بتاريخ '+e+')')+'. يُرجى التواصل مع المعلمة لتجديده حتى تستمر رحلتك مع القرآن دون انقطاع. جزاكم الله خيرًا.')}
 const VAPID='BFEq_tRlMTAnCA3juTFALpAYSwGX5Rt5fZ7ILD_Igj20r5Cys3hLmsf92I9qOozOPFhvYKqQCwH4CxWxTHh60t8';
 const u8=b=>{const s=(b+'='.repeat((4-b.length%4)%4)).replace(/-/g,'+').replace(/_/g,'/'),r=atob(s);return Uint8Array.from(r,c=>c.charCodeAt(0))};
 const pushOK=()=>'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
@@ -489,7 +489,7 @@ function fuPanel(L){
   return `<div class="panel" style="border-color:var(--gold)"><b>📌 اشتراكات تحتاج متابعة</b>${fu.map(s=>`<div class="kv"><span>${subSt(s)[0]} ${esc(s.name)} — ${subSt(s)[1]}</span>${s.phone?`<a class="lk" href="https://wa.me/${norm(s.phone)}?text=${encodeURIComponent(msg(s))}" target="_blank" rel="noopener">واتساب</a>`:''}</div>`).join('')}</div>`}
 function remCheck(){
   if(sMe&&sRow){const up=[...sRow.sessions].filter(x=>x.st==='مجدولة'&&x.date>=today()).sort((a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||''))[0];
-    if(up&&imminent(up)){const k='rt_remsent_'+sRow.id+'_'+up.date+'_'+up.time;if(!ls.g(k)){ls.s(k,1);sAdd('rem_'+sRow.id+'_'+up.date+'_'+up.time,'reminder','🔔 تذكير بالحصة','السلام عليكم ورحمة الله، نذكّرك بلطف بأن حصتك القرآنية ستبدأ بعد 10 دقائق تقريبًا، في تمام الساعة '+up.time+'. نسأل الله أن يفتح عليك ويبارك في وقتك.')}}
+    if(up&&imminent(up)){const k='rt_remsent_'+sRow.id+'_'+up.date+'_'+up.time;if(!ls.g(k)){ls.s(k,1);sAdd('rem_'+sRow.id+'_'+up.date+'_'+up.time,'reminder','🔔 تذكير بالحصة','السلام عليكم ورحمة الله، نذكّرك بأن حصتك القرآنية ستبدأ بعد 10 دقائق تقريبًا، في تمام الساعة '+up.time+'. نسأل الله أن يفتح عليك ويبارك في وقتك.')}}
     expCheck();
     if(sv2==='home'||sv2==='noti')render()}
   if(me){Object.values(S.students).filter(s=>s.teacherId===me.id&&!s.archived).forEach(s=>(s.sessions||[]).filter(imminent).forEach(x=>{const k='rt_trem_'+s.id+'_'+x.date+'_'+x.time;if(!ls.g(k)){ls.s(k,1);const m='حصة '+s.name+' ستبدأ بعد '+Math.max(1,Math.round(minutesTo(x.date,x.time)))+' دقائق تقريبًا (الساعة '+x.time+'). بارك الله في جهدك 🌷';toast('🔔 '+m);bNotify('🔔 تذكير بالحصة',m)}}))}
