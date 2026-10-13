@@ -651,7 +651,11 @@ async function admNotice(id,btn){
     await rq('rpc/rt_admin_notice',{method:'POST',body:JSON.stringify({p_code:ADM_CODE,p_student:id})});
     toast('تم إرسال الإشعار ✓');if(btn)btn.textContent='تم ✓'}
   catch(e){toast('تعذّر الإرسال');if(btn){btn.disabled=false;btn.textContent='إرسال'}}}
-function admNoticePanel(L){return `<div class="panel" style="border-color:var(--gold)"><b>📣 إشعارات الاشتراك للطالبات</b><p class="sv">تُرسل من الإدارة وحدها، بصيغة رسمية مهذّبة.</p>${L.map(s=>`<div class="kv"><span>${subSt(s)[0]} ${esc(s.name)}</span><button class="lk" onclick="admNotice('${esc(s.id)}',this)">إرسال</button></div>`).join('')}</div>`}
+function admNoticePanel(L){return `<div class="panel" style="border-color:var(--gold)"><b>📣 إشعارات الاشتراك للطالبات</b><p class="sv">تُرسل من الإدارة وحدها، بصيغة رسمية مهذّبة.</p>${L.map(s=>`<div class="kv"><span>${subSt(s)[0]} ${esc(s.name)}</span><span><button class="lk" onclick="admNotice('${esc(s.id)}',this)">إرسال</button> <button class="lk" style="color:#128c4a" onclick="admWA('${esc(s.id)}')">واتساب</button></span></div>`).join('')}</div>`}
+const AR_DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+function admMsg(st){const d=dl(st),dn=AR_DAYS[new Date(st.end+'T00:00:00').getDay()]+' '+st.end.split('-').reverse().join('-');
+ return '🔔 تنبيه 🌷\n\nالسلام عليكم ورحمة الله وبركاته، نود تذكيركم بأن موعد انتهاء الاشتراك '+(d>=0?'سيكون':'كان')+' يوم '+dn+'، نرجو تجديد الاشتراك '+(d>=0?'في الموعد المحدد ':'')+'لضمان استمرار الحصص دون انقطاع.\n\nبارك الله فيكم ونفع بكم وجعلكم من أهل القرآن وخاصته'}
+function admWA(id){const st=S.students[id];if(!st)return;if(!st.end)return toast('لا يوجد تاريخ انتهاء للاشتراك');const p=norm(st.phone);if(!p)return toast('رقم الواتساب غير صحيح');window.open('https://wa.me/'+p+'?text='+encodeURIComponent(admMsg(st)),'_blank')}
 function notify(sid,type,title,message){if(!av)return;const id='n'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);put('notifications',id,{id,studentId:sid,type,title,message,read:false,updatedAt:Date.now()})}
 function edP(el){if(!progCur)return;progCur[el.dataset.f]=el.value;const s=$('#psv');if(s)s.textContent='جارٍ الحفظ…';clearTimeout(tm2);tm2=setTimeout(saveProg,700)}
 async function saveProg(){tm2=null;if(!progCur)return;progCur.updatedAt=Date.now();await put('progress',progCur.id,progCur);const s=$('#psv');if(s)s.textContent='تم الحفظ تلقائيًا'}
