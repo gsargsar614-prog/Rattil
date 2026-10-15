@@ -329,6 +329,8 @@ const ls={g(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return nu
 const loc=ls.g('rt_students')||{};
 let S={teachers:ls.g('rt_teachers')||{},students:{...loc},payments:ls.g('rt_payments')||{},progress:{},reports:{},notifications:{}},me=ls.g('rt_me'),v='dash',av=null,cur=null,tm=null,photo='',taps=0,tt,tt2,PN=ls.g('rt_pend')||{},online=null,busy=0,sig='';
 const p2e=w=>norm(w)+'@students-rattil.com';
+const p2eAll=w=>{const s=String(w).replace(/[۰-۹]/g,x=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(x));const d=norm(s);const n=(d.length>9&&d.startsWith('218'))?d.slice(3):d;return [...new Set([d,n,'218'+n])].filter(Boolean).map(x=>x+'@students-rattil.com')};
+async function authLogin(w,p){const ps=[...new Set([p,p.trim()])];let last;for(const em of p2eAll(w)){for(const pw of ps){try{return await authReq('/token?grant_type=password',{email:em,password:pw})}catch(x){last=x}}}throw last||new Error('login')}
 let lmode='s',sMe=null,sRow=null,sProg=null,sReports=[],sNoti=[],sv2='home',progCur=null,tm2=null,sTeacher=null;
 let sSession=ls.g('rt_ssession')||null,sBooting=!!(sSession&&sSession.access_token);
 function saveSession(s){sSession=s;ls.s('rt_ssession',s)}
@@ -526,11 +528,11 @@ async function studentLogin(){
   if(!norm(w)||!p)return e.textContent='الرجاء إدخال رقم الواتساب وكلمة المرور';
   e.textContent='جارٍ الدخول…';
   try{
-    const j=await authReq('/token?grant_type=password',{email:p2e(w),password:p});
+    const j=await authLogin(w,p);
     if(!j.access_token)throw new Error('تعذّر الدخول');
     saveSession({access_token:j.access_token,refresh_token:j.refresh_token,user:j.user});
     await sLoad()
-  }catch(err){e.textContent='رقم الواتساب أو كلمة المرور غير صحيحة'}}
+  }catch(err){e.textContent='رقم الواتساب أو كلمة المرور غير صحيحة. إن كانت هذه أول مرة لكِ في الموقع فاضغطي «إنشاء حساب لأول مرة» بدل تسجيل الدخول.'}}
 async function studentSignup(){
   const e=$('#se');
   const w=$('#sw').value.trim(),p=$('#sp').value;
@@ -538,15 +540,18 @@ async function studentSignup(){
   if(!p||p.length<6)return e.textContent='كلمة المرور 6 أحرف على الأقل';
   e.textContent='جارٍ إنشاء الحساب…';
   try{
-    const r=await fetch(SB_URL+'/functions/v1/create-student-account',{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({phone:w,password:p})});
-    let j={};try{j=await r.json()}catch(x){}
+    let r,j={};
+    for(const ph of p2eAll(w).map(x=>x.split('@')[0])){
+      r=await fetch(SB_URL+'/functions/v1/create-student-account',{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({phone:ph,password:p})});
+      j={};try{j=await r.json()}catch(x){}
+      if(r.ok||j.error!=='no_match')break}
     if(!r.ok){
-      if(j.error==='no_match'){e.textContent='رقم الواتساب غير مسجّل لدى الأكاديمية بعد. يمكنك التواصل معنا عبر واتساب لتسجيل بياناتك أولًا.';return}
+      if(j.error==='no_match'){e.textContent=j.reason==='ambiguous'?'هذا الرقم مرتبط بأكثر من طالبة. تواصلي مع الإدارة عبر واتساب.':'رقم الواتساب غير مسجّل لدى الأكاديمية، أو أن حسابه مفعّل مسبقًا (جرّبي تسجيل الدخول). وإن لم تكوني مسجّلة فتواصلي معنا عبر واتساب.';return}
       if(j.error==='already_registered'){e.textContent='هذا الرقم مسجّل بالفعل — استخدمي تسجيل الدخول';return}
       if(j.error==='invalid_input'){e.textContent='الرجاء التأكد من رقم الواتساب وكلمة المرور';return}
       throw new Error(j.error||('خطأ '+r.status))
     }
-    const lj=await authReq('/token?grant_type=password',{email:p2e(w),password:p});
+    const lj=await authLogin(w,p);
     saveSession({access_token:lj.access_token,refresh_token:lj.refresh_token,user:lj.user});
     await sLoad()
   }catch(err){e.textContent='تعذّر إنشاء الحساب: '+err.message}}
