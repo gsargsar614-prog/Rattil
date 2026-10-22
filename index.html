@@ -365,8 +365,12 @@ const ls={g(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return nu
 const loc=ls.g('rt_students')||{};
 let S={teachers:ls.g('rt_teachers')||{},students:{...loc},payments:ls.g('rt_payments')||{},progress:{},reports:{},notifications:{}},me=ls.g('rt_me'),v='dash',av=null,cur=null,tm=null,photo='',taps=0,tt,tt2,PN=ls.g('rt_pend')||{},online=null,busy=0,sig='';
 const p2e=w=>norm(w)+'@students-rattil.com';
+/* ===== أسماء: دمج «عبد + اسم» في اسم واحد + تجزئة الاسم (مطابقة للخادم) ===== */
+const nn=x=>String(x??'').replace(/[\u064b-\u0652\u0640]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/\s+/g,'').toLowerCase();
+const h8=x=>{let h=0x811c9dc5;for(const b of new TextEncoder().encode(x)){h^=b;h=Math.imul(h,0x01000193)>>>0}return h.toString(16).padStart(8,'0')};
+function nameParts(n){const w=String(n||'').trim().split(/\s+/).filter(Boolean),o=[];for(let i=0;i<w.length;i++){const a=nn(w[i]);if((a==='عبد'||a==='عبيد')&&i+1<w.length){o.push(w[i]+' '+w[i+1]);i++}else o.push(w[i])}return o}
 const p2eAll=w=>{const s=String(w).replace(/[۰-۹]/g,x=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(x));const d=norm(s);const n=(d.length>9&&d.startsWith('218'))?d.slice(3):d;return [...new Set([d,n,'218'+n])].filter(Boolean).map(x=>x+'@students-rattil.com')};
-async function authLogin(w,p){const ps=[...new Set([p,p.trim()])];let last;for(const em of p2eAll(w)){for(const pw of ps){try{return await authReq('/token?grant_type=password',{email:em,password:pw})}catch(x){last=x}}}throw last||new Error('login')}
+async function authLogin(w,p,name){const ps=[...new Set([p,p.trim()])];let last;const nk=nn(name),ems=[];if(nk)p2eAll(w).forEach(e=>ems.push(e.split('@')[0]+'-'+h8(nk)+'@students-rattil.com'));p2eAll(w).forEach(e=>ems.push(e));for(const em of ems){for(const pw of ps){try{return await authReq('/token?grant_type=password',{email:em,password:pw})}catch(x){last=x}}}throw last||new Error('login')}
 let lmode='s',sMe=null,sRow=null,sProg=null,sReports=[],sNoti=[],sv2='home',progCur=null,tm2=null,sTeacher=null;
 let sSession=ls.g('rt_ssession')||null,sBooting=!!(sSession&&sSession.access_token);
 function saveSession(s){sSession=s;ls.s('rt_ssession',s)}
@@ -558,37 +562,39 @@ async function pull(){
     stat(true);const g=JSON.stringify([so,to,po,go,ro,DBG.pull,DBG.payLocal]);if(g!==sig){sig=g;refresh()}}catch(x){stat(false)}}
 function adopt(old,id,n){if(old&&old!==id)Object.values(ls.g('rt_students')||{}).filter(s=>s.teacherId===old).forEach(s=>{s.teacherId=id;s.teacherName=n;put('students',s.id,s)});ls.s('rt_tid',id)}
 function loginH(){return `<div class="lgn"><div class="cl">${logo()}<label class="pic" aria-label="رفع صورة شخصية"><input type="file" accept="image/*" hidden onchange="pick(this)"><span id="pv">📷</span></label><input id="ln" placeholder="اسم المعلم" aria-label="اسم المعلم" autocomplete="name"><input id="lw" type="tel" inputmode="tel" placeholder="رقم الواتساب" aria-label="رقم الواتساب"><input id="lc" type="password" inputmode="numeric" placeholder="رمز الدخول" aria-label="رمز الدخول" onkeydown="event.key==='Enter'&&login()"><button class="b1 full" onclick="login()">تسجيل الدخول</button><p class="er" id="le"></p><button class="bk" onclick="lmode='s';render()">دخول الطلاب</button></div></div>`}
-function studentLoginH(){return `<div class="lgn"><div class="cl">${logo()}<h3 style="text-align:center;margin:0">دخول الطلاب</h3><input id="sw" type="tel" inputmode="tel" placeholder="رقم الواتساب" aria-label="رقم الواتساب" autocomplete="tel"><input id="sp" type="password" placeholder="كلمة المرور" aria-label="كلمة المرور" onkeydown="event.key==='Enter'&&studentLogin()"><button class="b1 full" onclick="studentLogin()">تسجيل الدخول</button><button class="b2 full" onclick="studentSignup()">إنشاء حساب لأول مرة</button><p class="er" id="se"></p><button class="bk" onclick="lmode='t';render()">دخول المعلمين</button></div></div>`}
+function studentLoginH(){return `<div class="lgn"><div class="cl">${logo()}<h3 style="text-align:center;margin:0">دخول الطلاب</h3><input id="sn" placeholder="الاسم الثلاثي للطالب" aria-label="الاسم الثلاثي" autocomplete="name"><input id="sw" type="tel" inputmode="tel" placeholder="رقم الواتساب" aria-label="رقم الواتساب" autocomplete="tel"><input id="sp" type="password" placeholder="كلمة المرور" aria-label="كلمة المرور" onkeydown="event.key==='Enter'&&studentLogin()"><button class="b1 full" onclick="studentLogin()">تسجيل الدخول</button><button class="b2 full" onclick="studentSignup()">إنشاء حساب لأول مرة</button><p class="er" id="se"></p><button class="bk" onclick="lmode='t';render()">دخول المعلمين</button></div></div>`}
 async function studentLogin(){
   const e=$('#se');
-  const w=$('#sw').value.trim(),p=$('#sp').value;
+  const w=$('#sw').value.trim(),p=$('#sp').value,nm=($('#sn').value||'').trim();
+  if(nameParts(nm).length<3)return e.textContent='الرجاء كتابة الاسم الثلاثي';
   if(!norm(w)||!p)return e.textContent='الرجاء إدخال رقم الواتساب وكلمة المرور';
   e.textContent='جارٍ الدخول…';
   try{
-    const j=await authLogin(w,p);
+    const j=await authLogin(w,p,nm);
     if(!j.access_token)throw new Error('تعذّر الدخول');
     saveSession({access_token:j.access_token,refresh_token:j.refresh_token,user:j.user});
     await sLoad()
-  }catch(err){e.textContent='رقم الواتساب أو كلمة المرور غير صحيحة. إن كانت هذه أول مرة لكِ في الموقع فاضغطي «إنشاء حساب لأول مرة» بدل تسجيل الدخول.'}}
+  }catch(err){e.textContent='الاسم أو رقم الواتساب أو كلمة المرور غير صحيحة (اكتب الاسم كما سجّلته عند إنشاء الحساب). إن كانت هذه أول مرة لكِ في الموقع فاضغطي «إنشاء حساب لأول مرة» بدل تسجيل الدخول.'}}
 async function studentSignup(){
   const e=$('#se');
-  const w=$('#sw').value.trim(),p=$('#sp').value;
+  const w=$('#sw').value.trim(),p=$('#sp').value,nm=($('#sn').value||'').trim();
+  if(nameParts(nm).length<3)return e.textContent='الرجاء كتابة الاسم الثلاثي';
   if(!norm(w))return e.textContent='الرجاء إدخال رقم الواتساب';
   if(!p||p.length<6)return e.textContent='كلمة المرور 6 أحرف على الأقل';
   e.textContent='جارٍ إنشاء الحساب…';
   try{
     let r,j={};
     for(const ph of p2eAll(w).map(x=>x.split('@')[0])){
-      r=await fetch(SB_URL+'/functions/v1/create-student-account',{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({phone:ph,password:p})});
+      r=await fetch(SB_URL+'/functions/v1/create-student-account',{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({phone:ph,password:p,name:nm})});
       j={};try{j=await r.json()}catch(x){}
       if(r.ok||j.error!=='no_match')break}
     if(!r.ok){
-      if(j.error==='no_match'){e.textContent=j.reason==='ambiguous'?'هذا الرقم مرتبط بأكثر من طالبة. تواصلي مع الإدارة عبر واتساب.':'رقم الواتساب غير مسجّل لدى الأكاديمية، أو أن حسابه مفعّل مسبقًا (جرّبي تسجيل الدخول). وإن لم تكوني مسجّلة فتواصلي معنا عبر واتساب.';return}
+      if(j.error==='no_match'){e.textContent=j.reason==='name_mismatch'?'الاسم لا يطابق المسجّل لدى الأكاديمية لهذا الرقم. اكتب الاسم الثلاثي كما سُجّل، أو تواصل مع الإدارة.':j.reason==='ambiguous'?'هذا الرقم مرتبط بأكثر من طالبة. تواصلي مع الإدارة عبر واتساب.':'رقم الواتساب غير مسجّل لدى الأكاديمية، أو أن حسابه مفعّل مسبقًا (جرّبي تسجيل الدخول). وإن لم تكوني مسجّلة فتواصلي معنا عبر واتساب.';return}
       if(j.error==='already_registered'){e.textContent='هذا الرقم مسجّل بالفعل — استخدمي تسجيل الدخول';return}
       if(j.error==='invalid_input'){e.textContent='الرجاء التأكد من رقم الواتساب وكلمة المرور';return}
       throw new Error(j.error||('خطأ '+r.status))
     }
-    const lj=await authLogin(w,p);
+    const lj=await authLogin(w,p,nm);
     saveSession({access_token:lj.access_token,refresh_token:lj.refresh_token,user:lj.user});
     await sLoad()
   }catch(err){e.textContent='تعذّر إنشاء الحساب: '+err.message}}
@@ -607,6 +613,7 @@ async function sLoad(keep){
     const nt=await pgReq('notifications?select=*&student_id=eq.'+encodeURIComponent(sRow.id)+'&order=created_at.desc',sSession.access_token).catch(()=>[]);
     sNoti=(nt||[]).map(r=>fromRow('notifications',r));
     expCheck();
+    try{pushGate()}catch(e){}
     try{sDaily=(await pgReq('daily_reports?select=*&student_id=eq.'+encodeURIComponent(sRow.id)+'&order=day.desc&limit=60',sSession.access_token))||[]}catch(e){}
     try{const ph=await pgReq('student_photos?select=photo&student_id=eq.'+encodeURIComponent(sRow.id),sSession.access_token);sPhoto=ph&&ph[0]?ph[0].photo:''}catch(e){}
     try{const tr=await pgReq('rpc/my_teacher_contact',sSession.access_token,{method:'POST',body:'{}'});sTeacher=tr&&tr.whats?{whats:tr.whats}:null}catch(e){sTeacher=null}
@@ -719,7 +726,7 @@ function sHome(st){
   const sb1=subSt(st),days=dl(st),paused=st.sub==='paused',cls=paused?'gr':sb1[0]==='🔴'?'er':sb1[0]==='🟡'?'wn':'ok';
   const up=[...st.sessions].filter(x=>x.st==='مجدولة'&&x.date&&x.date>=today()).sort((a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||''))[0];
   const total=(st.start&&st.end&&!isNaN(new Date(st.start))&&!isNaN(new Date(st.end)))?Math.max(1,Math.ceil((new Date(st.end)-new Date(st.start))/864e5)):0;
-  const first=String(st.name||'').trim().split(/\s+/)[0]||'';
+  const first=nameParts(st.name)[0]||'';
   const al=paused||!st.end?'':days<0?`<div class="note er rise">${sic('bell',20)}<span><b>تنبيه:</b> انتهى اشتراكك بتاريخ ${esc(st.end)}. يسعدنا تواصلك مع إدارة الأكاديمية لتجديده ومواصلة رحلتك مع كتاب الله 🌷</span></div>`:days<=3?`<div class="note wn rise">${sic('bell',20)}<span><b>تنبيه:</b> ${days===0?'ينتهي اشتراكك اليوم':'ينتهي اشتراكك خلال '+dayTxt(days)} (${esc(st.end)}). يُرجى التواصل مع إدارة الأكاديمية لتجديد الاشتراك 🌷</span></div>`:'';
   const imm=up&&imminent(up)?`<div class="note gd rise">${sic('clock',20)}<span>تبدأ حصتك بعد ${Math.max(0,Math.round(minutesTo(up.date,up.time)))} دقيقة، الساعة ${esc(up.time)}. نسأل الله أن يفتح عليك ويبارك في وقتك.</span></div>`:'';
   const ud=up?stuDate(up.date):null;
@@ -768,7 +775,7 @@ function rnPkg(k){sRn.pkg=k;render()}
 function rnName(v){sRn.name=v;rnChk()}
 function rnNote(v){sRn.note=v}
 function rnFile(inp){const f=inp.files&&inp.files[0];if(!f)return;if(!/^image\//.test(f.type))return toast('اختاري صورة فقط');if(f.size>8e6)return toast('الصورة كبيرة، اختاري صورة أقل من 8 ميجا');try{if(sRn.url)URL.revokeObjectURL(sRn.url)}catch(e){}sRn.file=f;sRn.url=URL.createObjectURL(f);render()}
-function rnOk(){return !!(sRn.pkg&&sRn.file&&sRn.name.trim().split(/\s+/).filter(Boolean).length>=3)}
+function rnOk(){return !!(sRn.pkg&&sRn.file&&nameParts(sRn.name).length>=3)}
 function rnChk(){const b=document.getElementById('rnGo');if(b)b.disabled=!rnOk()}
 function rnCopy(v){try{navigator.clipboard.writeText(v).then(()=>toast('تم النسخ ✓'),()=>toast('انسخيه يدويًا'))}catch(e){toast('انسخيه يدويًا')}}
 function rnMsg(st){const p=PK[sRn.pkg]||{},d=new Date(today()+'T00:00:00'),dn=AR_DAYS[d.getDay()]+' '+today().split('-').reverse().join('-');
@@ -1077,6 +1084,25 @@ async function pushEnable(){
 async function pushSync(){
   try{const w=pushWho();if(!w||!pushOK()||ls.g('rt_push_ok')!==w.role+w.owner||Notification.permission!=='granted'||pushSynced===w.role+w.owner)return;
     const reg=await navigator.serviceWorker.getRegistration();if(!reg)return;const sub=await reg.pushManager.getSubscription();if(sub)await pushSave(sub)}catch(e){}}
+
+
+/* ===== نافذة تفعيل الإشعارات الإلزامية للطالب (تظهر في كل دخول حتى التفعيل) ===== */
+let pgShown=0;
+function pgOn(){return !!(sRow&&pushOK()&&ls.g('rt_push_ok')==='student'+sRow.id&&Notification.permission==='granted')}
+function pgClose(){const e=document.getElementById('pgate');if(e)e.remove()}
+function pushGate(){
+  if(pgShown||!sMe||!sRow||pgOn()||document.getElementById('pgate'))return;
+  const ios=isIOS&&!standalone();if(!pushOK()&&!ios)return;
+  pgShown=1;
+  const den=pushOK()&&Notification.permission==='denied';
+  const body=ios?'<p class="sv">للإشعارات على الآيفون: اضغطي زر المشاركة في Safari ثم «إضافة إلى الشاشة الرئيسية»، ثم افتحي الموقع من الأيقونة وفعّلي الإشعارات.</p>'
+   :den?'<p class="sv">الإشعارات محظورة لهذا الموقع. فعّليها من إعدادات المتصفح (🔒 بجانب العنوان ← الإشعارات ← السماح) ثم حدّثي الصفحة.</p>'
+   :'<p class="sv" style="font-size:15px">فعّل الإشعارات لتصلك تذكيرات الحصص وتنبيهات الاشتراك والتقارير <b>حتى لو كان الهاتف مغلقًا أو الموقع مغلقًا</b>.</p><button class="b1 full" id="pgb" onclick="pgEnable()">🔔 تفعيل الإشعارات الآن</button>';
+  const d=document.createElement('div');d.id='pgate';d.className='sh mid';d.style.zIndex='150';
+  d.innerHTML='<div class="bx" role="dialog" aria-modal="true" style="position:relative;text-align:center"><button class="ic" aria-label="تخطي" onclick="pgClose()" style="position:absolute;top:8px;inset-inline-start:10px;font-size:20px;line-height:1;color:var(--mut);padding:6px">✕</button><div style="font-size:46px">🔔</div><h3 style="text-align:center">تفعيل الإشعارات</h3>'+body+'</div>';
+  document.body.appendChild(d)}
+async function pgEnable(){const b=document.getElementById('pgb');if(b){b.disabled=true;b.textContent='جارٍ التفعيل…'}
+  await pushEnable();if(pgOn())pgClose();else if(b){b.disabled=false;b.textContent='🔔 تفعيل الإشعارات الآن'}}
 
 function remCheck(){
   if(sMe&&sRow){const up=[...sRow.sessions].filter(x=>x.st==='مجدولة'&&x.date>=today()).sort((a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||''))[0];
