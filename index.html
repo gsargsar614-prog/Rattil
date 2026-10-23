@@ -1078,31 +1078,36 @@ async function pushEnable(){
     const reg=await navigator.serviceWorker.register('sw.js');await navigator.serviceWorker.ready;
     let sub=await reg.pushManager.getSubscription();
     if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(VAPID)});
-    await pushSave(sub);ls.s('rt_push_ok',w.role+w.owner);toast('تم تفعيل الإشعارات ✅');render()
-  }catch(e){toast('تعذّر تفعيل الإشعارات')}}
+    let sv=true;try{await pushSave(sub)}catch(e2){sv=false;pgErr='تم الاشتراك لكن تعذّر حفظه في الخادم: '+(e2&&e2.message||'')}ls.s('rt_push_ok',w.role+w.owner);if(!sv){toast('سنعيد محاولة حفظ الإشعارات تلقائيًا');return}toast('تم تفعيل الإشعارات ✅');render()
+  }catch(e){pgErr='تعذّر التفعيل: '+(e&&e.message||e);toast('تعذّر تفعيل الإشعارات')}}
 async function pushSync(){
   try{const w=pushWho();if(!w||!pushOK()||ls.g('rt_push_ok')!==w.role+w.owner||Notification.permission!=='granted'||pushSynced===w.role+w.owner)return;
     const reg=await navigator.serviceWorker.getRegistration();if(!reg)return;const sub=await reg.pushManager.getSubscription();if(sub)await pushSave(sub)}catch(e){}}
 
 
-/* ===== نافذة تفعيل الإشعارات الإلزامية للطالب (تظهر في كل دخول حتى التفعيل) ===== */
-let pgShown=0;
-function pgOn(){return !!(sRow&&pushOK()&&ls.g('rt_push_ok')==='student'+sRow.id&&Notification.permission==='granted')}
+/* ===== نافذة تفعيل الإشعارات الإلزامية للطالب (تظهر في كل دخول حتى التفعيل الفعلي) ===== */
+let pgShown=0,pgErr='';
+async function pgSub(){try{if(!sRow||!pushOK()||Notification.permission!=='granted')return null;const reg=await navigator.serviceWorker.getRegistration();return reg?await reg.pushManager.getSubscription():null}catch(e){return null}}
 function pgClose(){const e=document.getElementById('pgate');if(e)e.remove()}
-function pushGate(){
-  if(pgShown||!sMe||!sRow||pgOn()||document.getElementById('pgate'))return;
+async function pushGate(){
+  try{
+  if(pgShown||!sMe||!sRow||document.getElementById('pgate'))return;
   const ios=isIOS&&!standalone();if(!pushOK()&&!ios)return;
   pgShown=1;
+  if(await pgSub()){ls.s('rt_push_ok','student'+sRow.id);pushSynced='';pushSync();return}
   const den=pushOK()&&Notification.permission==='denied';
-  const body=ios?'<p class="sv">للإشعارات على الآيفون: اضغطي زر المشاركة في Safari ثم «إضافة إلى الشاشة الرئيسية»، ثم افتحي الموقع من الأيقونة وفعّلي الإشعارات.</p>'
-   :den?'<p class="sv">الإشعارات محظورة لهذا الموقع. فعّليها من إعدادات المتصفح (🔒 بجانب العنوان ← الإشعارات ← السماح) ثم حدّثي الصفحة.</p>'
-   :'<p class="sv" style="font-size:15px">فعّل الإشعارات لتصلك تذكيرات الحصص وتنبيهات الاشتراك والتقارير <b>حتى لو كان الهاتف مغلقًا أو الموقع مغلقًا</b>.</p><button class="b1 full" id="pgb" onclick="pgEnable()">🔔 تفعيل الإشعارات الآن</button>';
+  const body=ios?'<p class="sv">للإشعارات على الآيفون: اضغط زر المشاركة في Safari ثم «إضافة إلى الشاشة الرئيسية»، ثم افتح الموقع من الأيقونة وفعّل الإشعارات.</p>'
+   :den?'<p class="sv">الإشعارات محظورة لهذا الموقع. فعّلها من إعدادات المتصفح (🔒 بجانب العنوان ← الإشعارات ← السماح) ثم حدّث الصفحة.</p>'
+   :'<p class="sv" style="font-size:15px">فعّل الإشعارات لتصلك تذكيرات الحصص وتنبيهات الاشتراك والتقارير <b>حتى لو كان الهاتف مغلقًا أو الموقع مغلقًا</b>.</p><p class="sv" id="pge" style="color:#c0392b"></p><button class="b1 full" id="pgb" onclick="pgEnable()">🔔 تفعيل الإشعارات الآن</button>';
   const d=document.createElement('div');d.id='pgate';d.className='sh mid';d.style.zIndex='150';
   d.innerHTML='<div class="bx" role="dialog" aria-modal="true" style="position:relative;text-align:center"><button class="ic" aria-label="تخطي" onclick="pgClose()" style="position:absolute;top:8px;inset-inline-start:10px;font-size:20px;line-height:1;color:var(--mut);padding:6px">✕</button><div style="font-size:46px">🔔</div><h3 style="text-align:center">تفعيل الإشعارات</h3>'+body+'</div>';
-  document.body.appendChild(d)}
-async function pgEnable(){const b=document.getElementById('pgb');if(b){b.disabled=true;b.textContent='جارٍ التفعيل…'}
-  await pushEnable();if(pgOn())pgClose();else if(b){b.disabled=false;b.textContent='🔔 تفعيل الإشعارات الآن'}}
-
+  document.body.appendChild(d)}catch(e){}}
+async function pgEnable(){const b=document.getElementById('pgb'),er=document.getElementById('pge');if(er)er.textContent='';
+  if(b){b.disabled=true;b.textContent='جارٍ التفعيل…'}
+  pgErr='';await pushEnable();
+  if(await pgSub()){pgClose();return}
+  if(b){b.disabled=false;b.textContent='🔔 تفعيل الإشعارات الآن'}
+  if(er)er.textContent=pgErr||(Notification.permission==='denied'?'الإشعارات محظورة من إعدادات المتصفح.':'لم يكتمل التفعيل، حاول مرة أخرى.')}
 function remCheck(){
   if(sMe&&sRow){const up=[...sRow.sessions].filter(x=>x.st==='مجدولة'&&x.date>=today()).sort((a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||''))[0];
     if(up&&imminent(up)){const k='rt_remsent_'+sRow.id+'_'+up.date+'_'+up.time;if(!ls.g(k)){ls.s(k,1);sAdd('rem_'+sRow.id+'_'+up.date+'_'+up.time,'reminder','🔔 حصتك القرآنية تقترب','السلام عليكم ورحمة الله وبركاته، تبقّى 10 دقائق على موعد حصتك القرآنية (الساعة '+up.time+'). نسأل الله أن يفتح عليك ويبارك في وقتك.')}}
