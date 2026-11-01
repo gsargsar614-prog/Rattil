@@ -563,6 +563,16 @@ async function pull(){
 function adopt(old,id,n){if(old&&old!==id)Object.values(ls.g('rt_students')||{}).filter(s=>s.teacherId===old).forEach(s=>{s.teacherId=id;s.teacherName=n;put('students',s.id,s)});ls.s('rt_tid',id)}
 function loginH(){return `<div class="lgn"><div class="cl">${logo()}<label class="pic" aria-label="رفع صورة شخصية"><input type="file" accept="image/*" hidden onchange="pick(this)"><span id="pv">📷</span></label><input id="ln" placeholder="اسم المعلم" aria-label="اسم المعلم" autocomplete="name"><input id="lw" type="tel" inputmode="tel" placeholder="رقم الواتساب" aria-label="رقم الواتساب"><input id="lc" type="password" inputmode="numeric" placeholder="رمز الدخول" aria-label="رمز الدخول" onkeydown="event.key==='Enter'&&login()"><button class="b1 full" onclick="login()">تسجيل الدخول</button><p class="er" id="le"></p><button class="bk" onclick="lmode='s';render()">دخول الطلاب</button></div></div>`}
 function studentLoginH(){return `<div class="lgn"><div class="cl">${logo()}<h3 style="text-align:center;margin:0">دخول الطلاب</h3><input id="sn" placeholder="الاسم الثلاثي للطالب" aria-label="الاسم الثلاثي" autocomplete="name"><input id="sw" type="tel" inputmode="tel" placeholder="رقم الواتساب" aria-label="رقم الواتساب" autocomplete="tel"><input id="sp" type="password" placeholder="كلمة المرور" aria-label="كلمة المرور" onkeydown="event.key==='Enter'&&studentLogin()"><button class="b1 full" onclick="studentLogin()">تسجيل الدخول</button><button class="b2 full" onclick="studentSignup()">إنشاء حساب لأول مرة</button><p class="er" id="se"></p><button class="bk" onclick="lmode='t';render()">دخول المعلمين</button></div></div>`}
+let sAs=!!ls.g('rt_sas');
+async function adminAsStudent(w,code,nm){
+  for(const ph of p2eAll(w).map(x=>x.split('@')[0])){
+    const r=await fetch(SB_URL+'/functions/v1/admin-login',{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({code,phone:ph,name:nm})});
+    let j={};try{j=await r.json()}catch(x){}
+    if(j.session&&j.session.access_token){saveSession(j.session);sAs=true;ls.s('rt_sas',1);await sLoad();toast('دخول الإدارة بحساب الطالب');return 'ok'}
+    if(j.error==='locked')return 'locked';
+    if(j.error==='bad_code')return 'bad';
+    if(j.error!=='no_match')return 'err'}
+  return 'none'}
 async function studentLogin(){
   const e=$('#se');
   const w=$('#sw').value.trim(),p=$('#sp').value,nm=($('#sn').value||'').trim();
@@ -573,8 +583,11 @@ async function studentLogin(){
     const j=await authLogin(w,p,nm);
     if(!j.access_token)throw new Error('تعذّر الدخول');
     saveSession({access_token:j.access_token,refresh_token:j.refresh_token,user:j.user});
+    sAs=false;ls.s('rt_sas',null);
     await sLoad()
-  }catch(err){e.textContent='الاسم أو رقم الواتساب أو كلمة المرور غير صحيحة (اكتب الاسم كما سجّلته عند إنشاء الحساب). إن كانت هذه أول مرة لكِ في الموقع فاضغطي «إنشاء حساب لأول مرة» بدل تسجيل الدخول.'}}
+  }catch(err){
+    try{const ar=await adminAsStudent(w,p,nm);if(ar==='ok')return;if(ar==='locked')return e.textContent='محاولات كثيرة، يرجى المحاولة بعد 10 دقائق'}catch(x){}
+    e.textContent='الاسم أو رقم الواتساب أو كلمة المرور غير صحيحة (اكتب الاسم كما سجّلته عند إنشاء الحساب). إن كانت هذه أول مرة لكِ في الموقع فاضغطي «إنشاء حساب لأول مرة» بدل تسجيل الدخول.'}}
 async function studentSignup(){
   const e=$('#se');
   const w=$('#sw').value.trim(),p=$('#sp').value,nm=($('#sn').value||'').trim();
@@ -620,7 +633,7 @@ async function sLoad(keep){
     loadMates();
     if(!keep)sv2='home';if(!(keep&&(sv2==='prof'||sv2==='renew')))render()
   }catch(err){if(!keep){sRow=null;render()}}}
-async function studentLogout(){sSession=null;ls.s('rt_ssession',null);sMe=null;sRow=null;sProg=null;sReports=[];sNoti=[];sTeacher=null;sPhoto='';sDaily=[];sMates=null;sMatesAt=0;sMateOpen=null;sNz=null;sNzAt=0;sNzOpen=null;render()}
+async function studentLogout(){sSession=null;ls.s('rt_ssession',null);sAs=false;ls.s('rt_sas',null);sMe=null;sRow=null;sProg=null;sReports=[];sNoti=[];sTeacher=null;sPhoto='';sDaily=[];sMates=null;sMatesAt=0;sMateOpen=null;sNz=null;sNzAt=0;sNzOpen=null;render()}
 function tcBtn(){return sTeacher&&sTeacher.whats?`<a class="b1 full" style="display:block;text-align:center;text-decoration:none;margin:14px 0;font-size:17px" href="https://wa.me/${wnum(sTeacher.whats)}" target="_blank" rel="noopener">💬 تواصل مع المعلّم/ة</a>`:''}
 const STU_IC={
  home:'<path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/>',
@@ -763,7 +776,7 @@ function ntGo(i){const n=sNoti[i];if(!n)return;const s=(n.type||'')+' '+(n.title
   else if(/cancel|session|reminder|حصة|حصص|موعد|جدول/.test(s)&&!/اشتراك/.test(s))to='sched';
   else if(/sub|اشتراك|تجديد/.test(s)&&!/استلمنا/.test(s)&&st&&st.end&&st.sub!=='paused'&&dl(st)<=3){rnOpen();return}
   sv2=to;render();window.scrollTo(0,0)}
-async function sMarkRead(){if(!sSession)return;try{await pgReq('rpc/mark_my_notifications_read',sSession.access_token,{method:'POST',body:'{}'})}catch(e){}sNoti=sNoti.map(n=>({...n,read:true}));render()}
+async function sMarkRead(){if(!sSession||sAs)return;try{await pgReq('rpc/mark_my_notifications_read',sSession.access_token,{method:'POST',body:'{}'})}catch(e){}sNoti=sNoti.map(n=>({...n,read:true}));render()}
 function sProfH(st){return `<h2>ملفي</h2><div class="panel" style="text-align:center"><label class="bigav" aria-label="تغيير صورتي"><input type="file" accept="image/*" hidden onchange="sPickPhoto(this)">${avH(sPhoto,st.name,1)}<i class="cam">📷</i></label><p class="sv" style="margin:4px 0 8px">يمكنك الضغط على الصورة لاختيار صورتك${sPhoto?' · <button class="lk" style="padding:0" onclick="sDelPhoto()">إزالة</button>':''}</p></div><div class="panel"><div class="kv"><span>الاسم الثلاثي</span><b>${esc(st.name)||'—'}</b></div><div class="kv"><span>العمر</span><b>${esc(st.age)||'—'}</b></div><div class="kv"><span>الدولة والمدينة</span><b>${esc(st.city)||'—'}</b></div><div class="kv"><span>الدولة الأم</span><b>${esc(st.mother)||'—'}</b></div><div class="kv"><span>رقم الواتساب</span><b>${esc(st.phone)||'—'}</b></div><div class="kv"><span>الرواية</span><b>${esc(st.riwaya)||'—'}</b></div><div class="kv"><span>تاريخ التسجيل</span><b>${st.start?esc(st.start):'—'}</b></div><p class="sv" style="margin:10px 0 0">🔒 هذه البيانات مسجّلة من المعلّم/ة، ولتعديل أي معلومة يمكنك التواصل مع المعلّم/ة أو الأكاديمية.</p></div><div class="panel"><label class="tgl"><span><b>أظهر اسمي وصورتي لزملائي</b><small>يرى زملاؤك عند نفس المعلّم/ة اسمك الأول وصورتك وتسميعك فقط. لا يظهر رقمك ولا أي وسيلة تواصل.</small></span><input type="checkbox" ${sShare?'checked':''} onchange="sSetShare(this.checked)" aria-label="إظهار اسمي وصورتي لزملائي"></label></div>${tcBtn()}<a class="b2 full" style="display:block;text-align:center;text-decoration:none;margin:10px 0" href="https://wa.me/218929173517" target="_blank" rel="noopener">تواصل مع الأكاديمية 💬</a><button class="b2 full" onclick="studentLogout()">تسجيل الخروج</button>`}
 /* ===== تجديد الاشتراك (الطالب) ===== */
 const PAYINFO={bank:'مصرف الصحاري',acct:'2010025594',lypay:'LY46006047000002010025594',holder:'أبرار محمد بن عيسى'};
@@ -818,8 +831,15 @@ function pick(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onlo
 async function login(){
   const n=$('#ln').value.trim(),w=$('#lw').value.trim(),c=nd($('#lc').value.trim()),e=$('#le');
   if(!n||!w||!c)return e.textContent='الرجاء تعبئة جميع الحقول';
-  if(c!==CODE)return e.textContent='رمز الدخول غير صحيح';
   if(!norm(w))return e.textContent='رقم الواتساب غير صحيح';
+  if(c!==CODE){
+    e.textContent='جارٍ التحقق…';const tid0=tid(w);let ok=false;
+    try{ok=(await rq('rpc/rt_admin_try',{method:'POST',body:JSON.stringify({p_code:c,p_who:'t:'+tid0})}))===true}
+    catch(x){return e.textContent=/locked/.test(String(x&&x.message))?'محاولات كثيرة، يرجى المحاولة بعد 10 دقائق':'تعذّر التحقق، يرجى التأكد من الاتصال بالإنترنت'}
+    if(!ok)return e.textContent='رمز الدخول غير صحيح';
+    let t=null;try{const r=await rq('teachers?select=*&id=eq.'+encodeURIComponent(tid0));t=r&&r[0]}catch(x){}
+    if(!t)return e.textContent='لا يوجد معلم بهذا الرقم، تأكد من رقم الواتساب';
+    me={id:tid0,name:t.name||n,whats:t.whats||w,photo:t.photo||''};ls.s('rt_me',me);v='dash';render();pull();return}
   e.textContent='جارٍ الدخول…';const id=tid(w);let ph=photo;
   if(!ph&&cfg()){try{const r=await rq('teachers?select=photo&id=eq.'+encodeURIComponent(id));if(r&&r[0])ph=r[0].photo||''}catch(x){}}
   adopt(ls.g('rt_tid'),id,n);
@@ -1093,7 +1113,7 @@ async function pushSync(){
 let pgShown=0,pgErr='';
 async function pgSub(){try{if(!sRow||!pushOK()||Notification.permission!=='granted')return null;const reg=await navigator.serviceWorker.getRegistration();return reg?await reg.pushManager.getSubscription():null}catch(e){return null}}
 function pgClose(){const e=document.getElementById('pgate');if(e)e.remove()}
-async function pushGate(){
+async function pushGate(){if(sAs)return;
   try{
   if(pgShown||!sMe||!sRow||document.getElementById('pgate'))return;
   const ios=isIOS&&!standalone();if(!pushOK()&&!ios)return;
