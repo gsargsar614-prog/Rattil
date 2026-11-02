@@ -1746,7 +1746,7 @@ var FS=[
 ' float m2=step(abs(mp.x+.19),.014)*step(.14,y)*step(y,.4)+step(abs(mp.x+.19),.014*(1.-(y-.4)/.07))*step(.4,y)*step(y,.47);',
 ' float m3=step(length((mp-vec2(-.03,.2))*vec2(1.,1.1)),.1)*step(.2,y)+step(abs(mp.x+.03),.1)*step(.1,y)*step(y,.2);',
 ' float mk=clamp(m1+m2+m3,0.,1.)*smoothstep(.08,.28,y)*(1.-smoothstep(.6,.7,y));',
-' sky=mix(sky,mix(uShade,uLit,.75),mk*.14);',
+' sky=mix(sky,mix(uShade,uLit,.75),mk*0.);',
 ' float oc=smoothstep(.75,1.1,uCov);vec2 ld=normalize(mix((uLP-uv)*vec2(asp,1.)+1e-4,vec2(0.,1.),oc));',
 ' float wt=uT*uWind;vec2 cp=q*3.3+vec2(wt,0.);',
 ' cp+=(vec2(vn(cp*.7+uT*.01),vn(cp*.7+7.3-uT*.012))-.5)*.55;',
