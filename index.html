@@ -750,6 +750,7 @@ function sHome(st){
   return pushBtn()+`<section class="hero rise" aria-label="الترحيب"><label class="av" aria-label="تغيير صورتي"><input type="file" accept="image/*" hidden onchange="sPickPhoto(this)">${sPhoto?`<img src="${esc(sPhoto)}" alt="">`:esc(first.charAt(0))}<i class="cam">📷</i></label><div class="sal">السلام عليكم ورحمة الله وبركاته</div><div class="who">أهلًا ${esc(first)} 🌷</div><div class="wl">أهلًا بك في أكاديمية رتل — نرتّل القرآن فنرتقي به</div></section>
 ${adm('al'+(st.end||'')+(days<0?'x':''),al)}${adm('im'+(up?up.id:''),imm)}
 ${rnBtn(st)}
+${fsBan()}
 ${stuCompNote()}
 <section class="card rise" aria-label="اشتراكي"><div class="hd"><b>${sic('star',18)} اشتراكي</b><span class="chip ${cls}">${paused?'متوقف':esc(sb1[1])}</span></div>
 <div class="subrow"><div class="subinfo"><div class="pk">${esc((PK[st.pkg]||{}).label||'')}</div><div class="dt">البداية: <b>${esc(st.start)||'—'}</b><br>النهاية: <b>${esc(st.end)||'—'}</b></div></div>${paused||!st.end?'':stuRing(days,total,cls)}</div></section>
@@ -757,7 +758,7 @@ ${stuCompNote()}
 ${stuAya()}
 <button class="abn rise" onclick="sv2='adhkar';render();scrollTo(0,0)"><span class="ab-m" style="font-size:38px">🤲</span><span class="ab-t"><b>أذكاري</b><small>أذكار الصباح والمساء والنوم والصلاة وغيرها</small></span><i>‹</i></button>
 
-<button class="abn rise" onclick="sv2='mates';render()" style="background:#fff6dc;border-color:#ead9a3"><span class="ab-m" style="color:#9a7414">${sic('users',44)}</span><span class="ab-t"><b>زملائي 🔥</b><small>تابع حماس مجموعتك وتقدّم زملائك</small></span><i>‹</i></button>
+${wdCard()}
 <div class="cta rise">${tw?`<a class="t1" href="https://wa.me/${tw}" target="_blank" rel="noopener">${sic('chat',19)} تواصل مع المعلّم/ة</a>`:''}<a class="${tw?'t2':'t1 one'}" href="https://wa.me/218929173517" target="_blank" rel="noopener">${sic('chat',19)} ${tw?'الأكاديمية':'تواصل مع الأكاديمية'}</a></div>`}
 function sSched(st){const t=today(),L=st.sessions.filter(x=>x.date||x.time);
   const isUp=x=>x.st==='مجدولة'&&x.date>=t;
@@ -824,7 +825,7 @@ async function rnVerify(id,end){try{const r=await rq('students?id=eq.'+encodeURI
 async function clrRenew(id){for(let i=0;i<3;i++){try{await rq('students?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({renew_req:null})});break}catch(e){await new Promise(r=>setTimeout(r,600))}}if(S.students[id]){S.students[id].renewReq=null;const m=ls.g('rt_students')||{};if(m[id]){m[id].renewReq=null;ls.s('rt_students',m)}}}
 function rqPanel(){const A=Object.values(S.students).filter(s=>rqOk(s)&&!s.archived);if(!A.length)return '';return `<div class="panel" style="border-color:var(--gold)"><b>🔄 طلبات التجديد (${A.length})</b><p class="sv">طلاب أرسلوا إيصال التجديد عبر الموقع. راجعي الواتساب ثم سجّلي التجديد.</p>${A.map(s=>`<div class="kv" style="flex-wrap:wrap;gap:8px"><span><b>${esc(s.name)}</b><small style="display:block;color:var(--mut)">${esc(s.renewReq.date||'')} · ${esc((PK[s.renewReq.pkg]||{}).label||'')}${s.renewReq.name?' · '+esc(s.renewReq.name):''}${s.renewReq.note?' · '+esc(s.renewReq.note):''}</small></span><span style="display:flex;gap:8px"><button class="b2" style="padding:7px 12px;font-size:13px" onclick="renewS('${esc(s.id)}')">تجديد</button><button class="lk" onclick="clrRenew('${esc(s.id)}').then(()=>render())">إخفاء</button></span></div>`).join('')}</div>`}
 function srender(){const A=$('#app'),st=sRow;sNoti=sNoti.filter(n=>!ndel().includes(String(n.id||n.createdAt)));
-  const body=sv2==='sched'?sSched(st):sv2==='prog'?sProgH():sv2==='noti'?sNotiH():sv2==='prof'?sProfH(st):sv2==='mates'?sMatesH(st):sv2==='renew'?sRenewH(st):sv2==='about'?sAbout():sv2==='adhkar'?adhH():sHome(st);
+  const body=sv2==='sched'?sSched(st):sv2==='prog'?sProgH():sv2==='noti'?sNotiH():sv2==='prof'?sProfH(st):sv2==='mates'?sMatesH(st):sv2==='renew'?sRenewH(st):sv2==='about'?sAbout():sv2==='adhkar'?adhH():sv2==='wird'?wdH():sHome(st);
   const unread=sNoti.filter(n=>!n.read).length;
   A.innerHTML=`<div class="stu"><header><span class="ic">${icon()}</span><div class="nm"><b>${esc(st.name)}</b><small>${esc((PK[st.pkg]||{}).label||'')}</small></div><button class="ic" onclick="sv2='prof';render()" aria-label="ملفي">${avH(sPhoto,st.name)}</button><button class="mdt" onclick="stSheet(1)" aria-label="الإعدادات">⋮</button></header><main>${body}</main><nav class="bn" aria-label="التنقل">${nvIc('home','home','الرئيسية')}${nvIc('sched','cal','جدولي')}${nvIc('prog','book','التقارير')}${nvIc('mates','users','زملائي')}${nvIc('noti','bell','الإشعارات',unread>9?'9+':unread||'')}${nvIc('about','star','الأكاديمية')}${nvIc('prof','user','ملفي')}</nav></div>`;sts()}
 function pick(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=128;const s=Math.min(im.width,im.height);c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,128,128);photo=c.toDataURL('image/jpeg',.75);$('#pv').innerHTML=`<img src="${photo}" alt="">`};im.src=r.result};r.readAsDataURL(f)}
@@ -1404,6 +1405,47 @@ function adhH(){const tabs=ADT.map(t=>`<button class="adt${adTab===t[0]?' on':''
  if(adTab==='more')b=AD.more.map((g,i)=>`<div class="adg"><button class="adh" onclick="adOpen=${adOpen===i?-1:i};render()" aria-expanded="${adOpen===i}"><span><b>${esc(g[0])}</b><small>${esc(g[1])}</small></span><i>${adOpen===i?'⌃':'⌄'}</i></button>${adOpen===i?g[2].map((x,j)=>adCard('g'+i+'-'+j,x)).join(''):''}</div>`).join('');
  else b=`<h3 class="adtt">${adTab==='m'?'أذكار الصباح':adTab==='e'?'أذكار المساء':adTab==='s'?'أذكار النوم':'أذكار الصلاة'}</h3>`+AD[adTab].map((x,j)=>adCard(adTab+j,x)).join('')+'<p class="sv" style="text-align:center">اضغط على الذكر لعدّ التكرار. المصادر: صحيح البخاري ومسلم والسنن وصحيح الترغيب وصحيح الكلم الطيب وغيرها.</p>';
  return `<button class="lk" style="padding:0 0 8px" onclick="sv2='home';render()">→ رجوع</button><h2>أذكاري 🤲</h2><div class="adts">${tabs}</div>${b}`}
+/* ===== ورد المحاسبة + تنبيهات الصيام والقيام ===== */
+const WD0=[['m','🌅','أذكار الصباح'],['e','🌇','أذكار المساء'],['r','🕌','السنن الرواتب'],['q','🌙','قيام الليل'],['s','😴','أذكار النوم'],['d','☀️','صلاة الضحى'],['qr','📖','ورد القرآن'],['f','⏰','الفرائض في وقتها'],['c','🤲','الصدقة']];
+const wdJ=(k,d)=>{try{return JSON.parse(ls.g(k)||'')||d}catch(e){return d}};
+const wdKey=d=>'rt_wd_'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const wdItems=()=>WD0.map(x=>({id:x[0],e:x[1],t:x[2]})).concat(wdJ('rt_wdc',[]).map(x=>({id:x.id,e:'⭐',t:x.t,cu:1})));
+const wdDone=(d)=>{const ids=wdItems().map(x=>x.id);return wdJ(wdKey(d||new Date()),[]).filter(x=>ids.includes(x))};
+function wdSum(){const n=wdItems().length,c=wdDone().length;return c?`أنجزت اليوم ${c} من ${n} — بارك الله فيك`:'حاسب نفسك على أذكارك وصلواتك وصدقتك كل يوم'}
+const wdSK=d=>wdKey(d).replace('rt_wd_','rt_wds_'),wdSkip=d=>wdJ(wdSK(d||new Date()),[]);
+function wdTog(id){const d=new Date(),k=wdKey(d),a=wdJ(k,[]),i=a.indexOf(id);if(i<0)a.push(id);else a.splice(i,1);ls.s(k,JSON.stringify(a));ls.s(wdSK(d),JSON.stringify(wdSkip(d).filter(x=>x!==id)));wdRe()}
+function wdNo(id){const d=new Date(),a=wdSkip(d);if(!a.includes(id))a.push(id);ls.s(wdSK(d),JSON.stringify(a));wdRe()}
+function wdYes(id){const d=new Date(),k=wdKey(d),a=wdJ(k,[]);if(!a.includes(id))a.push(id);ls.s(k,JSON.stringify(a));wdRe()}
+const wdRe=()=>{const y=scrollY;render();scrollTo(0,y)};
+function wdDate(){const d=new Date();try{return d.toLocaleDateString('ar-u-ca-islamic-umalqura-nu-latn',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).replace(/\s*هـ\s*$/,'')}catch(e){return d.toLocaleDateString('ar')}}
+function wdCard(full){const it=wdItems(),dn=wdDone(),sk=wdSkip(),n=it.length,cur=it.find(x=>!dn.includes(x.id)&&!sk.includes(x.id)),bars=[];
+ for(let k=5;k>=0;k--){const d=new Date();d.setDate(d.getDate()-k);const h=Math.round(wdDone(d).length/n*100);bars.push(`<div class="wd-c${k?'':' td'}"><div class="wd-v"><i style="height:${h}%"></i></div><span>${d.getDate()}</span></div>`)}
+ const hd=`<span class="wd-t">ورد المحاسبة</span><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#34c759" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h11M3 12h8M3 18h18"/><circle cx="18" cy="8" r="4.2" fill="#34c759" stroke="none"/><path d="M16.2 8l1.3 1.3 2.3-2.5" stroke="#fff" stroke-width="1.8"/></svg>`;
+ return `<section class="wd-card rise" aria-label="ورد المحاسبة"><div class="wd-tx">${full?`<div class="wd-hd">${hd}</div>`:`<button class="wd-hd" onclick="sv2='wird';render();scrollTo(0,0)" aria-label="فتح ورد المحاسبة">${hd}</button>`}
+ <div class="wd-q">${cur?esc(cur.t):'لا مزيد من الأوراد لهذا اليوم'}</div>
+ <div class="wd-bt"><button class="wd-y" ${cur?`onclick="wdYes('${cur.id}')"`:'disabled'} aria-label="تم">✓</button><button class="wd-n" ${cur?`onclick="wdNo('${cur.id}')"`:'disabled'} aria-label="تخطّي">✕</button></div>
+ <div class="wd-dt">${esc(wdDate())}</div></div><div class="wd-bars" aria-hidden="true">${bars.join('')}</div></section>`}
+function wdAdd(){const el=document.getElementById('wdn'),t=el&&el.value.trim().slice(0,60);if(!t)return;const a=wdJ('rt_wdc',[]);if(a.length>=30)return;a.push({id:'c'+Date.now().toString(36),t});ls.s('rt_wdc',JSON.stringify(a));const y=scrollY;render();scrollTo(0,y)}
+function wdDel(id){if(!confirm('حذف هذا البند؟'))return;ls.s('rt_wdc',JSON.stringify(wdJ('rt_wdc',[]).filter(x=>x.id!==id)));const y=scrollY;render();scrollTo(0,y)}
+function wdH(){const it=wdItems(),dn=wdDone();
+ return `<button class="lk" style="padding:0 0 8px" onclick="sv2='home';render()">→ رجوع</button>
+${wdCard(1)}
+<div class="wd-l">${it.map(x=>{const on=dn.includes(x.id),sx=!on&&wdSkip().includes(x.id);return `<div class="wd-r${on?' on':''}${sx?' sk':''}"><button class="wd-b" onclick="wdTog('${x.id}')" aria-pressed="${on}"><span class="wd-ck">${on?'✓':sx?'✕':''}</span><span class="wd-e">${x.e}</span><b>${esc(x.t)}</b></button>${x.cu?`<button class="wd-x" onclick="wdDel('${x.id}')" aria-label="حذف">✕</button>`:''}</div>`}).join('')}</div>
+<h3>➕ أضف بندًا خاصًا بك</h3><div class="wd-a"><input id="wdn" maxlength="60" placeholder="مثال: ختمة أسبوعية، صلة رحم…" onkeydown="if(event.key==='Enter')wdAdd()"><button class="b1" onclick="wdAdd()">إضافة</button></div>
+<p class="sv" style="text-align:center;margin-top:12px">يتجدد الورد كل يوم، ويُحفظ على جهازك فقط.</p>`}
+/* تنبيهات الصيام والقيام */
+const fsOn=()=>!ls.g('rt_fast_off');
+function fsHij(d){try{return +new Intl.DateTimeFormat('en-u-ca-islamic-umalqura',{day:'numeric'}).format(d)}catch(e){return 0}}
+function fsList(){const n=new Date(),h=n.getHours(),o=[],tm=new Date(n);tm.setDate(n.getDate()+1);
+ const info=d=>{const w=d.getDay(),hj=fsHij(d),a=[];if(hj>=13&&hj<=15)a.push('من الأيام البيض');if(w===1)a.push('الاثنين');if(w===4)a.push('الخميس');return a};
+ const fk=wdKey(n).slice(6);
+ const add=(d,when)=>{const a=info(d);if(!a.length)return;const wh=a.includes('من الأيام البيض')?'من الأيام البيض (13 و14 و15 من الشهر الهجري)':'يوم '+a[0];o.push({k:'fs'+wdKey(d).slice(6),t:'🌙 '+(when==='today'?'اليوم ':'غدًا ')+wh,m:when==='today'?'يُسنّ صيامه، ومن نوى فليستعن بالله.':'تذكير بسنة الصيام، ونيّة الصيام من الليل مستحبة.',ic:'🌙'})};
+ if(h<16)add(n,'today');else add(tm,'tm');
+ if(h>=20||h<4)o.push({k:'qm'+fk+(h<4?'':''),t:'قيام الليل',m:'ركعتان في جوف الليل خير من الدنيا وما فيها، ولو بقدر آية.',ic:'🕋'});
+ return o}
+function fsBan(){if(!fsOn())return '';const L=fsList();fsNotify(L);return L.map(x=>adm(x.k,`<div class="note gd rise"><span style="font-size:22px">${x.ic}</span><span><b>${esc(x.t.replace(/^🌙 /,''))}</b><br>${esc(x.m)}</span></div>`)).join('')}
+function fsNotify(L){try{if(!pOn())return;const sent=wdJ('rt_fs_sent',[]);L.forEach(x=>{if(sent.includes(x.k))return;sent.push(x.k);const b={body:x.m,icon:undefined,tag:x.k};if(navigator.serviceWorker&&navigator.serviceWorker.getRegistration)navigator.serviceWorker.getRegistration().then(r=>r?r.showNotification(x.t.replace(/^🌙 /,''),b):new Notification(x.t,b)).catch(()=>{});else new Notification(x.t,b)});ls.s('rt_fs_sent',JSON.stringify(sent.slice(-40)))}catch(e){}}
+function fsToggle(on){ls.s('rt_fast_off',on?null:'1');render()}
 /* تنبيهات قابلة للإغلاق */
 const dset=()=>{try{return JSON.parse(ls.g('rt_dis')||'[]')}catch(e){return[]}};
 function adm(k,h){if(!h)return '';if(dset().includes(k))return '';return h.replace(/<\/div>\s*$/,`<button class="xx" aria-label="إغلاق التنبيه" onclick="disS('${k}')">✕</button></div>`)}
@@ -1424,16 +1466,34 @@ async function stPw(){const o=$('#pw0').value,n=$('#pw1').value,c=$('#pw2').valu
  e.textContent='جارٍ التحقق…';
  try{if(sSession&&sSession.user&&sSession.user.email)await authReq('/token?grant_type=password',{email:sSession.user.email,password:o});else await authLogin(sRow.phone||'',o,sRow.name)}catch(x){return e.textContent='كلمة المرور الحالية غير صحيحة'}
  try{const r=await fetch(SB_URL+'/auth/v1/user',{method:'PUT',headers:{apikey:SB_KEY,Authorization:'Bearer '+sSession.access_token,'Content-Type':'application/json'},body:JSON.stringify({password:n})});if(!r.ok)throw 0;e.className='pwe ok';e.textContent='تم تغيير كلمة المرور ✓';['pw0','pw1','pw2'].forEach(i=>$('#'+i).value='')}catch(x){e.textContent='تعذّر التغيير، حاول مرة أخرى'}}
-function stSheet(o){let w=document.getElementById('stSh');if(w)w.remove();if(!o||!sRow)return;const th=ls.g('rt_theme')||'auto',sg=(k,t)=>`<button class="sgb${th===k?' on':''}" onclick="thSet('${k}')">${t}</button>`;
- w=document.createElement('div');w.id='stSh';w.className='shw';w.onclick=e=>{if(e.target===w)stSheet(0)};
- w.innerHTML=`<div class="sh" role="dialog" aria-label="الإعدادات"><div class="shh"><b>الإعدادات</b><button class="shx" onclick="stSheet(0)" aria-label="إغلاق">✕</button></div>
- <div class="shp"><label class="bigav" style="width:64px;height:64px"><input type="file" accept="image/*" hidden onchange="sPickPhoto(this)">${avH(sPhoto,sRow.name,1)}<i class="cam">📷</i></label><div><b>${esc(sRow.name)}</b><small>${esc((PK[sRow.pkg]||{}).label||'')}</small></div></div>
- <div class="shs"><h4>المظهر</h4><div class="sgm">${sg('light','☀️ فاتح')}${sg('dark','🌙 ليلي')}${sg('auto','📱 حسب النظام')}</div></div>
- <div class="shs"><h4>اللغة</h4><div class="sgm"><button class="sgb${(ls.g('rt_lang')||'ar')==='ar'?' on':''}" onclick="lgSet('ar')">العربية</button><button class="sgb${(ls.g('rt_lang')||'ar')==='en'?' on':''}" onclick="lgSet('en')">English</button></div></div>
- <div class="shs"><h4>الإشعارات والخصوصية</h4><label class="tgl"><span><b>الإشعارات</b><small>تذكير الحصص وتنبيهات الاشتراك حتى لو كان الموقع مغلقًا</small></span><input type="checkbox" ${pOn()?'checked':''} onchange="stPush(this.checked)"></label><label class="tgl" style="margin-top:12px"><span><b>إظهار اسمي وصورتي لزملائي</b><small>الاسم الأول والصورة فقط، بدون أي وسيلة تواصل</small></span><input type="checkbox" ${sShare?'checked':''} onchange="sSetShare(this.checked)"></label></div>
- <div class="shs"><h4>الأمان</h4><input id="pw0" type="password" placeholder="كلمة المرور الحالية" autocomplete="current-password"><input id="pw1" type="password" placeholder="كلمة المرور الجديدة" autocomplete="new-password"><input id="pw2" type="password" placeholder="تأكيد كلمة المرور الجديدة" autocomplete="new-password"><div id="pwe" class="pwe"></div><button class="b1 full" onclick="stPw()">تغيير كلمة المرور</button></div>
- <div class="shs"><h4>أخرى</h4><button class="b2 full" onclick="stSheet(0);sv2='about';render();scrollTo(0,0)">ℹ️ تعرّف على أكاديمية رتل</button><a class="b2 full" style="display:block;text-align:center;margin-top:8px;text-decoration:none" href="https://wa.me/${ACAD.wa}" target="_blank" rel="noopener">💬 تواصل مع الأكاديمية</a><button class="b2 full dng" style="margin-top:8px" onclick="stSheet(0);studentLogout()">تسجيل الخروج</button></div></div>`;
- document.body.appendChild(w)}
+function stSheet(o){let w=document.getElementById('stSh'),sc=0;if(w){const q=w.querySelector('.ss-b');sc=q?q.scrollTop:0;w.remove()}if(!o||!sRow)return;const th=ls.g('rt_theme')||'auto',lg=ls.g('rt_lang')||'ar',sg=(k,t)=>`<button class="ss-sg${th===k?' on':''}" onclick="thSet('${k}')">${t}</button>`;
+ w=document.createElement('div');w.id='stSh';w.className='ss-w';w.onclick=e=>{if(e.target===w)stSheet(0)};
+ w.innerHTML=`<div class="ss" role="dialog" aria-label="الإعدادات"><i class="ss-gr"></i>
+ <div class="ss-h"><b>الإعدادات</b><button class="ss-x" onclick="stSheet(0)" aria-label="إغلاق">✕</button></div>
+ <div class="ss-b">
+ <div class="ss-pf"><label class="bigav" style="width:60px;height:60px;flex:none"><input type="file" accept="image/*" hidden onchange="sPickPhoto(this)">${avH(sPhoto,sRow.name,1)}<i class="cam">📷</i></label><div><b>${esc(sRow.name)}</b><small>${esc((PK[sRow.pkg]||{}).label||'')}</small><em>اضغط على الصورة لتغييرها</em></div></div>
+ <div class="ss-t">التفضيلات</div>
+ <div class="ss-c">
+  <div class="ss-r col"><div class="ss-l"><span class="ss-i">🎨</span><b>المظهر</b></div><div class="ss-sgm">${sg('light','☀️ فاتح')}${sg('dark','🌙 ليلي')}${sg('auto','📱 تلقائي')}</div></div>
+  <div class="ss-r col"><div class="ss-l"><span class="ss-i">🌐</span><b>اللغة</b></div><div class="ss-sgm"><button class="ss-sg${lg==='ar'?' on':''}" onclick="lgSet('ar')">العربية</button><button class="ss-sg${lg==='en'?' on':''}" onclick="lgSet('en')">English</button></div></div>
+ </div>
+ <div class="ss-t">الإشعارات والخصوصية</div>
+ <div class="ss-c">
+  <label class="ss-r"><span class="ss-i">🔔</span><span class="ss-tx"><b>الإشعارات</b><small>تذكير الحصص وتنبيهات الاشتراك حتى لو كان الموقع مغلقًا</small></span><input class="ss-sw" type="checkbox" ${pOn()?'checked':''} onchange="stPush(this.checked)"></label>
+  <label class="ss-r"><span class="ss-i">🌙</span><span class="ss-tx"><b>تذكير الصيام والقيام</b><small>الاثنين والخميس والأيام البيض وقيام الليل</small></span><input class="ss-sw" type="checkbox" ${fsOn()?'checked':''} onchange="fsToggle(this.checked)"></label>
+  <label class="ss-r"><span class="ss-i">👥</span><span class="ss-tx"><b>إظهار اسمي وصورتي لزملائي</b><small>الاسم الأول والصورة فقط، بدون أي وسيلة تواصل</small></span><input class="ss-sw" type="checkbox" ${sShare?'checked':''} onchange="sSetShare(this.checked)"></label>
+ </div>
+ <div class="ss-t">الأمان</div>
+ <div class="ss-c"><details class="ss-d"><summary class="ss-r"><span class="ss-i">🔒</span><span class="ss-tx"><b>تغيير كلمة المرور</b></span><span class="ss-ch">‹</span></summary>
+  <div class="ss-pw"><input id="pw0" type="password" placeholder="كلمة المرور الحالية" autocomplete="current-password"><input id="pw1" type="password" placeholder="كلمة المرور الجديدة" autocomplete="new-password"><input id="pw2" type="password" placeholder="تأكيد كلمة المرور الجديدة" autocomplete="new-password"><div id="pwe" class="pwe"></div><button class="b1 full" onclick="stPw()">حفظ كلمة المرور</button></div></details></div>
+ <div class="ss-t">المزيد</div>
+ <div class="ss-c">
+  <button class="ss-r ss-a" onclick="stSheet(0);sv2='about';render();scrollTo(0,0)"><span class="ss-i">ℹ️</span><span class="ss-tx"><b>تعرّف على أكاديمية رتل</b></span><span class="ss-ch">‹</span></button>
+  <a class="ss-r ss-a" href="https://wa.me/${ACAD.wa}" target="_blank" rel="noopener"><span class="ss-i">💬</span><span class="ss-tx"><b>تواصل مع الأكاديمية</b></span><span class="ss-ch">‹</span></a>
+  <button class="ss-r ss-a dng" onclick="stSheet(0);studentLogout()"><span class="ss-i">🚪</span><span class="ss-tx"><b>تسجيل الخروج</b></span></button>
+ </div>
+ </div></div>`;
+ document.body.appendChild(w);if(sc){const q=w.querySelector('.ss-b');if(q)q.scrollTop=sc}}
 </script>
 <style>
 .stu header .mdt{border:0;background:transparent;font-size:26px;font-weight:900;line-height:1;padding:6px 8px;color:var(--emd);cursor:pointer;flex:none}
@@ -1446,15 +1506,69 @@ function stSheet(o){let w=document.getElementById('stSh');if(w)w.remove();if(!o|
 .adf{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:13px;color:var(--mu);border-top:1px dashed var(--ln);padding-top:8px}.adf .rp{color:#c0392b;font-weight:800}.adf small{text-align:end}
 .adg{margin-bottom:10px}.adh{display:flex;align-items:center;width:100%;background:#fff;border:1px solid var(--ln);border-radius:18px;padding:14px;margin-bottom:8px;font:inherit;cursor:pointer;text-align:start}
 .adh span{flex:1}.adh b{display:block;color:var(--ink);font-size:17px}.adh small{color:var(--mu)}.adh i{font-style:normal;color:var(--mu);font-size:18px}
-.shw{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:60;display:flex;align-items:flex-end;justify-content:center}
-.sh{background:#fff;color:var(--ink);width:100%;max-width:520px;max-height:90vh;overflow-y:auto;border-radius:26px 26px 0 0;padding:14px 16px calc(20px + env(safe-area-inset-bottom));animation:shUp .22s ease}
+.ss-w{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:60;display:flex;align-items:flex-end;justify-content:center}
+.ss{background:#f3f6f4;color:var(--ink);width:100%;max-width:520px;max-height:92vh;display:flex;flex-direction:column;border-radius:26px 26px 0 0;animation:shUp .22s ease;overflow:hidden}
 @keyframes shUp{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
-.shh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.shh b{font-size:19px}.shx{border:0;background:#eef3f0;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px}
-.shp{display:flex;gap:12px;align-items:center;background:#f4faf6;border-radius:18px;padding:12px;margin-bottom:12px}.shp small{display:block;color:var(--mu)}
-.shs{border:1px solid var(--ln);border-radius:18px;padding:12px 14px;margin-bottom:12px}.shs h4{margin:0 0 10px;color:var(--emd);font-size:15px}
-.shs input[type=password]{width:100%;box-sizing:border-box;margin-bottom:8px;padding:12px;border:1px solid var(--ln);border-radius:12px;font:inherit;background:#fff;color:var(--ink)}
-.sgm{display:flex;gap:6px}.sgb{flex:1;border:1px solid var(--ln);background:#fff;color:var(--ink);border-radius:12px;padding:10px 4px;font:inherit;font-weight:700;font-size:14px;cursor:pointer}.sgb.on{background:var(--emd);color:#fff;border-color:var(--emd)}.sgb:disabled{opacity:.5}
+.ss-gr{display:block;width:40px;height:4px;border-radius:4px;background:#c5d0ca;margin:8px auto 0;flex:none}
+.ss-h{display:flex;justify-content:space-between;align-items:center;padding:10px 18px 8px;flex:none}.ss-h b{font-size:20px}
+.ss-x{border:0;background:#e3eae6;color:inherit;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px}
+.ss-b{overflow-y:auto;padding:4px 14px calc(22px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch}
+.ss-pf{display:flex;gap:14px;align-items:center;background:#fff;border-radius:18px;padding:14px;margin-bottom:6px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.ss-pf b{display:block;font-size:17px}.ss-pf small{display:block;color:var(--mu);margin-top:2px}.ss-pf em{display:block;font-style:normal;color:var(--mu);font-size:12px;margin-top:4px}
+.ss-t{font-size:13px;font-weight:800;color:var(--mu);margin:16px 6px 7px}
+.ss-c{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.ss-r{display:flex;align-items:center;gap:12px;padding:13px 14px;width:100%;box-sizing:border-box;border:0;background:transparent;color:inherit;font:inherit;text-align:start;cursor:pointer;text-decoration:none;list-style:none}
+.ss-c>.ss-r+.ss-r,.ss-c>.ss-r+.ss-r{border-top:1px solid var(--ln)}
+.ss-r.col{flex-direction:column;align-items:stretch;gap:10px;cursor:default}.ss-r.col+.ss-r.col{border-top:1px solid var(--ln)}
+.ss-l{display:flex;align-items:center;gap:10px}.ss-l b{font-size:15px}
+.ss-i{flex:none;width:34px;height:34px;border-radius:10px;background:#e8f3ed;display:flex;align-items:center;justify-content:center;font-size:17px}
+.ss-tx{flex:1;min-width:0}.ss-tx b{display:block;font-size:15px}.ss-tx small{display:block;color:var(--mu);font-size:12.5px;line-height:1.6;margin-top:2px}
+.ss-ch{color:var(--mu);font-size:22px;line-height:1;flex:none}
+[dir=ltr] .ss-ch{transform:scaleX(-1)}
+.ss-a.dng b{color:#c0392b}.ss-a.dng .ss-i{background:#fbe9e7}
+.ss-sgm{display:flex;gap:4px;background:#eef2f0;border-radius:12px;padding:3px}
+.ss-sg{flex:1;border:0;background:transparent;color:var(--ink);border-radius:10px;padding:9px 4px;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer}
+.ss-sg.on{background:#fff;color:var(--emd);box-shadow:0 1px 3px rgba(0,0,0,.15)}.ss-sg:disabled{opacity:.5}
+.ss-sw{appearance:none;-webkit-appearance:none;flex:none;width:50px;height:30px;padding:0;margin:0;border-radius:16px;border:0;background:#cfd9d4;position:relative;cursor:pointer;transition:background .2s}
+.ss-sw::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s}
+.ss-sw:checked{background:#1f8a5f}
+[dir=rtl] .ss-sw:checked::after{transform:translateX(-20px)}
+:not([dir=rtl]) .ss-sw:checked::after{transform:translateX(20px)}
+.ss-d summary::-webkit-details-marker{display:none}.ss-d[open] .ss-ch{transform:rotate(-90deg)}
+.ss-pw{padding:2px 14px 14px;border-top:1px solid var(--ln);padding-top:12px}
+.ss-pw input{width:100%;box-sizing:border-box;margin-bottom:8px;padding:12px;border:1px solid var(--ln);border-radius:12px;font:inherit;background:#fff;color:var(--ink)}
 .pwe{min-height:18px;color:#c0392b;font-size:13px;margin-bottom:6px}.pwe.ok{color:#1f8a5f}
+.stu .wd-card{display:flex;gap:12px;align-items:stretch;background:#fff;border:1px solid var(--ln);border-radius:28px;box-shadow:0 4px 18px rgba(14,107,79,.08);padding:18px 18px 16px;margin-bottom:14px}
+.stu .wd-tx{flex:1;min-width:0;display:flex;flex-direction:column}
+.stu .wd-hd{display:flex;align-items:center;gap:8px;border:0;background:transparent;padding:0;font:inherit;cursor:pointer;color:#34c759;font-weight:800;font-size:17px;text-align:start}
+.stu .wd-q{font-size:21px;font-weight:800;line-height:1.5;margin:14px 0;color:var(--ink);min-height:62px}
+.stu .wd-bt{display:flex;gap:14px;margin-bottom:14px}
+.stu .wd-bt button{width:52px;height:52px;border-radius:50%;border:0;font-size:24px;font-weight:900;cursor:pointer;line-height:1}
+.stu .wd-y{background:#c4efd0;color:#fff}.stu .wd-n{background:#f9c5c2;color:#fff}.stu .wd-bt button:not(:disabled){box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.stu .wd-y:not(:disabled){background:#34c759}.stu .wd-n:not(:disabled){background:#ff6b63}
+.stu .wd-bt button:disabled{cursor:default}
+.stu .wd-dt{color:var(--mu);font-size:14px;margin-top:auto}
+.stu .wd-bars{flex:none;display:flex;gap:9px;align-items:stretch;direction:ltr;padding-top:34px}
+.stu .wd-c{display:flex;flex-direction:column;align-items:center;gap:6px}.stu .wd-v{width:9px;flex:1;min-height:90px;background:#eceeed;border-radius:6px;display:flex;align-items:flex-end;overflow:hidden}
+.stu .wd-v i{display:block;width:100%;background:#34c759;border-radius:6px}.stu .wd-c span{font-size:12px;color:var(--mu)}.stu .wd-c.td span{color:var(--ink);font-weight:800;font-size:14px}
+.stu .wd-r.sk .wd-b{opacity:.6}.stu .wd-r.sk .wd-ck{border-color:#ff6b63;color:#ff6b63}
+html.dk .stu .wd-card{background:#16231e;border-color:#26372f}html.dk .stu .wd-q{color:#e7f0ea}html.dk .stu .wd-v{background:#26372f}html.dk .stu .wd-c.td span{color:#e7f0ea}
+.stu .wd-top{display:flex;gap:14px;align-items:center;background:#fff;border:1px solid var(--ln);border-radius:20px;padding:14px;margin-bottom:14px}
+.stu .wd-pc{flex:none;text-align:center;min-width:74px}.stu .wd-pc b{display:block;font-size:26px;color:var(--emd)}.stu .wd-pc small,.stu .wd-pg small{color:var(--mu);font-size:12.5px}
+.stu .wd-pg{flex:1}.stu .wd-pb{height:10px;background:#e3eee8;border-radius:9px;overflow:hidden;margin-bottom:8px}.stu .wd-pb i{display:block;height:100%;background:linear-gradient(90deg,#1f8a5f,#e0b84a);border-radius:9px;transition:width .3s}
+.stu .wd-l{display:flex;flex-direction:column;gap:8px;margin-bottom:6px}.stu .wd-r{display:flex;gap:6px;align-items:stretch}
+.stu .wd-b{flex:1;display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--ln);border-radius:16px;padding:12px 14px;font:inherit;color:var(--ink);cursor:pointer;text-align:start}
+.stu .wd-b b{font-size:15px}.stu .wd-e{font-size:20px}
+.stu .wd-ck{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid #b9cbc2;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:15px}
+.stu .wd-r.on .wd-b{background:#e4f5ec;border-color:#8fd0b3}.stu .wd-r.on .wd-ck{background:#1f8a5f;border-color:#1f8a5f}.stu .wd-r.on .wd-b b{color:var(--emd)}
+.stu .wd-x{flex:none;width:44px;border:1px solid var(--ln);background:#fff;border-radius:16px;color:#c0392b;cursor:pointer;font-size:15px}
+.stu .wd-a{display:flex;gap:8px}.stu .wd-a input{flex:1;min-width:0;padding:12px;border:1px solid var(--ln);border-radius:14px;font:inherit;background:#fff;color:var(--ink)}
+.stu .wd-wk{display:flex;gap:6px;background:#fff;border:1px solid var(--ln);border-radius:18px;padding:12px 8px}
+.stu .wd-d{flex:1;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}.stu .wd-bar{width:70%;max-width:26px;height:64px;background:#e3eee8;border-radius:8px;display:flex;align-items:flex-end;overflow:hidden}.stu .wd-bar i{display:block;width:100%;background:#1f8a5f;border-radius:8px}
+.stu .wd-d.td b{color:var(--emd)}.stu .wd-d small{font-size:11px;color:var(--mu)}.stu .wd-d b{font-size:13px}
+html.dk .stu .wd-top,html.dk .stu .wd-b,html.dk .stu .wd-x,html.dk .stu .wd-wk{background:#16231e;border-color:#26372f}
+html.dk .stu .wd-r.on .wd-b{background:#163326;border-color:#2f5a47}html.dk .stu .wd-pb,html.dk .stu .wd-bar{background:#26372f}
+html.dk .stu .wd-a input{background:#0e1714;color:#e7f0ea;border-color:#26372f}html.dk .stu .wd-b{color:#e7f0ea}html.dk .stu .wd-ck{border-color:#3a4d44}
 </style>
 
 
@@ -1486,8 +1600,11 @@ html.dk .stu .note{background:#2a2715!important;color:#f0e2b0!important;border-c
 html.dk .stu .b2,html.dk .stu .adt:not(.on),html.dk .stu .sgb:not(.on){background:#1d2d26!important;color:#e7f0ea!important;border-color:#2d4338!important}
 html.dk .stu .b1{color:#3a2b05}
 html.dk .stu .adts{background:#0e1714}
-html.dk .stu input,html.dk .stu select,html.dk .stu textarea,html.dk .sh input{background:#1b2a24!important;color:#e7f0ea!important;border-color:#2d4338!important}
-html.dk .sh,html.dk .shp,html.dk .shs{background:#131e1a!important;color:#e7f0ea;border-color:#26372f!important}html.dk .shp{background:#1a2a24!important}html.dk .shx{background:#26372f;color:#e7f0ea}
+html.dk .stu input,html.dk .stu select,html.dk .stu textarea,html.dk .ss-pw input{background:#0e1714;color:#e7f0ea;border-color:#26372f}
+html.dk .ss{background:#0e1714;color:#e7f0ea}html.dk .ss-pf,html.dk .ss-c{background:#16231e;box-shadow:none}html.dk .ss-x{background:#26372f}html.dk .ss-gr{background:#3a4d44}
+html.dk .ss-i{background:#1f3329}html.dk .ss-a.dng .ss-i{background:#3a1f1c}html.dk .ss-a.dng b{color:#ff8a7a}html.dk .ss-c>.ss-r+.ss-r,html.dk .ss-r.col+.ss-r.col,html.dk .ss-pw{border-color:#26372f}
+html.dk .ss-sgm{background:#0e1714}html.dk .ss-sg{color:#e7f0ea}html.dk .ss-sg.on{background:#26372f;color:#fff}html.dk .ss-sw{background:#3a4d44}html.dk .ss-sw:checked{background:#1f8a5f}
+html.dk .ss b,html.dk .ss-tx b{color:#e7f0ea}html.dk .ss small,html.dk .ss em,html.dk .ss-t,html.dk .ss-ch{color:#9db0a6}
 html.dk .stu .adf{border-color:#2d4338}html.dk .stu .adc p,html.dk .stu .adh b{color:#e7f0ea}
 html.dk .stu h2,html.dk .stu h3,html.dk .stu b{color:#e7f0ea}html.dk .stu small,html.dk .stu .sv{color:#9db0a6}
 html.dk .stu .ring circle:first-child{stroke:#2a3a33}
