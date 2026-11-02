@@ -352,6 +352,23 @@ details.panel summary{cursor:pointer}
 <meta property="og:type" content="website">
 <meta name="apple-mobile-web-app-title" content="رتل">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<style id="rt-design-v17">
+/* خلفية احتياطية تظهر لو تأخر رسم السماء أو لم يدعم الجهاز WebGL */
+html{background:linear-gradient(165deg,#0a1a3a 0%,#0b4a46 55%,#0b6b52 100%) fixed!important}
+#skybg{background:linear-gradient(165deg,#0a1a3a 0%,#0b4a46 55%,#0b6b52 100%)}
+/* شاشة الدخول: بطاقة زجاجية فوق السماء */
+.lgn .cl{background:rgba(255,255,255,.9)!important;-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(255,255,255,.6);padding:18px 18px 14px;gap:11px}
+.lgn .lgimg{width:min(150px,48%)}
+.lgn .cl input{background:rgba(255,255,255,.92);border:1.5px solid #d3e4dc;border-radius:14px;transition:border-color .2s,box-shadow .2s}
+.lgn .cl input:focus,.lgn .cl input:focus-visible{outline:0;border-color:#0b8f6a;box-shadow:0 0 0 4px rgba(20,184,138,.22)}
+.lgn .bk{border:1.5px solid #c9a24b;background:rgba(201,162,75,.12);color:#5e430b;border-radius:14px;padding:12px;margin-top:4px;font-weight:700}
+.lgn::after{color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.55);font-size:12px}
+/* زر واتساب لا يغطي محتوى الدخول */
+.lgn{padding-bottom:92px}
+.wa{bottom:calc(34px + env(safe-area-inset-bottom,0px));width:52px;height:52px}
+@media (max-height:700px){.lgn .lgimg{width:min(120px,40%)}}
+@media (prefers-reduced-motion:reduce){.lgn .cl input{transition:none}}
+</style>
 </head>
 <body>
 <div id="skybg" aria-hidden="true"><canvas id="skyc"></canvas><canvas id="rainc"></canvas></div>
@@ -1824,7 +1841,7 @@ function target(){
   var timeBoost = isGolden?1.45:1;
   return{top:gr(p.top,g*.86,dk*.56),mid:gr(p.mid,g*.86,dk*.56),hor:gr(p.hor,g*.86,dk*.52),
     lit:gr(p.lit,g*.72,dk*.46),shade:gr(p.shade,g*.62,dk*.38),lc:lc,sun:sun,moon:moon,lp:lp,sc:sc,
-    sunI:[sunI*(1-g*.86)*timeBoost],moonI:[moonI*(1-g*.62)],li:[Math.max(sunI*(1-g*.82),moonI*.58)],st:[p.st*(1-g)*(1-.28)],cov:[W.cv],wind:[W.wd*(S.wd?1.8:1)],rain:[W.rn],dark:[dk],fl:[W.th],fog:[W.fog||0],snow:[W.snow||0],soft:[sm(.10,.32,sa)*(1-g)],label:W.label,wx:S.wx,golden:isGolden?1:0};
+    sunI:[sunI*(1-g*.86)*timeBoost],moonI:[moonI*(1-g*.62)],li:[Math.max(sunI*(1-g*.82),moonI*.58)],st:[p.st*(1-g)*(1-.28)],cov:[W.cv],wind:[W.wd*(S.wd?1.8:1)],rain:[W.rn],dark:[dk],fl:[W.th],fog:[W.fog||0],snow:[W.snow||0],soft:[sm(.10,.32,sa)*(1-g)],label:W.label,wx:S.wx,golden:[isGolden?1:0]};
 }
 var cur=null,tg=null,gl=null,pr=null,U={},raf=0,last=0,T0=performance.now(),rm=false;
 try{rm=matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}
