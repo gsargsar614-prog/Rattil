@@ -339,6 +339,73 @@ details.panel summary{cursor:pointer}
 :not([dir=rtl]) > .stu .tgl input:checked::after{transform:translateX(20px)}
 .stu .nvb small{font-size:10.5px!important}
 </style>
+<style id="rt-sky">
+/* ===== سماء بطاقة الترحيب: متحركة حسب الوقت والطقس ===== */
+.stu .hero.sk{background:#1b5fc2;background-image:none;box-shadow:0 14px 32px var(--sh,rgba(20,60,120,.30));isolation:isolate;transition:box-shadow 3s;--cl:#fff;--cls:rgba(110,150,205,.40);--k:1;--ovc:#7d8ba0;--sunc:#fff0a0;--sunc2:#ffc233;--sung:rgba(255,214,90,.55)}
+.stu .hero.sk::before{background:none}
+.stu .hero.sk::after{display:none}
+.stu .hero.sk>.sal,.stu .hero.sk>.who,.stu .hero.sk>.wl{z-index:2}
+.stu .hero.sk>.sal,.stu .hero.sk>.wl{opacity:1;font-weight:600;text-shadow:0 0 3px rgba(0,25,60,.55),0 1px 10px rgba(0,25,60,.65)}
+.stu .hero.sk>.who{text-shadow:0 0 3px rgba(0,25,60,.5),0 2px 14px rgba(0,25,60,.6)}
+.stu .hero.sk>.av{z-index:3}
+.hero .skyb{position:absolute;inset:0;z-index:0;overflow:hidden;border-radius:inherit;container-type:inline-size;pointer-events:none}
+.hero .skyb>*{position:absolute;pointer-events:none}
+.hero .sy{inset:0;opacity:0;transition:opacity 3s ease}
+.hero .sy.dw{background:linear-gradient(180deg,#3b3a8a 0%,#9a5aa0 36%,#e9776c 68%,#f1995f 100%)}
+.hero .sy.dy{background:linear-gradient(180deg,#154ca6 0%,#2f7bd3 58%,#3d8bd6 100%)}
+.hero .sy.ss{background:linear-gradient(180deg,#27276d 0%,#76408f 34%,#dd5a6c 66%,#f48a52 100%)}
+.hero .sy.nt{background:linear-gradient(180deg,#060b22 0%,#0f1b48 55%,#1f3673 100%)}
+.hero[data-sky=dawn] .sy.dw,.hero[data-sky=day] .sy.dy,.hero[data-sky=sunset] .sy.ss,.hero[data-sky=night] .sy.nt{opacity:1}
+.hero .glow{inset:0;opacity:0;background:radial-gradient(ellipse 75% 90% at var(--sx,20%) 105%,rgba(255,200,120,.65),transparent 70%);transition:opacity 3s}
+.hero[data-sky=dawn] .glow,.hero[data-sky=sunset] .glow{opacity:.9}
+.hero .stars{inset:0;opacity:0;transition:opacity 3s}
+.hero[data-sky=night] .stars{opacity:1}
+.hero[data-sky=night][data-wx=cloudy] .stars{opacity:.45}
+.hero[data-sky=night][data-wx=rain] .stars,.hero[data-sky=night][data-wx=storm] .stars{opacity:.12}
+.hero .stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;box-shadow:0 0 4px 1px rgba(255,255,255,.7);animation:skTw var(--d,4s) ease-in-out infinite;animation-delay:var(--o,0s)}
+.hero .stars b{position:absolute;top:16%;left:62%;width:70px;height:1.5px;background:linear-gradient(90deg,rgba(255,255,255,0),#fff);opacity:0;animation:skShoot 24s linear infinite;animation-delay:-9s}
+.hero .orb{opacity:0;transition:opacity 3s ease,left 60s linear,top 60s linear;border-radius:50%}
+.hero .sun{left:var(--sx,20%);top:var(--sy,30%);width:36px;height:36px;margin:-18px 0 0 -18px;background:radial-gradient(circle at 38% 36%,#fffbe0,var(--sunc) 40%,var(--sunc2) 100%);box-shadow:0 0 0 6px rgba(255,255,255,.12),0 0 28px 10px var(--sung)}
+.hero .sun::before{content:"";position:absolute;left:50%;top:50%;width:130px;height:130px;margin:-65px 0 0 -65px;border-radius:50%;background:repeating-conic-gradient(rgba(255,246,190,.26) 0 5deg,transparent 5deg 20deg);-webkit-mask:radial-gradient(circle,transparent 20px,#000 24px,transparent 64px);mask:radial-gradient(circle,transparent 20px,#000 24px,transparent 64px);animation:skSpin 90s linear infinite}
+.hero .moon{left:var(--mx,20%);top:var(--my,30%);width:30px;height:30px;margin:-15px 0 0 -15px;box-shadow:inset -8px -3px 0 0 #f6f0d6;filter:drop-shadow(0 0 7px rgba(255,248,214,.55))}
+.hero[data-sky=dawn] .sun,.hero[data-sky=day] .sun,.hero[data-sky=sunset] .sun,.hero[data-sky=night] .moon{opacity:1}
+.hero[data-wx=cloudy] .skyb .orb{opacity:.6!important}
+.hero[data-wx=rain] .skyb .orb,.hero[data-wx=storm] .skyb .orb{opacity:.25!important}
+.hero .ovl{inset:0;background:var(--ovc);opacity:0;transition:opacity 3s,background 3s}
+.hero[data-wx=cloudy] .ovl{opacity:.34}
+.hero[data-wx=rain] .ovl{opacity:.52}
+.hero[data-wx=storm] .ovl{opacity:.68}
+.hero .cl{left:calc(var(--w) * -1 - 12px);top:var(--t);width:var(--w);height:calc(var(--w) * .42);background:radial-gradient(closest-side,var(--cl) 70%,transparent) 20% 64%/44% 70% no-repeat,radial-gradient(closest-side,var(--cl) 70%,transparent) 46% 22%/40% 82% no-repeat,radial-gradient(closest-side,var(--cl) 70%,transparent) 76% 58%/42% 68% no-repeat,radial-gradient(closest-side,var(--cl) 72%,transparent) 50% 100%/100% 58% no-repeat,radial-gradient(closest-side,var(--cls),transparent) 50% 112%/92% 46% no-repeat;opacity:calc(var(--co) * var(--k));animation:skDrift calc(var(--du) * var(--sp,1)) linear infinite;animation-delay:var(--of);will-change:transform;transition:opacity 3s}
+.hero[data-wx=cloudy] .cl,.hero[data-wx=rain] .cl,.hero[data-wx=storm] .cl{opacity:calc(var(--cc) * var(--k))}
+.hero[data-wind="1"]{--sp:.5}
+.hero .rn{inset:-30px 0;opacity:0;background-repeat:repeat;transition:opacity 2s}
+.hero .rn1{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='120'%3E%3Cg stroke='white' stroke-opacity='.6' stroke-width='1.3' stroke-linecap='round'%3E%3Cpath d='M12 8l-3 16M44 50l-3 16M72 18l-3 16M26 82l-3 16M60 94l-3 16M82 66l-3 16'/%3E%3C/g%3E%3C/svg%3E");background-size:90px 120px;animation:skRain1 1.1s linear infinite}
+.hero .rn2{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='130' height='170'%3E%3Cg stroke='white' stroke-opacity='.38' stroke-width='1' stroke-linecap='round'%3E%3Cpath d='M20 10l-3 16M78 36l-3 16M112 88l-3 16M38 112l-3 16M96 140l-3 16M58 74l-3 16'/%3E%3C/g%3E%3C/svg%3E");background-size:130px 170px;animation:skRain2 1.7s linear infinite}
+.hero[data-wx=rain] .rn1{opacity:.85}.hero[data-wx=rain] .rn2{opacity:.6}
+.hero[data-wx=storm] .rn1,.hero[data-wx=storm] .rn2{opacity:1}
+.hero .fl{inset:0;opacity:0;background:radial-gradient(circle at 60% 15%,rgba(255,255,255,.9),rgba(190,205,255,.45) 55%,transparent 80%)}
+.hero[data-wx=storm] .fl{animation:skFlash 8s linear infinite}
+.hero .scrim{inset:0;background:linear-gradient(180deg,rgba(0,10,40,.16) 0%,rgba(0,10,40,.36) 100%)}
+.hero.sk[data-sky=dawn]{--cl:#ffd9cf;--cls:rgba(190,100,120,.40);--sunc:#ffe3a0;--sunc2:#ffa552;--sung:rgba(255,170,90,.6);--sh:rgba(150,70,100,.32)}
+.hero.sk[data-sky=day]{--sh:rgba(20,60,120,.30)}
+.hero.sk[data-sky=sunset]{--cl:#ffc7a6;--cls:rgba(170,60,90,.42);--sunc:#ffc070;--sunc2:#ff6a3d;--sung:rgba(255,100,60,.62);--sh:rgba(120,40,80,.34)}
+.hero.sk[data-sky=night]{--cl:#8fa0cf;--cls:rgba(20,30,70,.45);--k:.5;--ovc:#0d1324;--sh:rgba(5,10,40,.5)}
+.hero.sk[data-wx=cloudy]{--cl:#aab5c6;--cls:rgba(60,75,105,.45)}
+.hero.sk[data-wx=rain]{--cl:#8592a6;--cls:rgba(35,46,72,.5)}
+.hero.sk[data-wx=storm]{--cl:#66728a;--cls:rgba(20,28,48,.55)}
+.hero.sk[data-sky=night][data-wx=cloudy]{--cl:#5b6891}
+.hero.sk[data-sky=night][data-wx=rain]{--cl:#454f72}
+.hero.sk[data-sky=night][data-wx=storm]{--cl:#353d5a}
+@keyframes skDrift{from{transform:translateX(0)}to{transform:translateX(460px);transform:translateX(calc(100cqw + var(--w) + 30px))}}
+@keyframes skSpin{to{transform:rotate(360deg)}}
+@keyframes skTw{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.25)}}
+@keyframes skShoot{0%,93%{opacity:0;transform:translate(0,0) rotate(-24deg)}94%{opacity:.9}100%{opacity:0;transform:translate(-150px,66px) rotate(-24deg)}}
+@keyframes skRain1{to{background-position:-90px 480px}}
+@keyframes skRain2{to{background-position:-130px 680px}}
+@keyframes skFlash{0%,88%{opacity:0}89%{opacity:.6}90%{opacity:.08}91.5%{opacity:.45}94%,100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.hero .skyb .cl{left:var(--p)}}
+</style>
+
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0a4d39">
@@ -734,6 +801,46 @@ ${stuAya()}
 <button class="b1 full rise" style="padding:13px;margin:6px 0 14px" onclick="shareAcad()">💚 شارك أكاديمية رتل مع من تحب</button>`}
 function shareAcad(){const u=location.origin+location.pathname,t='أكاديمية رتل لتعليم القرآن الكريم — حصص فردية مع معلمين ومعلمات مجازين 🌙';
   if(navigator.share){navigator.share({title:'أكاديمية رتل',text:t,url:u}).catch(()=>{})}else window.open('https://wa.me/?text='+encodeURIComponent(t+'\n'+u),'_blank')}
+/* ===== سماء بطاقة الترحيب ===== */
+const SKY={rise:6,set:18};/* غيّري ساعتي الشروق والغروب التقريبيتين من هنا */
+const SKYC=[[130,'8%',110,.6,.8,'6%'],[90,'34%',85,.5,.75,'46%'],[160,'50%',140,.4,.8,'72%'],[110,'20%',100,0,.75,'28%'],[140,'60%',120,0,.7,'58%'],[100,'42%',95,0,.65,'84%']];
+const SKY_TZ={'Asia/Riyadh':[24.71,46.68],'Asia/Kuwait':[29.37,47.98],'Asia/Qatar':[25.29,51.53],'Asia/Bahrain':[26.23,50.58],'Asia/Dubai':[25.2,55.27],'Asia/Muscat':[23.59,58.41],'Asia/Aden':[12.78,45.04],'Asia/Baghdad':[33.31,44.36],'Asia/Amman':[31.95,35.93],'Asia/Beirut':[33.89,35.5],'Asia/Damascus':[33.51,36.29],'Asia/Gaza':[31.5,34.47],'Asia/Hebron':[31.53,35.1],'Asia/Jerusalem':[31.77,35.21],'Africa/Cairo':[30.04,31.24],'Africa/Khartoum':[15.5,32.56],'Africa/Tripoli':[32.89,13.19],'Africa/Tunis':[36.81,10.18],'Africa/Algiers':[36.75,3.06],'Africa/Casablanca':[33.57,-7.59],'Africa/Nouakchott':[18.08,-15.98],'Africa/Mogadishu':[2.05,45.32],'Africa/Djibouti':[11.59,43.15],'Europe/Istanbul':[41.01,28.98],'Asia/Istanbul':[41.01,28.98],'Europe/London':[51.51,-0.13],'Europe/Paris':[48.86,2.35],'Europe/Berlin':[52.52,13.4],'Europe/Madrid':[40.42,-3.7],'Europe/Rome':[41.9,12.5],'Europe/Amsterdam':[52.37,4.9],'Europe/Brussels':[50.85,4.35],'Europe/Stockholm':[59.33,18.07],'Europe/Vienna':[48.21,16.37],'Europe/Zurich':[47.38,8.54],'America/New_York':[40.71,-74.0],'America/Toronto':[43.65,-79.38],'America/Chicago':[41.88,-87.63],'America/Los_Angeles':[34.05,-118.24],'Australia/Sydney':[-33.87,151.21],'Asia/Karachi':[24.86,67.01],'Asia/Kolkata':[28.61,77.21],'Asia/Kuala_Lumpur':[3.14,101.69],'Asia/Jakarta':[-6.2,106.85]};
+let skyWx=(()=>{try{return JSON.parse(localStorage.getItem('rt_wx')||'null')}catch(e){return null}})(),skyBusy=false;
+function skyPhase(h){const r=SKY.rise,s=SKY.set;if(h>=r-1.25&&h<r+1)return'dawn';if(h>=r+1&&h<s-1.25)return'day';if(h>=s-1.25&&h<s+.75)return'sunset';return'night'}
+function skyState(){
+  let q;try{q=new URLSearchParams(location.search)}catch(e){q=new URLSearchParams('')}
+  const d=new Date();let h=d.getHours()+d.getMinutes()/60;
+  const fs={dawn:6.4,day:12,sunset:17.8,night:23}[q.get('sky')];if(fs!=null)h=fs;/* معاينة: ?sky=night&wx=rain */
+  const ph=skyPhase(h),r=SKY.rise,s=SKY.set,len=s-r;
+  const cl=v=>Math.max(-.12,Math.min(1.12,v)),pt=v=>[10+cl(v)*38,94-Math.sin(Math.PI*cl(v))*72];
+  const sp=pt((h-r)/len),mp=pt(((h-s+24)%24)/(24-len));
+  let w=skyWx&&Date.now()-skyWx.t<3*3600e3?skyWx:{k:'clear',w:0};
+  const fw=q.get('wx');if(['clear','cloudy','rain','storm'].indexOf(fw)>-1)w={k:fw,w:q.get('wind')==='1'?1:0};
+  return{ph,wx:w.k,wd:w.w?1:0,sx:sp[0].toFixed(1),sy:sp[1].toFixed(1),mx:mp[0].toFixed(1),my:mp[1].toFixed(1)}}
+function skyAttr(){const a=skyState();return` data-sky="${a.ph}" data-wx="${a.wx}" data-wind="${a.wd}" style="--sx:${a.sx}%;--sy:${a.sy}%;--mx:${a.mx}%;--my:${a.my}%"`}
+function skyLayers(){
+  skyFetchWx();const t=Date.now()/1000;
+  const cl=SKYC.map((c,i)=>`<i class="cl" style="--w:${c[0]}px;--t:${c[1]};--du:${c[2]}s;--of:-${((t+i*37)%c[2]).toFixed(1)}s;--co:${c[3]};--cc:${c[4]};--p:${c[5]}"></i>`).join('');
+  let st='';for(let i=0;i<16;i++)st+=`<i style="left:${(i*37+11)%96}%;top:${(i*53+7)%64}%;--d:${(3+(i%5)*.8).toFixed(1)}s;--o:-${(i*.7).toFixed(1)}s"></i>`;
+  return`<div class="skyb" aria-hidden="true"><div class="sy dw"></div><div class="sy dy"></div><div class="sy ss"></div><div class="sy nt"></div><div class="glow"></div><div class="stars">${st}<b></b></div><div class="orb sun"></div><div class="orb moon"></div><div class="ovl"></div>${cl}<div class="rn rn2"></div><div class="rn rn1"></div><div class="fl"></div><div class="scrim"></div></div>`}
+function skyTick(){
+  const els=document.querySelectorAll('.hero.sk');if(!els.length)return;const a=skyState();
+  els.forEach(e=>{e.dataset.sky=a.ph;e.dataset.wx=a.wx;e.dataset.wind=a.wd;const s=e.style;s.setProperty('--sx',a.sx+'%');s.setProperty('--sy',a.sy+'%');s.setProperty('--mx',a.mx+'%');s.setProperty('--my',a.my+'%')});
+  skyFetchWx()}
+function skyFetchWx(){
+  try{
+    if(skyBusy||!window.fetch)return;if(skyWx&&Date.now()-skyWx.t<30*60e3)return;
+    const c=SKY_TZ[Intl.DateTimeFormat().resolvedOptions().timeZone];if(!c)return;
+    skyBusy=true;const ac=window.AbortController?new AbortController():null,tm=setTimeout(()=>{if(ac)ac.abort()},6000);
+    fetch('https://api.open-meteo.com/v1/forecast?latitude='+c[0]+'&longitude='+c[1]+'&current=weather_code,wind_speed_10m&timezone=auto',ac?{signal:ac.signal}:{})
+      .then(r=>r.ok?r.json():null).then(j=>{
+        clearTimeout(tm);const cu=j&&j.current;if(!cu)return;
+        const code=+cu.weather_code,ws=+cu.wind_speed_10m||0;let k='clear';
+        if(code>=95||ws>=60)k='storm';else if((code>=51&&code<=67)||(code>=80&&code<=82))k='rain';else if(code===3||code===45||code===48||(code>=71&&code<=77)||code===85||code===86)k='cloudy';
+        skyWx={k,w:ws>=38?1:0,t:Date.now()};try{localStorage.setItem('rt_wx',JSON.stringify(skyWx))}catch(e){}
+        skyTick()}).catch(()=>{}).then(()=>{skyBusy=false;clearTimeout(tm)});
+  }catch(e){skyBusy=false}}
+setInterval(skyTick,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)skyTick()});
 function sHome(st){
   const sb1=subSt(st),days=dl(st),paused=st.sub==='paused',cls=paused?'gr':sb1[0]==='🔴'?'er':sb1[0]==='🟡'?'wn':'ok';
   const up=[...st.sessions].filter(x=>x.st==='مجدولة'&&x.date&&x.date>=today()).sort((a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||''))[0];
@@ -747,7 +854,7 @@ function sHome(st){
   const pub=sReports.filter(r=>r.published!==false).length,unread=sNoti.filter(n=>!n.read).length;
   const prog=pr.length?pr.map(r=>`<div class="prow"><span class="pi">${sic(r[0],19)}</span><div class="pt"><small>${r[1]}</small><b>${esc(r[2])}</b></div></div>`).join('')+(pub?`<div class="dt" style="margin-top:6px">سجلاتك الشهرية المنشورة: <b>${pub}</b></div>`:''):`<div class="emp" style="padding:20px 14px;border-radius:16px">رحلتك مع القرآن تبدأ من هنا 🌿<br><small>سيظهر حفظك ومراجعتك هنا بعد أول حصة مع المعلّم/ة.</small></div>`;
   const tw=sTeacher&&sTeacher.whats?wnum(sTeacher.whats):'';
-  return pushBtn()+`<section class="hero rise" aria-label="الترحيب"><label class="av" aria-label="تغيير صورتي"><input type="file" accept="image/*" hidden onchange="sPickPhoto(this)">${sPhoto?`<img src="${esc(sPhoto)}" alt="">`:esc(first.charAt(0))}<i class="cam">📷</i></label><div class="sal">السلام عليكم ورحمة الله وبركاته</div><div class="who">أهلًا ${esc(first)} 🌷</div><div class="wl">أهلًا بك في أكاديمية رتل — نرتّل القرآن فنرتقي به</div></section>
+  return pushBtn()+`<section class="hero sk rise" aria-label="الترحيب"${skyAttr()}>${skyLayers()}<label class="av" aria-label="تغيير صورتي"><input type="file" accept="image/*" hidden onchange="sPickPhoto(this)">${sPhoto?`<img src="${esc(sPhoto)}" alt="">`:esc(first.charAt(0))}<i class="cam">📷</i></label><div class="sal">السلام عليكم ورحمة الله وبركاته</div><div class="who">أهلًا ${esc(first)} 🌷</div><div class="wl">أهلًا بك في أكاديمية رتل — نرتّل القرآن فنرتقي به</div></section>
 ${adm('al'+(st.end||'')+(days<0?'x':''),al)}${adm('im'+(up?up.id:''),imm)}
 ${rnBtn(st)}
 ${fsBan()}
