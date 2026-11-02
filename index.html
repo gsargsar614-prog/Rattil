@@ -748,7 +748,7 @@ function skyState(){
   const fs={dawn:6.4,day:12,sunset:17.8,night:23}[q.get('sky')];if(fs!=null)h=fs;/* معاينة: ?sky=night&wx=rain أو ?h=15.5 */
   const qh=parseFloat(q.get('h'));if(!isNaN(qh))h=((qh%24)+24)%24;
   let w=skyWx&&Date.now()-skyWx.t<3*3600e3?skyWx:{k:'clear',w:0};
-  const fw=q.get('wx');if(['clear','cloudy','rain','storm'].indexOf(fw)>-1)w={k:fw,w:q.get('wind')==='1'?1:0};
+  const fw=q.get('wx');const all=['clear','sunny','dawn','sunrise','morning','noon','afternoon','sunset','dusk','evening','night','cloudy','overcast','fog','mist','windy','light_rain','rain','rainy','heavy_rain','storm','thunder','snow','dust'];if(all.indexOf(fw)>-1)w={k:fw,w:q.get('wind')==='1'?1:0};
   return{h,wx:w.k,wd:w.w?1:0}}
 function skyTick(){skyFetchWx();if(window.skyUpd)window.skyUpd()}
 function skyFetchWx(){
@@ -760,7 +760,16 @@ function skyFetchWx(){
       .then(r=>r.ok?r.json():null).then(j=>{
         clearTimeout(tm);const cu=j&&j.current;if(!cu)return;
         const code=+cu.weather_code,ws=+cu.wind_speed_10m||0;let k='clear';
-        if(code>=95||ws>=60)k='storm';else if((code>=51&&code<=67)||(code>=80&&code<=82))k='rain';else if(code===3||code===45||code===48||(code>=71&&code<=77)||code===85||code===86)k='cloudy';
+        if(code===95||code===96||code===99)k='thunder';
+        else if(code===96||code>=95||ws>=60)k='storm';
+        else if((code>=51&&code<=67)||(code>=80&&code<=82))k= code>=65||code===82?'heavy_rain':code>=61?'rain':'light_rain';
+        else if(code===71||code===73||code===75||code===77||code===85||code===86)k='snow';
+        else if(code===45||code===48)k='fog';
+        else if(code===3)k='overcast';
+        else if(code===2)k='cloudy';
+        else if(code===1)k='morning';
+        else if(ws>=38)k='windy';
+        else k='clear';
         const dl=j.daily,f=x=>{const m=/T(\d+):(\d+)/.exec(x||'');return m?+m[1]+m[2]/60:null};
         if(dl&&dl.sunrise&&dl.sunset){const a=f(dl.sunrise[0]),b=f(dl.sunset[0]);if(a!=null&&b!=null&&b-a>6&&b-a<18){SKY.rise=a;SKY.set=b}}
         skyWx={k,w:ws>=38?1:0,t:Date.now(),rs:SKY.rise,ss:SKY.set};try{localStorage.setItem('rt_wx',JSON.stringify(skyWx))}catch(e){}
@@ -1647,12 +1656,15 @@ html.dk #toast{background:#e7f0ea;color:#0e1714}
 [dir=ltr] .stu{text-align:left}
 </style>
 
+
 <style id="rt-sky2">
-/* ===== خلفية السماء لكل الموقع ===== */
+/* ===== خلفية السماء لكل الموقع - نظام الطقس المتكامل ===== */
 html{background-color:#0c2a5a}
 #skybg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:linear-gradient(0deg,#9cd0f5,#4896e6 45%,#1d63c6)}
 #skybg canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-#rainc{z-index:1}
+#rainc{z-index:2}
+#fogc{z-index:3;opacity:0.9}
+#snowc{z-index:2}
 html.dk #skybg{filter:brightness(.78)}
 html body,html.dk body,html .stu,html.dk .stu,html #adm,html.dk #adm,html .lgn,html.dk .lgn{background:transparent!important;background-image:none!important}
 /* البطاقة الزرقاء محذوفة: الترحيب يظهر مباشرة فوق السماء */
@@ -1674,35 +1686,114 @@ html.dk .emp{background:rgba(16,26,22,.82)}
 body:has(#adm:not([hidden])) #app{visibility:hidden}
 body:has(#adm:not([hidden])){overflow:hidden}
 
+/* مؤشر حالة الطقس */
+#wx-badge{position:fixed;top:calc(6px + env(safe-area-inset-top,0px));inset-inline-start:8px;z-index:5;background:rgba(255,255,255,.18);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:99px;padding:4px 10px;font-size:11.5px;font-weight:700;display:flex;align-items:center;gap:6px;pointer-events:none;text-shadow:0 1px 6px rgba(0,0,0,.35)}
+#wx-badge i{font-style:normal;font-size:14px}
+.stu #wx-badge{top:calc(56px + env(safe-area-inset-top,0px))}
+
+/* لوحة تحكم تجريبية للطقس ?demo=1 */
+#wx-demo{position:fixed;bottom:calc(84px + env(safe-area-inset-bottom,0px));inset-inline-start:10px;z-index:30;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border:1px solid #e6ddc8;border-radius:16px;padding:10px 10px;max-width:280px;box-shadow:0 8px 24px rgba(0,0,0,.18);display:none}
+#wx-demo.on{display:grid;gap:8px}
+#wx-demo b{font-size:13px;color:#0a4d39}
+#wx-demo .row{display:flex;flex-wrap:wrap;gap:6px}
+#wx-demo button{border:1px solid #ece5d2;background:#fff;border-radius:99px;padding:6px 10px;font-size:12px;cursor:pointer}
+#wx-demo button.on{background:#0e6b4f;color:#fff;border-color:#0e6b4f}
 </style>
 <script>
-/* ===== خلفية سماء واقعية متحركة للموقع كله (WebGL) — تتغير حسب الوقت والطقس ===== */
+/* ===== نظام السماء والطقس المطوّر — يدعم: فجر، شروق، صباح، ظهيرة، عصر، غروب، مساء، ليل، غائم، ممطر، رعد، ضباب، رياح ===== */
 (function(){
 'use strict';
 var root=document.getElementById('skybg');if(!root)return;
+// ensure extra canvases
 var cv=document.getElementById('skyc'),rc=document.getElementById('rainc');
+var fogc=document.getElementById('fogc'); if(!fogc){fogc=document.createElement('canvas');fogc.id='fogc';root.appendChild(fogc);}
+var snowc=document.getElementById('snowc'); if(!snowc){snowc=document.createElement('canvas');snowc.id='snowc';root.appendChild(snowc);}
+var badge=document.getElementById('wx-badge'); if(!badge){badge=document.createElement('div');badge.id='wx-badge';document.body.appendChild(badge);}
+var demo=document.getElementById('wx-demo'); if(!demo){demo=document.createElement('div');demo.id='wx-demo';document.body.appendChild(demo);}
+
 var hex=function(s){return[1,3,5].map(function(i){return parseInt(s.substr(i,2),16)/255})};
 var P=function(a,b,c,d,e,f){return{top:hex(a),mid:hex(b),hor:hex(c),lit:hex(d),shade:hex(e),st:f}};
-var NIGHT=P('#040813','#0a1330','#15244f','#7482b0','#0b1226',1),
-PRE=P('#16224f','#654a84','#e88a62','#fba98a','#3a3560',.35),
-MORN=P('#75b6ef','#5b95e0','#6a74d0','#fff6ee','#c3d3ee',0),
+
+// لوحات زمنية غنية
+var FAJR=P('#0e1a3a','#3d2d5e','#ff7a5a','#ffb68a','#1e234a',0.55),
+DAWN=P('#16224f','#654a84','#e88a62','#fba98a','#3a3560',0.35),
+SUNRISE=P('#3a2a6b','#c45a6e','#ff9a3d','#ffd09a','#5a3a5a',0.15),
+MORNING=P('#75b6ef','#5b95e0','#6a74d0','#fff6ee','#c3d3ee',0),
+MORNING2=P('#6cb6f2','#4f8fe6','#7a8fd8','#ffffff','#bcd6f5',0),
 NOON=P('#6cb6f2','#4f8fe6','#4a63d2','#ffffff','#bcd6f5',0),
-AFT=P('#6aa8e8','#5686dc','#5a62c8','#fff3e2','#b9c9ea',0),
+NOON_BRIGHT=P('#7cc8ff','#5ba6f0','#6088e6','#ffffff','#c7defa',0),
+AFTERNOON=P('#6aa8e8','#5686dc','#5a62c8','#fff3e2','#b9c9ea',0),
+ASR=P('#7aa0e0','#6e6bb8','#a070b0','#ffd9b0','#a8a0c8',0),
 SUNSET=P('#27357f','#a9507a','#f08a40','#ff9a55','#3c3363',0),
-DUSK=P('#0f1b4a','#3a3a7c','#b85a78','#d27088','#1e2450',.5);
+SUNSET2=P('#4b2b6b','#c05a52','#ff8a2a','#ffcc88','#4a365a',0),
+DUSK=P('#0f1b4a','#3a3a7c','#b85a78','#d27088','#1e2450',0.5),
+EVENING=P('#0a1330','#2a2a5a','#5a3a6a','#8a6a9a','#12152e',0.7),
+NIGHT=P('#040813','#0a1330','#15244f','#7482b0','#0b1226',1),
+NIGHT_DEEP=P('#02050f','#060e26','#0d1a3a','#5a6a90','#050a1a',1);
+
 var cl=function(x,a,b){return Math.max(a,Math.min(b,x))};
 var sm=function(a,b,x){var t=cl((x-a)/(b-a),0,1);return t*t*(3-2*t)};
 var lum=function(c){return .3*c[0]+.59*c[1]+.11*c[2]};
 function palette(h){
   var r=SKY.rise,s=SKY.set,m=(r+s)/2;
-  var L=[[r-1.8,NIGHT],[r-.5,PRE],[r+.6,MORN],[m,NOON],[s-1.8,AFT],[s-.4,SUNSET],[s+.5,DUSK],[s+1.5,NIGHT]],E=[];
+  // timeline موسع: فجر، شروق، صباح، ظهيرة، عصر، غروب، مساء، ليل
+  var L=[
+    [r-2.2,NIGHT_DEEP],
+    [r-1.4,FAJR],
+    [r-0.8,DAWN],
+    [r-0.15,SUNRISE],
+    [r+0.6,MORNING],
+    [r+1.6,MORNING2],
+    [m-1,NOON_BRIGHT],
+    [m+0.6,NOON],
+    [s-2.4,AFTERNOON],
+    [s-1.5,ASR],
+    [s-0.7,SUNSET],
+    [s-0.15,SUNSET2],
+    [s+0.5,DUSK],
+    [s+1.2,EVENING],
+    [s+2.0,NIGHT]
+  ],E=[];
   [-24,0,24].forEach(function(o){L.forEach(function(x){E.push([x[0]+o,x[1]])})});
   var i=0;while(i<E.length-2&&E[i+1][0]<=h)i++;
   var a=E[i],b=E[i+1],f=sm(0,1,(h-a[0])/(b[0]-a[0]));
   var mx=function(x,y){return x.map(function(v,k){return v+(y[k]-v)*f})};
   return{top:mx(a[1].top,b[1].top),mid:mx(a[1].mid,b[1].mid),hor:mx(a[1].hor,b[1].hor),lit:mx(a[1].lit,b[1].lit),shade:mx(a[1].shade,b[1].shade),st:a[1].st+(b[1].st-a[1].st)*f};
 }
-var WX={clear:{cv:.52,g:0,dk:0,rn:0,wd:.05},cloudy:{cv:.8,g:.55,dk:.12,rn:0,wd:.09},rain:{cv:1.2,g:.8,dk:.35,rn:1,wd:.15},storm:{cv:1.35,g:.92,dk:.6,rn:2,wd:.28}};
+
+// أنواع الطقس الموسعة
+var WX={
+  clear:{cv:.35,g:0,dk:0,rn:0,wd:.04,fog:0,snow:0,th:0,label:'صافٍ ☀️'},
+  sunny:{cv:.28,g:0,dk:0,rn:0,wd:.02,fog:0,snow:0,th:0,label:'مشمس ☀️'},
+  dawn:{cv:.48,g:.08,dk:.02,rn:0,wd:.03,fog:.15,snow:0,th:0,label:'فجر 🌅'},
+  sunrise:{cv:.52,g:.12,dk:0,rn:0,wd:.04,fog:.1,snow:0,th:0,label:'شروق 🌅'},
+  morning:{cv:.55,g:.08,dk:0,rn:0,wd:.06,fog:0,snow:0,th:0,label:'صباح 🌤️'},
+  noon:{cv:.38,g:0,dk:0,rn:0,wd:.05,fog:0,snow:0,th:0,label:'ظهيرة ☀️'},
+  afternoon:{cv:.55,g:.08,dk:.02,rn:0,wd:.07,fog:0,snow:0,th:0,label:'عصر 🌤️'},
+  sunset:{cv:.6,g:.18,dk:.04,rn:0,wd:.05,fog:.05,snow:0,th:0,label:'غروب 🌇'},
+  dusk:{cv:.7,g:.32,dk:.12,rn:0,wd:.04,fog:.1,snow:0,th:0,label:'شفق 🌆'},
+  evening:{cv:.8,g:.45,dk:.22,rn:0,wd:.05,fog:.08,snow:0,th:0,label:'مساء 🌙'},
+  night:{cv:.55,g:.2,dk:.15,rn:0,wd:.04,fog:0,snow:0,th:0,label:'ليل 🌙'},
+  cloudy:{cv:.82,g:.52,dk:.14,rn:0,wd:.09,fog:.1,snow:0,th:0,label:'غائم ☁️'},
+  overcast:{cv:1.08,g:.72,dk:.28,rn:0,wd:.11,fog:.25,snow:0,th:0,label:'غائم كلياً ☁️'},
+  fog:{cv:.95,g:.6,dk:.18,rn:0,wd:.03,fog:1.2,snow:0,th:0,label:'ضباب 🌫️'},
+  mist:{cv:.85,g:.5,dk:.1,rn:0,wd:.04,fog:.75,snow:0,th:0,label:'سديم 🌫️'},
+  windy:{cv:.62,g:.18,dk:.06,rn:0,wd:.35,fog:.05,snow:0,th:0,label:'رياح 🌬️'},
+  light_rain:{cv:.9,g:.55,dk:.22,rn:.55,wd:.14,fog:.15,snow:0,th:0,label:'رذاذ 🌧️'},
+  rain:{cv:1.15,g:.78,dk:.34,rn:1,wd:.15,fog:.2,snow:0,th:0,label:'مطر 🌧️'},
+  rainy:{cv:1.15,g:.78,dk:.34,rn:1,wd:.15,fog:.2,snow:0,th:0,label:'مطر 🌧️'},
+  heavy_rain:{cv:1.28,g:.88,dk:.48,rn:1.8,wd:.22,fog:.25,snow:0,th:0,label:'مطر غزير 🌧️'},
+  storm:{cv:1.32,g:.9,dk:.58,rn:1.6,wd:.28,fog:.2,snow:0,th:.7,label:'عاصفة ⛈️'},
+  thunder:{cv:1.35,g:.92,dk:.62,rn:1.2,wd:.26,fog:.18,snow:0,th:1,label:'رعد وبرق ⚡'},
+  snow:{cv:1.0,g:.68,dk:.22,rn:0,wd:.1,fog:.3,snow:1,th:0,label:'ثلج ❄️'},
+  dust:{cv:.88,g:.52,dk:.12,rn:0,wd:.28,fog:.85,snow:0,th:0,label:'غبار 🌪️'}
+};
+
+var WX_ICON={
+  clear:'☀️',sunny:'☀️',dawn:'🌅',sunrise:'🌅',morning:'🌤️',noon:'☀️',afternoon:'🌤️',sunset:'🌇',dusk:'🌆',evening:'🌙',night:'🌙',
+  cloudy:'☁️',overcast:'☁️',fog:'🌫️',mist:'🌫️',windy:'🌬️',light_rain:'🌧️',rain:'🌧️',rainy:'🌧️',heavy_rain:'🌧️',storm:'⛈️',thunder:'⚡',snow:'❄️',dust:'🌪️'
+};
+
 function target(){
   var S=skyState(),h=S.h,r=SKY.rise,s=SKY.set,len=s-r,p=palette(h),W=WX[S.wx]||WX.clear;
   var t=(h-r)/len,tm=(((h-s)%24)+24)%24/(24-len);
@@ -1714,16 +1805,18 @@ function target(){
   var sunW=sunI+.001,moonW=moonI*.5+.001,lp=[(sun[0]*sunW+moon[0]*moonW)/(sunW+moonW),(sun[1]*sunW+moon[1]*moonW)/(sunW+moonW)];
   var sc=[1,.55+.4*sm(.05,.45,sa),.25+.55*sm(.05,.45,sa)];
   var lc=sunI>=moonI?sc:[.72,.8,1];
+  // تعديل لمعان الشمس حسب الوقت
+  var timeBoost = (S.wx==='sunrise'||S.wx==='sunset'||S.wx==='dawn')?1.3:1;
   return{top:gr(p.top,g*.85,dk*.55),mid:gr(p.mid,g*.85,dk*.55),hor:gr(p.hor,g*.85,dk*.5),
     lit:gr(p.lit,g*.7,dk*.45),shade:gr(p.shade,g*.6,dk*.35),lc:lc,sun:sun,moon:moon,lp:lp,sc:sc,
-    sunI:[sunI*(1-g*.85)],moonI:[moonI*(1-g*.6)],li:[Math.max(sunI*(1-g*.8),moonI*.55)],st:[p.st*(1-g)*(1-.3)],cov:[W.cv],wind:[W.wd*(S.wd?1.7:1)],rain:[W.rn],dark:[dk],fl:[S.wx==='storm'?1:0],soft:[sm(.12,.3,sa)*(1-g)]};
+    sunI:[sunI*(1-g*.85)*timeBoost],moonI:[moonI*(1-g*.6)],li:[Math.max(sunI*(1-g*.8),moonI*.55)],st:[p.st*(1-g)*(1-.3)],cov:[W.cv],wind:[W.wd*(S.wd?1.7:1)],rain:[W.rn],dark:[dk],fl:[W.th],fog:[W.fog||0],snow:[W.snow||0],soft:[sm(.12,.3,sa)*(1-g)],label:W.label,wx:S.wx};
 }
 var cur=null,tg=null,gl=null,pr=null,U={},raf=0,last=0,T0=performance.now(),rm=false;
 try{rm=matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}
 var VS='attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
 var FS=[
 '#ifdef GL_FRAGMENT_PRECISION_HIGH','precision highp float;','#else','precision mediump float;','#endif',
-'uniform vec2 uRes,uSun,uMoon,uLP,uFP;uniform float uT,uSoft,uSunI,uMoonI,uSt,uCov,uWind,uLI,uFl,uDark;',
+'uniform vec2 uRes,uSun,uMoon,uLP,uFP;uniform float uT,uSoft,uSunI,uMoonI,uSt,uCov,uWind,uLI,uFl,uDark,uFog,uSnow;',
 'uniform vec3 uTop,uMid,uHor,uLit,uShade,uLC,uSC;',
 'float h21(vec2 p){vec3 q=fract(vec3(p.xyx)*.1031);q+=dot(q,q.yzx+33.33);return fract((q.x+q.y)*q.z);}',
 'float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h21(i),h21(i+vec2(1.,0.)),f.x),mix(h21(i+vec2(0.,1.)),h21(i+vec2(1.,1.)),f.x),f.y);}',
@@ -1741,12 +1834,6 @@ var FS=[
 ' vec2 sg=q*70.;vec2 id=floor(sg);float rr=h21(id);vec2 off=(vec2(h21(id+7.1),h21(id+13.7))-.5)*.6;',
 ' float star=step(.945,rr)*smoothstep(.16,.0,length(fract(sg)-.5-off))*(.55+.45*sin(uT*(1.2+rr*3.)+rr*50.));',
 ' float stv=star*uSt*smoothstep(.12,.55,y);',
-' vec2 mp=vec2((uv.x-.5)*asp,y);',
-' float m1=step(abs(mp.x-.12),.018)*step(.16,y)*step(y,.5);m1+=step(abs(mp.x-.12),.028)*step(.4,y)*step(y,.42);m1+=step(abs(mp.x-.12),.018*(1.-(y-.5)/.08))*step(.5,y)*step(y,.58);m1+=step(abs(mp.x-.12),.003)*step(.58,y)*step(y,.62);',
-' float m2=step(abs(mp.x+.19),.014)*step(.14,y)*step(y,.4)+step(abs(mp.x+.19),.014*(1.-(y-.4)/.07))*step(.4,y)*step(y,.47);',
-' float m3=step(length((mp-vec2(-.03,.2))*vec2(1.,1.1)),.1)*step(.2,y)+step(abs(mp.x+.03),.1)*step(.1,y)*step(y,.2);',
-' float mk=clamp(m1+m2+m3,0.,1.)*smoothstep(.08,.28,y)*(1.-smoothstep(.6,.7,y));',
-' sky=mix(sky,mix(uShade,uLit,.75),mk*0.);',
 ' float oc=smoothstep(.75,1.1,uCov);vec2 ld=normalize(mix((uLP-uv)*vec2(asp,1.)+1e-4,vec2(0.,1.),oc));',
 ' float wt=uT*uWind;vec2 cp=q*3.3+vec2(wt,0.);',
 ' cp+=(vec2(vn(cp*.7+uT*.01),vn(cp*.7+7.3-uT*.012))-.5)*.55;',
@@ -1761,13 +1848,22 @@ var FS=[
 ' float fl=uFl*(.3+.7*exp(-length((uv-uFP)*vec2(asp,1.))*2.));',
 ' cc+=vec3(.75,.82,1.)*fl*(.4+.6*dens);',
 ' float ca=dens*(.95-.4*uSoft);',
+' // ضباب
+' float fogF = uFog * (0.5+0.5*smoothstep(0.0,0.7,y));',
+' vec3 fogCol = mix(uHor,vec3(0.92,0.92,0.88),0.4);',
+' // تأثير الشمس المشرقة والغروب - توهج افقي
+' float horGlow = exp(-pow(abs(y-0.02)*18.0,1.4)) * (uSunI*0.9+uMoonI*0.2);',
+' cc = mix(cc,vec3(1.0,0.72,0.35),horGlow*0.25);',
 ' vec2 hp=vec2(q.x*1.2+wt*1.7,y*4.2);float hn=fbm(hp+vec2(3.,uT*.01),uT*.015);',
 ' float ha=smoothstep(.5,.85,hn)*.38*(1.-uCov*.55)*smoothstep(.35,.9,y);',
 ' vec3 col=sky+vec3(stv)*(1.-ca)*(1.-ha);',
 ' col=mix(col,mix(uLit,uLC,.15*uLI)*(.85+.15*lit),ha);',
 ' col=mix(col,cc,ca);',
+' col=mix(col,fogCol,fogF*0.55);',
 ' col+=vec3(.7,.78,1.)*fl*.25;',
 ' col*=(1.-.18*uDark*(1.-y))*.96;',
+' // vignette خفيف',
+' col*=1.0-0.08*length((uv-0.5)*vec2(asp,1.0));',
 ' col+=(h21(gl_FragCoord.xy+fract(uT))-.5)/200.;',
 ' gl_FragColor=vec4(clamp(col,0.,1.),1.);}'
 ].join('\n');
@@ -1780,46 +1876,75 @@ function initGL(){
     gl.useProgram(pr);var b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);
     gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
     var a=gl.getAttribLocation(pr,'a');gl.enableVertexAttribArray(a);gl.vertexAttribPointer(a,2,gl.FLOAT,false,0,0);
-    ['uSoft','uRes','uSun','uMoon','uLP','uFP','uT','uSunI','uMoonI','uSt','uCov','uWind','uLI','uFl','uDark','uTop','uMid','uHor','uLit','uShade','uLC','uSC'].forEach(function(n){U[n]=gl.getUniformLocation(pr,n)});
+    ['uSoft','uRes','uSun','uMoon','uLP','uFP','uT','uSunI','uMoonI','uSt','uCov','uWind','uLI','uFl','uDark','uTop','uMid','uHor','uLit','uShade','uLC','uSC','uFog','uSnow'].forEach(function(n){U[n]=gl.getUniformLocation(pr,n)});
     return true;
   }catch(e){gl=null;return false}
 }
 function size(){
   var w=innerWidth,h=innerHeight,k=Math.min(.8,1100/Math.max(w,h));
   cv.width=Math.max(2,Math.round(w*k));cv.height=Math.max(2,Math.round(h*k));
-  rc.width=w;rc.height=h;if(gl)gl.viewport(0,0,cv.width,cv.height);
+  rc.width=w;rc.height=h;fogc.width=w;fogc.height=h;snowc.width=w;snowc.height=h;
+  if(gl)gl.viewport(0,0,cv.width,cv.height);
 }
-var rd=[];for(var i=0;i<320;i++)rd.push({x:Math.random(),y:Math.random(),l:.02+Math.random()*.035,s:.8+Math.random()*1.1,g:i%3});
-var rx=rc.getContext('2d'),flT=-99,flNext=0,flP=[.5,.8];
+var rd=[];for(var i=0;i<420;i++)rd.push({x:Math.random(),y:Math.random(),l:.02+Math.random()*.035,s:.8+Math.random()*1.1,g:i%3});
+var sd=[];for(var i=0;i<120;i++)sd.push({x:Math.random(),y:Math.random(),r:2+Math.random()*3.5,s:.2+Math.random()*.6,w:Math.random()*2-1});
+var rx=rc.getContext('2d'),fx=fogc.getContext('2d'),sx=snowc.getContext('2d'),flT=-99,flNext=0,flP=[.5,.8],flInt=0;
 function rainDraw(dt,amt,wind){
   rx.clearRect(0,0,rc.width,rc.height);if(amt<.03)return;
-  var n=Math.round(Math.min(320,170*amt)),W=rc.width,H=rc.height,sl=.16+wind*.5;
+  var n=Math.round(Math.min(420,220*amt)),W=rc.width,H=rc.height,sl=.16+wind*.5;
   for(var g=0;g<3;g++){
-    rx.beginPath();rx.lineWidth=.8+g*.45;rx.strokeStyle='rgba(215,230,255,'+(.2+g*.12)*Math.min(1,amt)+')';
+    rx.beginPath();rx.lineWidth=.8+g*.45;rx.strokeStyle='rgba(215,230,255,'+(.18+g*.11)*Math.min(1,amt)+')';
     for(var i=g;i<n;i+=3){var d=rd[i];d.y+=d.s*dt*(.9+g*.25);d.x-=d.s*dt*sl*.5;if(d.y>1.05){d.y=-.05;d.x=Math.random()*1.2}if(d.x<-.1)d.x+=1.2;
       var x=d.x*W,yy=d.y*H,L=d.l*H*(.7+g*.35);rx.moveTo(x,yy);rx.lineTo(x-L*sl,yy-L)}
     rx.stroke();
   }
 }
+function snowDraw(dt,amt,wind){
+  sx.clearRect(0,0,snowc.width,snowc.height);if(amt<.02)return;
+  var W=snowc.width,H=snowc.height,n=Math.round(60*amt);
+  sx.fillStyle='rgba(255,255,255,0.9)';
+  for(var i=0;i<Math.min(n,sd.length);i++){var d=sd[i];d.y+=d.s*dt*60;d.x+=d.w*dt*.02+wind*dt*.02;if(d.y>1){d.y=-.05;d.x=Math.random()}if(d.x<0)d.x+=1;if(d.x>1)d.x-=1;
+    var x=d.x*W,y=d.y*H; sx.beginPath(); sx.arc(x,y,d.r,0,Math.PI*2); sx.fill();}
+}
+function fogDraw(amt){
+  fx.clearRect(0,0,fogc.width,fogc.height);if(amt<.05)return;
+  var W=fogc.width,H=fogc.height;
+  var g=fx.createLinearGradient(0,H*0.2,0,H); g.addColorStop(0,'rgba(255,255,255,0)'); g.addColorStop(0.5,'rgba(235,235,225,'+(0.08*amt)+')'); g.addColorStop(1,'rgba(210,210,200,'+(0.18*amt)+')');
+  fx.fillStyle=g; fx.fillRect(0,0,W,H);
+  // طبقات ضباب متحركة
+  fx.fillStyle='rgba(255,255,255,'+(0.04*amt)+')';
+  for(var i=0;i<3;i++){ var y=H*(0.3+i*0.22+Math.sin(Date.now()/4000+i)*0.04); fx.fillRect(0,y,W, H*0.12);}
+}
 var lerp=function(a,b,k){return a.map(function(v,i){return v+(b[i]-v)*k})};
-var KEYS=['top','mid','hor','lit','shade','lc','sun','moon','lp','sc','sunI','moonI','li','st','cov','wind','rain','dark','fl','soft'];
+var KEYS=['top','mid','hor','lit','shade','lc','sun','moon','lp','sc','sunI','moonI','li','st','cov','wind','rain','dark','fl','soft','fog','snow'];
 function step(dt){
-  var k=1-Math.exp(-dt/1.4);KEYS.forEach(function(n){cur[n]=lerp(cur[n],tg[n],k)});
+  var k=1-Math.exp(-dt/1.2);KEYS.forEach(function(n){if(cur[n]&&tg[n])cur[n]=lerp(cur[n],tg[n],k)});
 }
 function draw(now,dt){
   var t=(now-T0)/1000*(rm?.15:1)+40;
-  if(tg.fl[0]>.5&&!rm){
-    if(now>flNext){flT=now;flNext=now+3500+Math.random()*9000;flP=[.2+Math.random()*.6,.55+Math.random()*.35]}
+  if(tg.fl[0]>.4&&!rm){
+    if(now>flNext){flT=now;flNext=now+ (tg.wx==='thunder'? 1800+Math.random()*4000 : 3500+Math.random()*9000);flP=[.2+Math.random()*.6,.55+Math.random()*.35]; flInt = tg.wx==='thunder'? 0.8+Math.random()*0.6 : 0.4+Math.random()*0.5}
   }
-  var ft=(now-flT)/1000,fl=ft<.9?Math.max(0,Math.exp(-ft/.09)*.9+(ft>.2?Math.exp(-(ft-.2)/.07)*.55:0)):0;
+  var ft=(now-flT)/1000,fl=ft<.9?Math.max(0,Math.exp(-ft/.07)*.95*flInt+(ft>.15?Math.exp(-(ft-.15)/.06)*.55*flInt:0)):0;
   if(gl){
     var c=cur,g1=function(n,v){gl.uniform1f(U[n],v)},g3=function(n,v){gl.uniform3f(U[n],v[0],v[1],v[2])},g2=function(n,v){gl.uniform2f(U[n],v[0],v[1])};
     g2('uRes',[cv.width,cv.height]);g1('uT',t);g3('uTop',c.top);g3('uMid',c.mid);g3('uHor',c.hor);g3('uLit',c.lit);g3('uShade',c.shade);g3('uLC',c.lc);g3('uSC',c.sc);
     g2('uSun',c.sun);g2('uMoon',c.moon);g2('uLP',c.lp);g2('uFP',flP);
-    g1('uSunI',c.sunI[0]);g1('uMoonI',c.moonI[0]);g1('uSt',c.st[0]);g1('uCov',c.cov[0]);g1('uWind',c.wind[0]);g1('uLI',c.li[0]);g1('uFl',fl);g1('uDark',c.dark[0]);g1('uSoft',c.soft[0]);
+    g1('uSunI',c.sunI[0]);g1('uMoonI',c.moonI[0]);g1('uSt',c.st[0]);g1('uCov',c.cov[0]);g1('uWind',c.wind[0]);g1('uLI',c.li[0]);g1('uFl',fl);g1('uDark',c.dark[0]);g1('uSoft',c.soft[0]);g1('uFog',c.fog[0]);g1('uSnow',c.snow[0]);
     gl.drawArrays(gl.TRIANGLES,0,3);
   }
-  if(!rm)rainDraw(dt,cur.rain[0],cur.wind[0]*3);else rx.clearRect(0,0,rc.width,rc.height);
+  if(!rm){
+    rainDraw(dt,cur.rain[0],cur.wind[0]*3);
+    snowDraw(dt,cur.snow[0],cur.wind[0]);
+    fogDraw(cur.fog[0]);
+    // وميض البرق يضيء الشاشة
+    if(fl>0.05){
+      var ov=document.getElementById('lightning-flash'); if(!ov){ov=document.createElement('div');ov.id='lightning-flash';ov.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:2;background:#fff;mix-blend-mode:screen';root.appendChild(ov);}
+      ov.style.opacity=fl*0.7; ov.style.display='block';
+    } else {
+      var ov=document.getElementById('lightning-flash'); if(ov) ov.style.display='none';
+    }
+  } else { rx.clearRect(0,0,rc.width,rc.height); fx.clearRect(0,0,fogc.width,fogc.height); sx.clearRect(0,0,snowc.width,snowc.height); }
 }
 function loop(ts){
   if(document.hidden){raf=0;return}
@@ -1829,8 +1954,14 @@ function loop(ts){
 }
 function css(c){var f=function(a){return'rgb('+a.map(function(v){return Math.round(v*255)}).join(',')+')'};return'linear-gradient(0deg,'+f(c.hor)+','+f(c.mid)+' 45%,'+f(c.top)+')'}
 window.skyUpd=function(){
-  tg=target();if(!cur){cur={};KEYS.forEach(function(n){cur[n]=tg[n].slice()})}
+  tg=target();if(!cur){cur={};KEYS.forEach(function(n){cur[n]=tg[n]?tg[n].slice():[0,0,0]})}
   root.style.background=css(tg);document.documentElement.style.backgroundColor='rgb('+tg.top.map(function(v){return Math.round(v*255)}).join(',')+')';
+  // تحديث الشارة
+  try{
+    var ic=WX_ICON[tg.wx]||'☁️';
+    var tm=new Date(); var hh=tm.getHours(); var timeLabel = hh<5?'فجر':hh<7?'شروق':hh<11?'صباح':hh<14?'ظهيرة':hh<17?'عصر':hh<19?'غروب':hh<21?'مساء':'ليل';
+    badge.innerHTML='<i>'+ic+'</i> '+ (tg.label||'') + ' · '+ timeLabel;
+  }catch(e){}
   if(!raf&&!document.hidden){last=0;raf=requestAnimationFrame(loop)}
 };
 initGL();size();
@@ -1838,10 +1969,36 @@ var rt=0;addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(siz
 document.addEventListener('visibilitychange',function(){if(!document.hidden){window.skyUpd()}});
 if(gl)cv.addEventListener('webglcontextlost',function(e){e.preventDefault();gl=null;cv.style.display='none'});
 else cv.style.display='none';
+
+// لوحة تجريبية ?demo=1
+(function(){
+  try{
+    var q=new URLSearchParams(location.search);
+    if(q.get('demo')==='1' || q.get('weather-demo')==='1'){
+      demo.classList.add('on');
+      var allWx=['clear','sunny','dawn','sunrise','morning','noon','afternoon','sunset','dusk','evening','night','cloudy','overcast','fog','mist','windy','light_rain','rain','heavy_rain','storm','thunder','snow'];
+      var allSky=['dawn','sunrise','morning','noon','afternoon','sunset','dusk','evening','night'];
+      demo.innerHTML='<b>🌦️ معاينة الطقس</b><div class="row" id="wx-row"></div><b>🌅 وقت اليوم</b><div class="row" id="sky-row"></div><div style="font-size:11px;color:#6b7a74">استخدم ?wx=rain&sky=sunset أو ?h=6.5 للمعاينة</div>';
+      var wr=document.getElementById('wx-row'), sr=document.getElementById('sky-row');
+      allWx.forEach(function(k){
+        var b=document.createElement('button'); b.textContent=(WX[k]?WX[k].label: k); b.onclick=function(){
+          var u=new URL(location.href); u.searchParams.set('wx',k); history.replaceState(null,'',u); if(window.skyUpd)window.skyUpd();
+          demo.querySelectorAll('#wx-row button').forEach(function(x){x.classList.remove('on')}); b.classList.add('on');
+        }; if(skyState().wx===k) b.classList.add('on'); wr.appendChild(b);
+      });
+      allSky.forEach(function(k){
+        var b=document.createElement('button'); b.textContent=k; b.onclick=function(){
+          var u=new URL(location.href); u.searchParams.set('sky',k); history.replaceState(null,'',u); if(window.skyUpd)window.skyUpd();
+        }; sr.appendChild(b);
+      });
+      var reset=document.createElement('button'); reset.textContent='↺ تلقائي'; reset.style.background='#e8f4ee'; reset.onclick=function(){ var u=new URL(location.href); u.searchParams.delete('wx'); u.searchParams.delete('sky'); u.searchParams.delete('h'); history.replaceState(null,'',u); if(window.skyUpd)window.skyUpd(); demo.classList.remove('on'); }; sr.appendChild(reset);
+    }
+  }catch(e){}
+})();
+
 window.skyUpd();setInterval(function(){window.skyUpd()},20000);
 if(window.skyFetchWx)skyFetchWx();
 })();
-
 </script>
 </body>
 </html>
