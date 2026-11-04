@@ -827,13 +827,13 @@ function sSched(st){const t=today(),L=st.sessions.filter(x=>x.date||x.time);
   const blk=(ti,a,em)=>`<h3>${ti}</h3>`+(a.length?`<div class="card" style="padding:4px 16px">${a.map(row).join('')}</div>`:`<div class="emp">${em}</div>`);
   return `<h2>جدولي وسجل حصصي</h2>${stuCompNote()}<div class="sstat"><div><b>${cn(st,'مجدولة')}</b><small>متبقية</small></div><div><b>${cn(st,'مكتملة')}</b><small>مكتملة</small></div><div><b>${cn(st,'ملغاة')}</b><small>ملغاة</small></div></div>`+blk('📅 الحصص القادمة',up,'لا توجد حصص قادمة حاليًا.')+blk('📖 سجل الحصص السابقة',past,'لا توجد حصص مسجلة بعد')}
 function sProgH(){return `<h2>تقاريري 🌿</h2><h3>📅 السجل اليومي</h3><div class="tools"><p class="sv" style="margin:0;flex:1">اضغط على السهم الصغير بجوار أي يوم لعرض تقرير المعلم.</p>${sortBar('sday','d-',true)}</div><div id="sdl">${sDaily.length?dayListH(sortBy(sDaily,'sday',()=>'',r=>r.day,'d-'),sDayOpen,true,'sDayTog'):'<div class="emp">لا توجد تقارير بعد. ستظهر هنا تقارير المعلم اليومية.</div>'}</div>`}
-var NI={subscription:'⏳',expiry_soon:'⏳',exp0:'⌛',renew:'🔄',cancel:'⚠️',reminder:'⏰',report:'📝',monthly:'📊',record:'📖',nudge:'👋🏻',poke:'👋🏻'};
+var NI={subscription:'⏳',expiry_soon:'⏳',exp0:'⌛',renew:'🔄',cancel:'⚠️',absence:'📌',reminder:'⏰',report:'📝',monthly:'📊',record:'📖',nudge:'👋🏻',poke:'👋🏻'};
 function sNotiH(){const un=sNoti.filter(n=>!n.read).length;return `<h2>الإشعارات 🔔</h2>${sNoti.length?(un?'<button class="lk" onclick="sMarkRead()">تحديد الكل كمقروء</button>':'')+sNoti.map(n=>{const d=new Date(+n.createdAt),ds=isNaN(d)?'':d.toLocaleString('ar',{dateStyle:'medium',timeStyle:'short'});return `<div class="nt${n.read?'':' new'}" role="button" tabindex="0" style="cursor:pointer" onclick="ntGo(${sNoti.indexOf(n)})"><span class="ni" aria-hidden="true">${NI[n.type]||'🔔'}</span><div style="flex:1"><b>${esc(n.title)}</b><p>${esc(n.message)}</p><small>${esc(ds)}</small></div><span style="align-self:center;color:var(--mu);font-size:20px">‹</span></div>`}).join(''):'<div class="emp">لا توجد إشعارات حتى الآن 🌿</div>'}`}
 function ntGo(i){const n=sNoti[i];if(!n)return;const s=(n.type||'')+' '+(n.title||'')+' '+(n.message||''),st=sRow;
   let to='home';
   if(/nudge|نغزة/.test(s))to='mates';
   else if(/monthly|record|report|تقرير|سجل/.test(s))to='prog';
-  else if(/cancel|session|reminder|حصة|حصص|موعد|جدول/.test(s)&&!/اشتراك/.test(s))to='sched';
+  else if(/cancel|session|reminder|absence|حصة|حصص|موعد|جدول|غياب/.test(s)&&!/اشتراك/.test(s))to='sched';
   else if(/sub|اشتراك|تجديد/.test(s)&&!/استلمنا/.test(s)&&st&&st.end&&st.sub!=='paused'&&dl(st)<=3){rnOpen();return}
   sv2=to;render();window.scrollTo(0,0)}
 async function sMarkRead(){if(!sSession||sAs)return;try{await pgReq('rpc/mark_my_notifications_read',sSession.access_token,{method:'POST',body:'{}'})}catch(e){}sNoti=sNoti.map(n=>({...n,read:true}));render()}
@@ -917,6 +917,15 @@ async function tRemind(sid,date,time,btn){
     await rq('rpc/rt_teacher_remind',{method:'POST',body:JSON.stringify({p_teacher:me.id,p_student:sid,p_date:date,p_time:time})});
     ls.s('rt_tsent_'+sid+date+time,1);toast('تم الإشعار ✓');if(btn)btn.textContent='تم الإرسال ✓'}
   catch(e){toast('تعذّر الإرسال');if(btn){btn.disabled=false;btn.textContent='إشعار بالوقت المتبقي'}}}
+async function tAbsAlert(sid,btn){
+  if(!me)return;const st=S.students[sid];if(!st)return;
+  const AB=['غياب الطالب','غياب الطالب بدون عذر','غياب الطالب بعذر'],n=curSess(st).filter(x=>AB.includes(x.st)).length;
+  if(!confirm('إرسال تنبيه الغياب إلى '+st.name+'؟\nعدد مرات الغياب المسجلة في الاشتراك الحالي: '+n))return;
+  const t0=btn?btn.textContent:'';
+  try{if(btn){btn.disabled=true;btn.textContent='جارٍ الإرسال…'}
+    await rq('rpc/rt_teacher_absence_alert',{method:'POST',body:JSON.stringify({p_teacher:me.id,p_student:sid})});
+    toast('تم إرسال تنبيه الغياب ✓');if(btn){btn.disabled=false;btn.textContent=t0}}
+  catch(e){toast(/already_sent/.test(e.message)?'سبق إرسال تنبيه غياب لهذا الطالب اليوم':'تعذّر الإرسال');if(btn){btn.disabled=false;btn.textContent=t0}}}
 async function admNotice(id,btn){
   if(!ADM_CODE)return toast('يرجى إعادة الدخول للإدارة');const st=S.students[id];if(!st)return;
   if(!confirm('إرسال إشعار الاشتراك إلى '+st.name+'؟'))return;
@@ -994,7 +1003,7 @@ function det(st,ro,part){part=part||DT||'info';if(ro&&part==='daily')part='info'
       pvH=ms.length?`<label>اختر الشهر لعرض جدوله كاملًا<select aria-label="الشهر" onchange="pvm(this.value)">${ms.map(m=>`<option value="${m}"${m===pvSel?' selected':''}>${monthLabel(m)}</option>`).join('')}</select></label>`:'<div class="emp">لا توجد اشتراكات سابقة بعد. تظهر هنا جداول الاشتراكات المنتهية بعد التجديد.</div>';
       list=(st.sessions||[]).filter(x=>(x.date||'').slice(0,7)===pvSel);num.clear();list.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')||(a.time||'').localeCompare(b.time||'')).forEach((x,k)=>num.set(x,k+1))}
     const rows=sortBy(list.map(x=>({x,i:idx.get(x)})),sk,()=>'',o=>o.x.date||'','d+'),cH=isP?(()=>{const c=k=>list.filter(x=>x.st===k).length;return`الإجمالي: <b>${list.length}</b> · المكتملة: <b>${c('مكتملة')}</b> · الغياب: <b>${c('غياب الطالب')}</b> · التعويضية: <b>${list.filter(x=>x.kind==='تعويضية').length}</b>`})():cntH(st);
-    body=(isP?prevSubsH(st)+pvH:'')+((!ro&&!isP)?tNote():'')+((isP&&!pvSel)?'':`<div class="tools"><p class="sv" id="cnt" style="margin:0;flex:1">${cH}</p>${sortBar(sk,'d+',true)}</div><div class="tw"><table><thead><tr><th>#</th><th>التاريخ</th><th>الوقت</th><th>النوع</th><th>الحالة</th><th>الملاحظات</th></tr></thead><tbody>${rows.map(({x,i})=>`<tr><td>${num.get(x)}</td><td>${I(x,i,'date','date')}</td><td>${I(x,i,'time','time')}</td><td>${x.kind==='تعويضية'?'<span style="color:var(--gt);font-weight:700">تعويضية</span>':'عادية'}${x.tid&&me&&x.tid!==me.id?' 🔒':''}</td><td><select aria-label="حالة الحصة" data-i="${i}" data-f="st" onchange="ed(this)"${dx(x)}${lkA(x,ro)}>${(SS.includes(x.st)?SS:SS.concat([x.st])).map(o=>`<option value="${o}"${o===x.st?' selected':''}>${stLbl(o)}</option>`).join('')}${ppOpt(x,ro)}</select>${lkI(x,ro)}</td><td>${I(x,i,'notes','text')}</td></tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--mut)">لا توجد حصص بعد</td></tr>'}</tbody></table></div>`)+((ro||isP)?'':'<div class="acts" style="flex-direction:row"><button class="b2" onclick="mkSheet()">+ حصة تعويضية</button></div>')}
+    body=(isP?prevSubsH(st)+pvH:'')+((!ro&&!isP)?tNote():'')+((isP&&!pvSel)?'':`<div class="tools"><p class="sv" id="cnt" style="margin:0;flex:1">${cH}</p>${sortBar(sk,'d+',true)}</div><div class="tw"><table><thead><tr><th>#</th><th>التاريخ</th><th>الوقت</th><th>النوع</th><th>الحالة</th><th>الملاحظات</th></tr></thead><tbody>${rows.map(({x,i})=>`<tr><td>${num.get(x)}</td><td>${I(x,i,'date','date')}</td><td>${I(x,i,'time','time')}</td><td>${x.kind==='تعويضية'?'<span style="color:var(--gt);font-weight:700">تعويضية</span>':'عادية'}${x.tid&&me&&x.tid!==me.id?' 🔒':''}</td><td><select aria-label="حالة الحصة" data-i="${i}" data-f="st" onchange="ed(this)"${dx(x)}${lkA(x,ro)}>${(SS.includes(x.st)?SS:SS.concat([x.st])).map(o=>`<option value="${o}"${o===x.st?' selected':''}>${stLbl(o)}</option>`).join('')}${ppOpt(x,ro)}</select>${lkI(x,ro)}</td><td>${I(x,i,'notes','text')}</td></tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--mut)">لا توجد حصص بعد</td></tr>'}</tbody></table></div>`)+((ro||isP)?'':'<div class="acts" style="flex-direction:row"><button class="b2" onclick="mkSheet()">+ حصة تعويضية</button><button class="b2" style="color:#b26a00" onclick="tAbsAlert(\''+esc(st.id)+'\',this)">🔔 تنبيه غياب</button></div>')}
   else if(part==='addsess'&&ro)body=addSessH(st);
   else body=`${dlogH(st,ro)}${st.summary?`<p class="sv">ملخص سابق: ${esc(st.summary)}</p>`:''}${ro?'':`<h3>🧾 الصحيفة الشهرية</h3><div class="panel" style="text-align:center"><p class="sv" style="margin:0 0 10px">يمكنك فتح صحيفة الطالب/ة وتعبئتها ثم تحميلها PDF أو إرسالها على الواتساب.</p><button class="b1 full" onclick="reportSheet('${esc(st.id)}')">+ فتح الصحيفة الشهرية</button></div>`}`;
   return head+chips+body}
@@ -1378,7 +1387,7 @@ function abFrom(){return'2026-10-01'}
 function abIsAbs(t){return['غياب الطالب','غياب الطالب بدون عذر','غياب الطالب بعذر','غياب المعلم بعذر','غياب المعلم بدون عذر','إلغاء من الإدارة'].includes(t)}
 function abNew(x){return x.pol===1&&(x.date||'')>=abFrom()}
 function mkOk(x){if(x.st==='غياب الطالب')return true;if(!abNew(x))return false;if(x.exc)return true;const t=x.st;if(t==='غياب الطالب بعذر')return x.ap==='approved';return t==='غياب المعلم بعذر'||t==='غياب المعلم بدون عذر'||t==='إلغاء من الإدارة'}
-function payable(x){return abNew(x)?((x.st==='مكتملة'&&!x.refPaid)||x.st==='غياب الطالب بدون عذر'):x.st==='مكتملة'}
+function payable(x){return x.st==='مكتملة'}
 function abElig(s){return(s.sessions||[]).filter(x=>mkOk(x)&&!x.mk)}
 function abLocked(x,v){if(x.st==='غياب الطالب')return (!!x.mk||x.pol===1)&&v!==x.st;return abNew(x)&&abIsAbs(x.st)&&v!==x.st}
 function abMark(s,x){if(x.st==='غياب الطالب'){x.pol=1;x.id=x.id||('a'+Date.now().toString(36)+Math.random().toString(36).slice(2,5));(s.abLog=s.abLog||[]).push({sid:x.id,date:x.date,act:'تسجيل: غياب الطالب',at:new Date().toISOString()});return}if((x.date||'')<abFrom()||!abIsAbs(x.st))return;x.pol=1;x.id=x.id||('a'+Date.now().toString(36)+Math.random().toString(36).slice(2,5));if(x.st==='غياب الطالب بعذر'){if(!x.ap)x.ap='pending'}else if(x.ap==='pending')delete x.ap;(s.abLog=s.abLog||[]).push({sid:x.id,date:x.date,act:'تسجيل: '+x.st,at:new Date().toISOString()})}
