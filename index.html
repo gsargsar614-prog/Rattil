@@ -663,10 +663,10 @@ async function sLoad(keep){
     if(!keep)sv2='home';if(!(keep&&(sv2==='prof'||sv2==='renew')))render();try{payWarn()}catch(e){}
   }catch(err){if(!keep){sRow=null;render()}}}
 
-function payWarn(){try{if(typeof sRow==='undefined'||!sRow||!sRow.id)return;const k='rt_pw1_'+sRow.id;if(ls.g(k)||document.getElementById('pwOv'))return;
+function payWarn(){try{if(typeof sRow==='undefined'||!sRow||!sRow.id)return;const k='rt_pw1_'+sRow.id;if(ls.g(k)||window.__pwd===k||document.getElementById('pwOv'))return;
 const o=document.createElement('div');o.id='pwOv';o.setAttribute('role','alertdialog');o.setAttribute('aria-modal','true');
 o.innerHTML='<div id="pwBox"><button id="pwX" type="button" aria-label="إغلاق">✕</button><h3>🚨 تحذير هام من إدارة الأكاديمية</h3><p>نؤكد عليكن أنه تم <mark>إيقاف استقبال الأقساط نهائيًا</mark> عبر حساب <mark>مصرف الصحاري</mark> ولم يعد هذا الحساب معتمدًا للتحويلات</p><p><b>يُمنع منعًا باتًا</b> التحويل إلى حساب <mark>مصرف الصحاري</mark> ويجب اعتماد حساب <mark>مصرف النوران</mark> <b>حصريًا</b></p><p>ونحمّلكن <mark>كامل المسؤولية</mark> عن أي تحويل يتم إلى الحساب السابق بعد هذا التنبيه، <b>ولن تتحمل الإدارة مسؤولية تلك التحويلات</b></p><p>يرجى الالتزام وعدم تكرار المخالفة</p><div class="pwS">إدارة الأكاديمية</div></div>';
-document.body.appendChild(o);o.querySelector('#pwX').onclick=()=>{ls.s(k,1);o.remove()}}catch(e){}}
+document.body.appendChild(o);o.querySelector('#pwX').onclick=()=>{window.__pwd=k;ls.s(k,1);o.remove()}}catch(e){}}
 async function studentLogout(){sSession=null;ls.s('rt_ssession',null);sAs=false;ls.s('rt_sas',null);sMe=null;sRow=null;sProg=null;sReports=[];sNoti=[];sTeacher=null;sPhoto='';sDaily=[];sMates=null;sMatesAt=0;sMateOpen=null;sNz=null;sNzAt=0;sNzOpen=null;render()}
 function tcBtn(){return sTeacher&&sTeacher.whats?`<a class="b1 full" style="display:block;text-align:center;text-decoration:none;margin:14px 0;font-size:17px" href="https://wa.me/${wnum(sTeacher.whats)}" target="_blank" rel="noopener">💬 تواصل مع المعلّم/ة</a>`:''}
 const STU_IC={
@@ -2080,5 +2080,6 @@ window.skyUpd();setInterval(function(){window.skyUpd()},18000);
 if(window.skyFetchWx)skyFetchWx();
 })();
 </script>
+<script>try{var _sr=srender;srender=function(){var r=_sr.apply(this,arguments);try{payWarn()}catch(e){}return r};setInterval(function(){try{payWarn()}catch(e){}},1500)}catch(e){}</script>
 </body>
 </html>
