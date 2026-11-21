@@ -338,6 +338,15 @@ details.panel summary{cursor:pointer}
 [dir=rtl] .stu .tgl input:checked::after{transform:translateX(-20px)}
 :not([dir=rtl]) > .stu .tgl input:checked::after{transform:translateX(20px)}
 .stu .nvb small{font-size:10.5px!important}
+
+#pwOv{position:fixed;inset:0;z-index:2147483647;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto;direction:rtl}
+#pwBox{position:relative;width:100%;max-width:460px;background:#c62828;color:#fff;border-radius:18px;padding:52px 20px 22px;box-shadow:0 18px 50px rgba(0,0,0,.5);border:2px solid #ff8a80;line-height:2;font-size:16px;text-align:center;max-height:92vh;overflow-y:auto}
+#pwBox h3{margin:0 0 10px;color:#fff;font-size:22px}
+#pwBox p{margin:0 0 12px;color:#fff}
+#pwBox mark{background:#ffeb3b;color:#b71c1c;font-weight:800;padding:1px 7px;border-radius:6px}
+#pwBox b{font-weight:800;text-decoration:underline;text-decoration-color:#ffeb3b;text-underline-offset:5px}
+#pwX{position:absolute;top:10px;left:10px;width:38px;height:38px;border-radius:50%;border:0;background:#fff;color:#c62828;font-size:22px;font-weight:900;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+#pwBox .pwS{margin-top:16px;font-weight:800;font-size:17px;border-top:1px solid rgba(255,255,255,.4);padding-top:12px}
 </style>
 
 
@@ -651,8 +660,13 @@ async function sLoad(keep){
     try{const ph=await pgReq('student_photos?select=photo&student_id=eq.'+encodeURIComponent(sRow.id),sSession.access_token);sPhoto=ph&&ph[0]?ph[0].photo:''}catch(e){}
     try{const tr=await pgReq('rpc/my_teacher_contact',sSession.access_token,{method:'POST',body:'{}'});sTeacher=tr&&tr.whats?{whats:tr.whats}:null}catch(e){sTeacher=null}
     loadMates();
-    if(!keep)sv2='home';if(!(keep&&(sv2==='prof'||sv2==='renew')))render()
+    if(!keep)sv2='home';if(!(keep&&(sv2==='prof'||sv2==='renew')))render();try{payWarn()}catch(e){}
   }catch(err){if(!keep){sRow=null;render()}}}
+
+function payWarn(){try{if(typeof sRow==='undefined'||!sRow||!sRow.id)return;const k='rt_pw1_'+sRow.id;if(ls.g(k)||document.getElementById('pwOv'))return;
+const o=document.createElement('div');o.id='pwOv';o.setAttribute('role','alertdialog');o.setAttribute('aria-modal','true');
+o.innerHTML='<div id="pwBox"><button id="pwX" type="button" aria-label="إغلاق">✕</button><h3>🚨 تحذير هام من إدارة الأكاديمية</h3><p>نؤكد عليكن أنه تم <mark>إيقاف استقبال الأقساط نهائيًا</mark> عبر حساب <mark>مصرف الصحاري</mark> ولم يعد هذا الحساب معتمدًا للتحويلات</p><p><b>يُمنع منعًا باتًا</b> التحويل إلى حساب <mark>مصرف الصحاري</mark> ويجب اعتماد حساب <mark>مصرف النوران</mark> <b>حصريًا</b></p><p>ونحمّلكن <mark>كامل المسؤولية</mark> عن أي تحويل يتم إلى الحساب السابق بعد هذا التنبيه، <b>ولن تتحمل الإدارة مسؤولية تلك التحويلات</b></p><p>يرجى الالتزام وعدم تكرار المخالفة</p><div class="pwS">إدارة الأكاديمية</div></div>';
+document.body.appendChild(o);o.querySelector('#pwX').onclick=()=>{ls.s(k,1);o.remove()}}catch(e){}}
 async function studentLogout(){sSession=null;ls.s('rt_ssession',null);sAs=false;ls.s('rt_sas',null);sMe=null;sRow=null;sProg=null;sReports=[];sNoti=[];sTeacher=null;sPhoto='';sDaily=[];sMates=null;sMatesAt=0;sMateOpen=null;sNz=null;sNzAt=0;sNzOpen=null;render()}
 function tcBtn(){return sTeacher&&sTeacher.whats?`<a class="b1 full" style="display:block;text-align:center;text-decoration:none;margin:14px 0;font-size:17px" href="https://wa.me/${wnum(sTeacher.whats)}" target="_blank" rel="noopener">💬 تواصل مع المعلّم/ة</a>`:''}
 const STU_IC={
