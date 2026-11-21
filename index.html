@@ -708,12 +708,12 @@ const o=a.createOscillator(),og=a.createGain();o.type='triangle';o.frequency.set
 function lampIntro(){if(window.__lampDone||document.getElementById('lampOv'))return;window.__lampDone=1;window.__lampOn=true;
 const o=document.createElement('div');o.id='lampOv';o.setAttribute('role','dialog');o.setAttribute('aria-label','شاشة الترحيب');
 let ps='';for(let i=0;i<22;i++)ps+=`<i class="lpP" style="left:${Math.random()*100}%;top:${10+Math.random()*80}%;width:${2+Math.random()*3}px;height:${2+Math.random()*3}px;--d:${3+Math.random()*4}s;animation-delay:${Math.random()*3}s"></i>`;
-o.innerHTML=ps+`<div class="lpGr"><img class="lpLg" src="${LOGO_MARK}" alt=""><h1>أهلًا بكِ في أكاديمية رتل</h1><p>وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا</p></div><svg viewBox="0 0 300 420" aria-hidden="true"><defs><linearGradient id="lpCn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c4" stop-opacity=".5"/><stop offset="1" stop-color="#b5c99a" stop-opacity="0"/></linearGradient><linearGradient id="lpShd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2d3326"/><stop offset="1" stop-color="#0b0e09"/></linearGradient></defs><polygon class="lpC" points="70,158 236,136 300,420 40,420" fill="url(#lpCn)"/><ellipse cx="150" cy="402" rx="84" ry="9" fill="#000" opacity=".4"/><ellipse cx="150" cy="394" rx="66" ry="10" fill="#12150e"/><ellipse cx="150" cy="390" rx="66" ry="10" fill="#1d2217" stroke="#c9a24b" stroke-opacity=".5"/><line x1="150" y1="388" x2="112" y2="282" stroke="#171a12" stroke-width="8" stroke-linecap="round"/><line x1="112" y1="282" x2="92" y2="166" stroke="#171a12" stroke-width="8" stroke-linecap="round"/><circle cx="150" cy="388" r="8" fill="#c9a24b"/><circle cx="112" cy="282" r="7" fill="#c9a24b"/><g transform="rotate(-14 150 150)"><g class="lpSh"><path d="M64 150Q64 60 150 54Q236 60 236 150Z" fill="url(#lpShd)"/><path d="M84 112Q104 74 150 66" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="3" stroke-linecap="round"/><ellipse class="lpB" cx="150" cy="150" rx="86" ry="12"/><ellipse cx="150" cy="150" rx="86" ry="12" fill="none" stroke="#c9a24b" stroke-width="3"/><ellipse class="lpBulb" cx="150" cy="151" rx="30" ry="4" fill="#fff"/></g></g><circle cx="92" cy="166" r="7" fill="#c9a24b"/><line id="lpS" x1="150" y1="152" x2="150" y2="212" stroke="#c9a24b" stroke-width="2.5"/><g id="lpT" tabindex="0" role="button" aria-label="اسحبي الخيط للتشغيل" style="cursor:grab;touch-action:none"><circle cx="150" cy="232" r="30" fill="transparent"/><circle class="lpHl" cx="150" cy="226" r="16"/><circle class="lpRg" cx="150" cy="226" r="12"/><rect x="143" y="212" width="14" height="28" rx="6" fill="#c9a24b"/></g></svg><div class="lpLb">اسحبي الخيط للتشغيل</div><button class="lpSk" id="lpSk" type="button">تخطي</button>`;
+o.innerHTML=ps+`<div class="lpGr"><img class="lpLg" src="${LOGO_MARK}" alt=""><h1>أهلًا بكِ في أكاديمية رتل</h1><p>وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا</p></div><svg viewBox="0 0 300 420" aria-hidden="true"><defs><linearGradient id="lpCn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c4" stop-opacity=".5"/><stop offset="1" stop-color="#b5c99a" stop-opacity="0"/></linearGradient><linearGradient id="lpShd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2d3326"/><stop offset="1" stop-color="#0b0e09"/></linearGradient></defs><polygon class="lpC" points="70,158 236,136 300,420 40,420" fill="url(#lpCn)"/><ellipse cx="150" cy="402" rx="84" ry="9" fill="#000" opacity=".4"/><ellipse cx="150" cy="394" rx="66" ry="10" fill="#12150e"/><ellipse cx="150" cy="390" rx="66" ry="10" fill="#1d2217" stroke="#c9a24b" stroke-opacity=".5"/><line x1="150" y1="388" x2="112" y2="282" stroke="#171a12" stroke-width="8" stroke-linecap="round"/><line x1="112" y1="282" x2="92" y2="166" stroke="#171a12" stroke-width="8" stroke-linecap="round"/><circle cx="150" cy="388" r="8" fill="#c9a24b"/><circle cx="112" cy="282" r="7" fill="#c9a24b"/><g transform="rotate(-14 150 150)"><g class="lpSh"><path d="M64 150Q64 60 150 54Q236 60 236 150Z" fill="url(#lpShd)"/><path d="M84 112Q104 74 150 66" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="3" stroke-linecap="round"/><ellipse class="lpB" cx="150" cy="150" rx="86" ry="12"/><ellipse cx="150" cy="150" rx="86" ry="12" fill="none" stroke="#c9a24b" stroke-width="3"/><ellipse class="lpBulb" cx="150" cy="151" rx="30" ry="4" fill="#fff"/></g></g><circle cx="92" cy="166" r="7" fill="#c9a24b"/><line id="lpS" x1="150" y1="152" x2="150" y2="212" stroke="#c9a24b" stroke-width="2.5"/><g id="lpT" tabindex="0" role="button" aria-label="اسحبي الخيط للتشغيل" style="cursor:grab;touch-action:none"><circle cx="150" cy="232" r="30" fill="transparent"/><circle class="lpHl" cx="150" cy="226" r="16"/><circle class="lpRg" cx="150" cy="226" r="12"/><rect x="143" y="212" width="14" height="28" rx="6" fill="#c9a24b"/></g></svg><div class="lpLb">اسحبي الخيط <i class="lpAr">↓</i></div><button class="lpSk" id="lpSk" type="button">تخطي</button>`;
 document.body.appendChild(o);
 const T=o.querySelector('#lpT'),S=o.querySelector('#lpS'),V=o.querySelector('svg');let dy=0,drag=false,y0=0,on=false;
 const set=v=>{dy=v;S.setAttribute('y2',212+v);T.setAttribute('transform','translate(0,'+v+')')};
-const end=()=>{o.classList.add('out');setTimeout(()=>{o.remove();window.__lampOn=false},750)};
-const pull=()=>{if(on)return;on=true;drag=false;set(46);setTimeout(()=>set(0),170);lampSnd();setTimeout(()=>o.classList.add('on'),210);setTimeout(end,4600)};
+const end=()=>{o.classList.add('out');setTimeout(()=>{o.remove();window.__lampOn=false},450)};
+const pull=()=>{if(on)return;on=true;drag=false;set(46);setTimeout(()=>set(0),170);lampSnd();setTimeout(()=>o.classList.add('on'),210);setTimeout(end,2200)};
 T.addEventListener('pointerdown',e=>{if(on)return;drag=true;y0=e.clientY;try{T.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault()});
 T.addEventListener('pointermove',e=>{if(!drag)return;const k=300/V.getBoundingClientRect().width,v=Math.max(0,Math.min(60,(e.clientY-y0)*k));set(v);if(v>36)pull()});
 const up=()=>{if(drag){drag=false;if(!on)set(0)}};T.addEventListener('pointerup',up);T.addEventListener('pointercancel',up);
@@ -1495,14 +1495,22 @@ function lkA(x,ro){return (!ro&&abLocked(x,''))?' disabled':''}
 function lkI(x,ro){return (!ro&&abLocked(x,''))?' 🔒':''}
 function addSessH(st){return `<h3>➕ إضافة حصة للطالب</h3><div class="panel"><p class="sv">تُضاف الحصة إلى جدول حصص ${esc(st.name)} وتظهر عند المعلم/ة والطالب/ة.</p><label>التاريخ<input id="as1" type="date" value="${today()}"></label><label>الوقت<input id="as2" type="time" value="${esc(st.fixedTime||'')}"></label><label>نوع الحصة<select id="as3"><option value="عادية">عادية</option><option value="تعويضية">تعويضية</option></select></label><label>ملاحظات (اختياري)<input id="as4" type="text"></label><button class="b1 full" onclick="admAddSess('${esc(st.id)}',this)">إضافة الحصة</button></div>`}
 
-function admEditP(id){const st=S.students[id];if(!st)return;const lk=!!st.authUid,f=(i,l,x,ty,dis)=>`<label>${l}<input id="${i}" type="${ty||'text'}" value="${esc(x||'')}"${dis?' disabled':''}></label>`;
-$('#ov2').innerHTML=`<div class="sh" onclick="if(event.target===this)shut()"><div class="bx" role="dialog" aria-modal="true"><h3>تعديل البيانات الشخصية</h3>${f('ep1','الاسم الثلاثي',st.name,'text',lk)}${f('ep5','رقم الواتساب',st.phone,'tel',lk)}${lk?'<small class="sv" style="display:block;margin:-4px 0 8px">الاسم والرقم مرتبطان بحساب دخول الطالبة، فلا يتغيّران من هنا حتى لا يُقفل عليها الدخول.</small>':''}${f('ep3','الدولة والمدينة',st.city)}${f('ep4','الدولة الأم',st.mother)}${f('ep8','العمر',st.age,'number')}${f('ep2','الرواية المطلوبة',st.riwaya)}<div class="bt"><button class="b2" onclick="shut()">إلغاء</button><button class="b1" onclick="admSaveP('${esc(id)}',this)">حفظ</button></div></div></div>`}
+function admEditP(id){const st=S.students[id];if(!st)return;const lk=!!st.authUid,f=(i,l,x,ty)=>`<label>${l}<input id="${i}" type="${ty||'text'}" value="${esc(x||'')}"></label>`;
+$('#ov2').innerHTML=`<div class="sh" onclick="if(event.target===this)shut()"><div class="bx" role="dialog" aria-modal="true"><h3>تعديل البيانات الشخصية</h3>${f('ep1','الاسم الثلاثي',st.name)}${f('ep5','رقم الواتساب',st.phone,'tel')}${lk?'<small class="sv" style="display:block;margin:-4px 0 8px">عند تغيير الاسم أو الرقم يُحدَّث حساب دخول الطالبة تلقائيًا، وتدخل بعدها بالرقم الجديد.</small>':''}${f('ep3','الدولة والمدينة',st.city)}${f('ep4','الدولة الأم',st.mother)}${f('ep8','العمر',st.age,'number')}${f('ep2','الرواية المطلوبة',st.riwaya)}<div class="bt"><button class="b2" onclick="shut()">إلغاء</button><button class="b1" onclick="admSaveP('${esc(id)}',this)">حفظ</button></div></div></div>`}
 async function admSaveP(id,btn){const src=S.students[id];if(!src)return;const g=i=>{const e=$('#'+i);return e?e.value.trim():''};
- if(!src.authUid){if(!g('ep1'))return toast('الرجاء إدخال الاسم')}
+ const nn1=g('ep1'),ph=g('ep5');if(!nn1)return toast('الرجاء إدخال الاسم');
  if(btn)btn.disabled=true;const s=nm(JSON.parse(JSON.stringify(src)));
- if(!src.authUid){s.name=g('ep1');s.phone=g('ep5')}
- s.city=g('ep3');s.mother=g('ep4');s.age=g('ep8');s.riwaya=g('ep2');s.updatedAt=Date.now();
- try{await put('students',id,s);toast('تم حفظ البيانات ✓');shut();ra()}catch(e){if(btn)btn.disabled=false;toast('تعذّر الحفظ، حاولي مرة أخرى')}}
+ try{
+  if(src.authUid&&(nn1!==src.name||ph!==src.phone)){
+   const d=norm(nd(ph)),pn=(d.length>9&&d.startsWith('218'))?d.slice(3):d;
+   if(pn.length<5||pn.length>15){if(btn)btn.disabled=false;return toast('رقم الهاتف غير صحيح')}
+   if(!ADM_CODE){if(btn)btn.disabled=false;return toast('يرجى إعادة الدخول للإدارة')}
+   const r=await rq('rpc/rt_admin_set_student_login',{method:'POST',body:JSON.stringify({p_code:ADM_CODE,p_id:id,p_phone:pn,p_hash:h8(nn(nn1))})});
+   if(!r||!r.ok){if(btn)btn.disabled=false;return toast(r&&r.err==='email_taken'?'هذا الرقم مستخدم لحساب آخر':'تعذّر تحديث حساب الدخول')}
+  }
+  s.name=nn1;s.phone=ph;
+  s.city=g('ep3');s.mother=g('ep4');s.age=g('ep8');s.riwaya=g('ep2');s.updatedAt=Date.now();
+  await put('students',id,s);toast('تم حفظ البيانات ✓');shut();ra()}catch(e){if(btn)btn.disabled=false;toast('تعذّر الحفظ، حاولي مرة أخرى')}}
 async function admAddSess(id,btn){const src=S.students[id];if(!src)return;const g=i=>$('#'+i).value.trim(),d=g('as1'),t=g('as2'),k=g('as3'),n=g('as4');
   if(!d)return toast('اختر تاريخ الحصة');if(!t)return toast('اختر وقت الحصة');
   if(btn)btn.disabled=true;const s=nm(JSON.parse(JSON.stringify(src)));s.sessions.push({date:d,time:t,st:'مجدولة',kind:k,pkg:s.pkg,notes:n});s.updatedAt=Date.now();
@@ -2166,6 +2174,18 @@ html.dk .fbell{background:linear-gradient(145deg,#2b3622,#1f2918);color:#e9f5db}
 #lampOv .lpBulb{opacity:0;transition:opacity .5s}#lampOv.on .lpBulb{opacity:1}
 #lampOv .lpRg{stroke:#f2b632}
 @media(prefers-reduced-motion:reduce){.fbell.rg svg{animation:none}}
+#lampOv::before{transition:opacity .35s!important}
+#lampOv .lpB{transition:fill .25s,filter .25s!important}
+#lampOv .lpC{transition:opacity .35s!important}
+#lampOv .lpSh{transition:filter .3s!important}
+#lampOv .lpBulb,#lampOv .lpHl{transition:opacity .2s,fill .25s!important}
+.lpGr{transition:opacity .45s .1s,transform .45s .1s!important}
+.lpLg{transition:transform .5s cubic-bezier(.2,.7,.2,1)!important}
+#lampOv{transition:opacity .45s!important}
+.lpLb{padding:4px 12px!important;font-size:12px!important;font-weight:600!important;background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.14)!important;color:rgba(255,255,255,.8)!important;margin-top:2px!important}
+.lpAr{font-style:normal;display:inline-block;animation:lpAr 1.2s ease-in-out infinite}
+@keyframes lpAr{0%,100%{transform:translateY(-2px)}50%{transform:translateY(3px)}}
+@media(prefers-reduced-motion:reduce){.lpAr{animation:none}}
 </style>
 </body>
 </html>
