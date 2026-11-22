@@ -1088,7 +1088,7 @@ function det(st,ro,part){part=part||DT||'info';if(ro&&part==='daily')part='info'
       pvH=ms.length?`<label>اختر الشهر لعرض جدوله كاملًا<select aria-label="الشهر" onchange="pvm(this.value)">${ms.map(m=>`<option value="${m}"${m===pvSel?' selected':''}>${monthLabel(m)}</option>`).join('')}</select></label>`:'<div class="emp">لا توجد اشتراكات سابقة بعد. تظهر هنا جداول الاشتراكات المنتهية بعد التجديد.</div>';
       list=(st.sessions||[]).filter(x=>(x.date||'').slice(0,7)===pvSel);num.clear();list.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')||(a.time||'').localeCompare(b.time||'')).forEach((x,k)=>num.set(x,k+1))}
     const rows=sortBy(list.map(x=>({x,i:idx.get(x)})),sk,()=>'',o=>o.x.date||'','d+'),cH=isP?(()=>{const c=k=>list.filter(x=>x.st===k).length;return`الإجمالي: <b>${list.length}</b> · المكتملة: <b>${c('مكتملة')}</b> · الغياب: <b>${c('غياب الطالب')}</b> · التعويضية: <b>${list.filter(x=>x.kind==='تعويضية').length}</b>`})():cntH(st);
-    body=(isP?prevSubsH(st)+pvH:'')+((!ro&&!isP)?tNote():'')+((isP&&!pvSel)?'':`<div class="tools"><p class="sv" id="cnt" style="margin:0;flex:1">${cH}</p>${sortBar(sk,'d+',true)}</div><div class="tw"><table><thead><tr><th>#</th><th>التاريخ</th><th>الوقت</th><th>النوع</th><th>الحالة</th><th>الملاحظات</th></tr></thead><tbody>${rows.map(({x,i})=>`<tr><td>${num.get(x)}</td><td>${I(x,i,'date','date')}</td><td>${I(x,i,'time','time')}</td><td>${x.kind==='تعويضية'?'<span style="color:var(--gt);font-weight:700">تعويضية</span>':'عادية'}${x.tid&&me&&x.tid!==me.id?' 🔒':''}</td><td><select aria-label="حالة الحصة" data-i="${i}" data-f="st" onchange="ed(this)"${dx(x)}${lkA(x,ro)}>${(SS.includes(x.st)?SS:SS.concat([x.st])).map(o=>`<option value="${o}"${o===x.st?' selected':''}>${stLbl(o)}</option>`).join('')}${ppOpt(x,ro)}</select>${lkI(x,ro)}</td><td>${I(x,i,'notes','text')}</td></tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--mut)">لا توجد حصص بعد</td></tr>'}</tbody></table></div>`)+((ro||isP)?'':'<div class="acts" style="flex-direction:row"><button class="b2" onclick="mkSheet()">+ حصة تعويضية</button><button class="b2" style="color:#b26a00" onclick="tAbsAlert(\''+esc(st.id)+'\',this)">🔔 تنبيه غياب</button></div>')}
+    body=(isP?prevSubsH(st)+pvH:'')+((!ro&&!isP)?tNote():'')+((isP&&!pvSel)?'':`<div class="tools"><p class="sv" id="cnt" style="margin:0;flex:1">${cH}</p>${sortBar(sk,'d+',true)}</div><div class="tw"><table><thead><tr><th>#</th><th>التاريخ</th><th>الوقت</th><th>النوع</th><th>الحالة</th><th>الملاحظات</th></tr></thead><tbody>${rows.map(({x,i})=>`<tr class="${x.st==='مكتملة'?'r-done':x.st==='مجدولة'?'r-sch':(x.st||'').indexOf('غياب')>-1?'r-abs':''}"><td>${num.get(x)}</td><td>${I(x,i,'date','date')}</td><td>${I(x,i,'time','time')}</td><td>${x.kind==='تعويضية'?'<span style="color:var(--gt);font-weight:700">تعويضية</span>':'عادية'}${x.tid&&me&&x.tid!==me.id?' 🔒':''}</td><td><select aria-label="حالة الحصة" data-i="${i}" data-f="st" onchange="ed(this)"${dx(x)}${lkA(x,ro)}>${(SS.includes(x.st)?SS:SS.concat([x.st])).map(o=>`<option value="${o}"${o===x.st?' selected':''}>${stLbl(o)}</option>`).join('')}${ppOpt(x,ro)}</select>${lkI(x,ro)}</td><td>${I(x,i,'notes','text')}</td></tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--mut)">لا توجد حصص بعد</td></tr>'}</tbody></table></div>`)+((ro||isP)?'':'<div class="acts" style="flex-direction:row"><button class="b2" onclick="mkSheet()">+ حصة تعويضية</button><button class="b2" style="color:#b26a00" onclick="tAbsAlert(\''+esc(st.id)+'\',this)">🔔 تنبيه غياب</button></div>')}
   else if(part==='addsess'&&ro)body=addSessH(st);
   else body=`${dlogH(st,ro)}${st.summary?`<p class="sv">ملخص سابق: ${esc(st.summary)}</p>`:''}${ro?'':`<h3>🧾 الصحيفة الشهرية</h3><div class="panel" style="text-align:center"><p class="sv" style="margin:0 0 10px">يمكنك فتح صحيفة الطالب/ة وتعبئتها ثم تحميلها PDF أو إرسالها على الواتساب.</p><button class="b1 full" onclick="reportSheet('${esc(st.id)}')">+ فتح الصحيفة الشهرية</button></div>`}`;
   return head+chips+body}
@@ -1421,9 +1421,9 @@ let TDAY='';const LSENT=ls.g('rt_linksent')||{};
 const addD=(d,n)=>{const x=new Date(d+'T00:00:00');x.setDate(x.getDate()+n);return ymd(x)};
 function sdate(v2){TDAY=v2||today();render()}
 function sday(n){sdate(addD(TDAY||today(),n))}
-const CHM={'مجدولة':'ok','مكتملة':'gd','غياب الطالب بعذر':'wn','غياب المعلم بعذر':'wn'};
+const CHM={'مجدولة':'sch','مكتملة':'dn','غياب الطالب بعذر':'wn','غياب المعلم بعذر':'wn'};
 function tSched(L){const d=TDAY||today(),tm=addD(today(),1),rows=L.flatMap(s=>(s.sessions||[]).filter(x=>x.date===d&&notFri(x.date)).map(x=>({s,x}))).sort((a,b)=>(a.x.time||'99:99').localeCompare(b.x.time||'99:99'));
- return `<h2>جدول الحصص</h2><div class="dsel"><button onclick="sday(-1)" aria-label="اليوم السابق">›</button><input type="date" value="${d}" onchange="sdate(this.value)"><button onclick="sday(1)" aria-label="اليوم التالي">‹</button></div><div class="chips"><button class="chp${d===today()?' on':''}" onclick="sdate(today())">اليوم</button><button class="chp${d===tm?' on':''}" onclick="sdate('${tm}')">غدًا</button></div><p class="sv">${dayLbl(d)} · ${rows.length} حصة</p>`+(rows.length?rows.map(({s,x})=>`<div class="srw"><div class="tmv">${x.time?t12(x.time):'—'}</div><div class="who"><b>${esc(s.name)}</b><small>${dayLbl(x.date)} · ${x.date}</small></div><div class="sx"><span class="chip ${CHM[x.st]||'er'}">${esc(stLbl(x.st))}</span><button class="ctb" onclick="tCt('${esc(s.id)}')">تواصل مع الطالب</button></div></div>`).join(''):'<div class="emp">لا توجد حصص في هذا اليوم</div>')}
+ return `<h2>جدول الحصص</h2><div class="dsel"><button onclick="sday(-1)" aria-label="اليوم السابق">›</button><input type="date" value="${d}" onchange="sdate(this.value)"><button onclick="sday(1)" aria-label="اليوم التالي">‹</button></div><div class="chips"><button class="chp${d===today()?' on':''}" onclick="sdate(today())">اليوم</button><button class="chp${d===tm?' on':''}" onclick="sdate('${tm}')">غدًا</button></div><p class="sv">${dayLbl(d)} · ${rows.length} حصة</p>`+(rows.length?rows.map(({s,x})=>`<div class="srw ${x.st==='مكتملة'?'s-done':x.st==='مجدولة'?'s-sch':(x.st||'').indexOf('غياب')>-1?'s-abs':''}"><div class="tmv">${x.time?t12(x.time):'—'}</div><div class="who"><b>${esc(s.name)}</b><small>${dayLbl(x.date)} · ${x.date}</small></div><div class="sx"><span class="chip ${CHM[x.st]||'er'}">${esc(stLbl(x.st))}</span><button class="ctb" onclick="tCt('${esc(s.id)}')">تواصل مع الطالب</button></div></div>`).join(''):'<div class="emp">لا توجد حصص في هذا اليوم</div>')}
 function siteUrl(){return location.href.split(/[?#]/)[0].replace(/index\.html$/,'')}
 function admRegWA(id){const st=S.students[id];if(!st)return;const p=wnum(st.phone);if(!p)return toast('رقم الواتساب غير صحيح');
   const m='السلام عليكم ورحمة الله وبركاته 🌷\n\nنرجو منكم الدخول إلى موقع الأكاديمية وإنشاء حسابكم لمتابعة مستواكم وحصصكم وتأكيد اشتراككم.\n\nالخطوات:\n1) افتحوا الرابط التالي.\n2) اضغطوا «إنشاء حساب لأول مرة».\n3) اكتبوا رقم الواتساب المسجّل لدينا: '+(st.phone||'')+' واختاروا كلمة مرور (6 أحرف أو أرقام على الأقل).\n\n'+siteUrl()+'\n\nبارك الله فيكم ونفع بكم';
@@ -2187,5 +2187,168 @@ html.dk .fbell{background:linear-gradient(145deg,#2b3622,#1f2918);color:#e9f5db}
 @keyframes lpAr{0%,100%{transform:translateY(-2px)}50%{transform:translateY(3px)}}
 @media(prefers-reduced-motion:reduce){.lpAr{animation:none}}
 </style>
+<style id="rt-nav3">
+/* =====================================================================
+   v19 — 1) شريط تنقل زجاجي عائم بفقاعة منزلقة  2) أسماء أوضح  3) ألوان الحصص
+   ===================================================================== */
+@property --nx{syntax:'<length>';inherits:true;initial-value:-300px}
+
+/* ---------- 1) الشريط ---------- */
+html body nav.tnav.tnav,
+html body .stu nav.bn.bn,
+html body nav.bn.bn{
+  --nx:-300px;
+  position:fixed!important;left:12px!important;right:12px!important;inset-inline:12px!important;
+  bottom:calc(10px + env(safe-area-inset-bottom,0px))!important;top:auto!important;
+  height:68px;padding:0 6px!important;margin:0;
+  background:none!important;border:0!important;border-radius:34px!important;box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  display:flex!important;align-items:stretch;overflow:visible;
+  transition:--nx .55s cubic-bezier(.3,1.25,.4,1);
+  -webkit-tap-highlight-color:transparent
+}
+html body nav.tnav.tn-nt,html body nav.bn.tn-nt{transition:none!important}
+nav.tnav .tn-sh,nav.bn .tn-sh{position:absolute;inset:0;border-radius:34px;box-shadow:0 12px 30px rgba(8,16,6,.42),0 2px 8px rgba(8,16,6,.25);pointer-events:none}
+nav.tnav .tn-bg,nav.bn .tn-bg{
+  position:absolute;inset:0;border-radius:34px;pointer-events:none;
+  background:linear-gradient(180deg,rgba(78,94,58,.80),rgba(22,31,18,.93) 80%);
+  -webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5);
+  border:1px solid rgba(255,255,255,.28);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25),inset 0 -10px 18px rgba(0,0,0,.12);
+  -webkit-mask-image:radial-gradient(circle 36px at var(--nx) 0,transparent 34.4px,#000 35.8px);
+          mask-image:radial-gradient(circle 36px at var(--nx) 0,transparent 34.4px,#000 35.8px)
+}
+nav.tnav .tn-ring,nav.bn .tn-ring{
+  position:absolute;top:-36px;left:calc(var(--nx) - 36px);width:72px;height:72px;border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.34);box-sizing:border-box;pointer-events:none;
+  clip-path:inset(50% 0 0 0);
+  box-shadow:inset 0 0 14px rgba(255,255,255,.10)
+}
+nav.tnav .tn-bub,nav.bn .tn-bub{
+  position:absolute;top:-23px;left:calc(var(--nx) - 27px);width:54px;height:54px;border-radius:50%;
+  display:grid;place-items:center;color:#fff;pointer-events:none;z-index:1;
+  background:radial-gradient(circle at 34% 28%,#9db57c 0,#6d8552 52%,#4a5c37 100%);
+  border:1px solid rgba(255,255,255,.35);
+  box-shadow:0 8px 18px rgba(8,16,6,.45),0 0 20px rgba(157,181,124,.55),inset 0 1px 1px rgba(255,255,255,.45)
+}
+nav.tnav .tn-bub svg,nav.bn .tn-bub svg{width:25px;height:25px;display:block;transition:opacity .16s,transform .16s}
+nav.tnav .tn-bub.sw svg,nav.bn .tn-bub.sw svg{opacity:0;transform:scale(.6)}
+
+/* الأزرار */
+html body nav.tnav button,html body nav.bn button{
+  position:relative;z-index:2;flex:1;min-width:0;background:none!important;border:0!important;box-shadow:none!important;
+  display:grid;grid-template-rows:22px auto;justify-items:center;align-content:start;gap:3px;
+  padding:14px 0 0!important;border-radius:0!important;font:inherit;
+  color:rgba(255,255,255,.86)!important;cursor:pointer;-webkit-tap-highlight-color:transparent
+}
+html body nav.tnav button small,html body nav.bn button small{
+  font-size:10.5px!important;font-weight:700;line-height:1.2;color:rgba(255,255,255,.78)!important;
+  max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+html body nav.tnav button svg,html body nav.bn button svg{width:22px;height:22px;transition:transform .45s cubic-bezier(.3,1.25,.4,1),opacity .2s}
+html body nav.tnav button.on,html body nav.bn button.on{color:#fff!important}
+html body nav.tnav button.on small,html body nav.bn button.on small{color:#f6d77a!important}
+html body nav.tnav button.on::before,html body nav.bn button.on::before,
+html body .stu nav.bn button.on::before{display:none!important;content:none!important}
+/* أيقونة الزر النشط تنتقل لتكون داخل الفقاعة (الفقاعة تعرض نسخة منها) */
+html body nav.tnav.tn-on button.on svg,html body nav.bn.tn-on button.on svg{opacity:0!important;transform:translateY(-21px) scale(.7)!important}
+/* شارات العدّاد */
+html body nav.tnav .bdg,html body nav.bn .bdg{
+  position:absolute;top:8px;inset-inline-start:auto;inset-inline-end:calc(50% - 22px);
+  min-width:16px;height:16px;line-height:16px;padding:0 4px;border-radius:9px;background:#e5484d;color:#fff;
+  font-size:10px;font-weight:700;text-align:center;display:block;box-shadow:0 0 0 2px rgba(26,36,21,.9);z-index:3
+}
+html body nav.tnav button.on .bdg,html body nav.bn button.on .bdg{top:-20px;inset-inline-end:calc(50% - 30px)}
+
+/* إفساح مكان للشريط العائم */
+main.tm{padding-bottom:calc(128px + env(safe-area-inset-bottom,0px))!important}
+.stu main{padding-bottom:calc(128px + env(safe-area-inset-bottom,0px))!important}
+html body .fab,html body .wa{bottom:calc(112px + env(safe-area-inset-bottom,0px))!important}
+html body #toast{bottom:calc(120px + env(safe-area-inset-bottom,0px))!important}
+html body #wx-demo{bottom:calc(112px + env(safe-area-inset-bottom,0px))!important}
+
+/* ---------- 2) أسماء أوضح ---------- */
+main>.bk,.tm>.bk{color:#f6d77a!important;font-weight:800;text-shadow:0 1px 2px rgba(0,0,0,.5),0 2px 10px rgba(0,8,30,.6)}
+
+.dethd b{
+  color:#fff!important;font-size:20px!important;font-weight:800;line-height:1.35;
+  text-shadow:0 1px 2px rgba(0,0,0,.55),0 2px 14px rgba(0,8,30,.75)
+}
+.dethd .sv{
+  color:#eef5e2!important;font-size:14px;font-weight:600;
+  text-shadow:0 1px 2px rgba(0,0,0,.55),0 2px 10px rgba(0,8,30,.7)
+}
+header .nm b{color:#1f2918!important;font-weight:800}
+header .nm small{color:#6b4f0c!important;font-weight:700}
+.cd .tx b,.cd b,.srw .who b{color:#1b2415!important;font-weight:800}
+.srw .who small,.cd small{color:#4f5e3f!important}
+html.dk header .nm b{color:#f1f7e6!important}
+html.dk header .nm small{color:#f6d77a!important}
+html.dk .cd .tx b,html.dk .cd b,html.dk .srw .who b{color:#f1f7e6!important}
+html.dk .srw .who small,html.dk .cd small{color:#c3d1ad!important}
+
+/* ---------- 3) ألوان الحصص: مجدولة (أزرق) / مكتملة (أخضر غامق) ---------- */
+.chip.sch{background:#dcebff;color:#1c5aa3;border:1px solid #a9c9f3}
+.chip.sch::before{content:"◷ ";font-weight:800}
+.chip.dn{background:#2f8a53;color:#fff;border:1px solid #226b40}
+.chip.dn::before{content:"✓ ";font-weight:800}
+.srw{border-inline-start:6px solid #c9c3b0}
+.srw.s-sch{border-inline-start-color:#2d6cb5;background:linear-gradient(90deg,rgba(45,108,181,.06),transparent 60%),var(--card)}
+.srw.s-sch .tmv{background:linear-gradient(135deg,#dcebff,#b6d3f6);color:#17497f}
+.srw.s-done{border-inline-start-color:#2f8a53;background:linear-gradient(90deg,rgba(47,138,83,.10),transparent 60%),var(--card)}
+.srw.s-done .tmv{background:linear-gradient(135deg,#3fa268,#2a7a49);color:#fff}
+.srw.s-abs{border-inline-start-color:#d29a1f}
+.srw.s-abs .tmv{background:linear-gradient(135deg,#fdf0c9,#f6dc8c);color:#74530a}
+html.dk .chip.sch{background:#17304f;color:#a9cdf8;border-color:#2c568a}
+html.dk .srw.s-sch .tmv{background:linear-gradient(135deg,#1f3d63,#17304f);color:#cfe3fb}
+/* سجل حصص الطالب (جدول المعلم) */
+tr.r-sch td:first-child{background:#2d6cb5;color:#fff;font-weight:800;text-align:center}
+tr.r-done td:first-child{background:#2f8a53;color:#fff;font-weight:800;text-align:center}
+tr.r-abs td:first-child{background:#d29a1f;color:#fff;font-weight:800;text-align:center}
+.tools>.sv,.tm>.sv{color:#eaf2dc!important;text-shadow:0 1px 2px rgba(0,0,0,.5),0 2px 10px rgba(0,8,30,.6)}
+tr.r-sch select[data-f="st"]{background:#e6f1ff;color:#17497f;border-color:#a9c9f3;font-weight:700}
+tr.r-done select[data-f="st"]{background:#dff3e6;color:#1d6a3c;border-color:#8fcfa6;font-weight:700}
+</style>
+<script id="rt-nav3-js">
+(function(){
+  var last={key:'',x:null,svg:''};
+  function key(n){return n.className.replace(/\btn-\w+\b/g,'').trim()+'|'+n.querySelectorAll('button').length+'|'+Math.round(n.getBoundingClientRect().width)}
+  function xOf(n,b){var a=n.getBoundingClientRect(),r=b.getBoundingClientRect();return r.left-a.left+r.width/2}
+  function build(n){
+    if(n.dataset.tn)return;
+    var nr=n.getBoundingClientRect();if(!nr.width)return;
+    n.dataset.tn='1';
+    n.insertAdjacentHTML('afterbegin','<i class="tn-sh"></i><i class="tn-bg"></i><i class="tn-ring"></i><i class="tn-bub"></i>');
+    var on=n.querySelector('button.on'),bub=n.querySelector('.tn-bub'),k=key(n);
+    if(!on){n.style.setProperty('--nx','-300px');n.classList.remove('tn-on');last={key:k,x:null,svg:''};return}
+    var sv=on.querySelector('svg'),svg=sv?sv.outerHTML:'',x=xOf(n,on);
+    n.classList.add('tn-on');
+    if(last.key===k&&last.x!==null&&Math.abs(last.x-x)>1){
+      n.classList.add('tn-nt');n.style.setProperty('--nx',last.x+'px');bub.innerHTML=last.svg;
+      void n.offsetWidth;n.classList.remove('tn-nt');n.style.setProperty('--nx',x+'px');
+      setTimeout(function(){bub.classList.add('sw');setTimeout(function(){bub.innerHTML=svg;bub.classList.remove('sw')},120)},170);
+    }else{
+      n.classList.add('tn-nt');n.style.setProperty('--nx',x+'px');bub.innerHTML=svg;void n.offsetWidth;n.classList.remove('tn-nt');
+    }
+    last={key:k,x:x,svg:svg};
+  }
+  function place(n){ /* عند تغيّر القياس: أعيدي الموضع بلا حركة */
+    var on=n.querySelector('button.on');if(!on||!n.dataset.tn)return;
+    var x=xOf(n,on);n.classList.add('tn-nt');n.style.setProperty('--nx',x+'px');void n.offsetWidth;n.classList.remove('tn-nt');last.x=x;last.key=key(n)
+  }
+  var q=0;function run(){q=0;document.querySelectorAll('nav.tnav,nav.bn').forEach(build)}
+  function sched(){if(!q)q=requestAnimationFrame(run)}
+  new MutationObserver(sched).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});
+  window.addEventListener('resize',function(){document.querySelectorAll('nav.tnav[data-tn],nav.bn[data-tn]').forEach(place)});
+  document.addEventListener('DOMContentLoaded',sched);sched();
+  /* تلوين صف الحصة فور تغيير الحالة من القائمة */
+  document.addEventListener('change',function(e){
+    var s=e.target;if(!s||!s.matches||!s.matches('select[data-f="st"]'))return;
+    var tr=s.closest('tr');if(!tr)return;tr.classList.remove('r-sch','r-done','r-abs');
+    if(s.value==='مكتملة')tr.classList.add('r-done');else if(s.value==='مجدولة')tr.classList.add('r-sch');else if(s.value.indexOf('غياب')>-1)tr.classList.add('r-abs')
+  },true);
+})();
+</script>
+
 </body>
 </html>
