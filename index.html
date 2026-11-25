@@ -831,9 +831,7 @@ function sAbout(){
   const fb=ACAD.fb?`<a class="cbtn fb" href="${esc(ACAD.fb)}" target="_blank" rel="noopener">متابعة</a>`:`<span class="cbtn off" aria-disabled="true">متابعة</span>`;
   return `<section class="toon rise"><div class="mas"><img class="lgimg" style="width:min(210px,64%)" src="${LOGO_FULL}" alt="شعار أكاديمية رتل"></div><p>أكاديمية متخصصة في تعليم القرآن الكريم للمغتربين والمغتربات 🌙</p></section>
 <h3>${sic('star',18)} لماذا أكاديمية رتل؟</h3>
-<div class="fgrid">${FEATS.map((f,i)=>`<div class="fc rise" style="background:${f[3]};border-color:${f[4]};animation-delay:${i*.05}s"><div class="em">${f[0]}</div><b>${f[1]}</b><p>${f[2]}</p></div>`).join('')}</div>
-${stuAya()}
-<h3>${sic('book',18)} أحاديث تلهمنا</h3><div class="vgrid">${VBG.map((c,i)=>{const a=hadAt(i+1);return `<div class="vc rise" style="background:${c[0]};border-color:${c[1]}"><p>${a[0]}</p><small>${a[1]}</small></div>`}).join('')}</div>
+<div class="fgrid">${FEATS.map((f,i)=>`<div class="fc rise" style="background:${f[3]};border-color:${f[4]};animation-delay:${i*.05}s"><b>${f[1]}</b><p>${f[2]}</p></div>`).join('')}</div>
 <h3>${sic('chat',18)} تواصل مع الأكاديمية</h3>
 <div class="card rise"><div class="crow"><span class="ci cwa">${sic('chat',20)}</span><div class="cm"><b>واتساب</b><small dir="ltr">${ACAD.waShow}</small></div><a class="cbtn cwa" href="https://wa.me/${ACAD.wa}" target="_blank" rel="noopener">تواصل</a></div>
 <div class="crow"><span class="ci fbk"><b>f</b></span><div class="cm"><b>صفحة فيسبوك</b><small>أخبار الأكاديمية</small></div>${fb}</div>
@@ -897,7 +895,6 @@ function sHome(st){
 ${adm('al'+(st.end||'')+(days<0?'x':''),al)}${adm('im'+(up?up.id:''),imm)}
 ${rnBtn(st)}
 ${fsBan()}
-${stuCompNote()}
 <section class="card rise" aria-label="اشتراكي"><div class="hd"><b>${sic('star',18)} اشتراكي</b><span class="chip ${cls}">${paused?'متوقف':esc(sb1[1])}</span></div>
 <div class="subrow"><div class="subinfo"><div class="pk">${esc((PK[st.pkg]||{}).label||'')}</div><div class="dt">البداية: <b>${esc(st.start)||'—'}</b><br>النهاية: <b>${esc(st.end)||'—'}</b></div></div>${paused||!st.end?'':stuRing(days,total,cls)}</div></section>
 <section class="card rise" aria-label="الحصة القادمة"><div class="hd"><b>${sic('cal',18)} الحصة القادمة</b><button class="lk" onclick="sv2='sched';render()">جدولي ‹</button></div>${sess}</section>
