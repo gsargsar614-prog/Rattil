@@ -496,7 +496,7 @@ const dl=s=>Math.round((new Date(s.end+'T00:00:00')-new Date(new Date().toDateSt
 const minutesTo=(date,time)=>time?(new Date(date+'T'+time)-new Date())/60000:9999;
 const imminent=x=>x.st==='مجدولة'&&x.date===today()&&x.time&&minutesTo(x.date,x.time)>=0&&minutesTo(x.date,x.time)<=10;
 const subSt=s=>s.sub==='paused'?['⚪','متوقف']:!s.end?['🟢','نشط']:dl(s)<0?['🔴','منتهي']:dl(s)<=3?['🟡','ينتهي قريبًا']:['🟢','نشط'];
-function calc(t,m){let f=0,hf=0,us=0;Object.values(S.students).forEach(s=>{(s.sessions||[]).forEach(x=>{if((x.tid||s.teacherId)===t&&payable(x)&&(x.date||'').slice(0,7)===m){if(x.pkg==='half')hf++;else if(x.pkg==='full')f++;else if(/^usd/.test(x.pkg))us++}})});
+function calc(t,m){let f=0,hf=0,us=0;Object.values(S.students).forEach(s=>{(s.sessions||[]).forEach(x=>{if((x.tid||s.teacherId)===t&&payable(x)&&!freeAt(s,x.date||'')&&(x.date||'').slice(0,7)===m){if(x.pkg==='half')hf++;else if(x.pkg==='full')f++;else if(/^usd/.test(x.pkg))us++}})});
   const dueL=r2(f*RATE.full+hf*RATE.half),dueU=r2(us*RATE.usd);
   const P=Object.values(S.payments).filter(p=>p.teacherId===t&&p.month===m);
   const paidL=r2(P.filter(p=>(p.currency||'LYD')==='LYD').reduce((a,p)=>a+(+p.amount||0),0)),paidU=r2(P.filter(p=>p.currency==='USD').reduce((a,p)=>a+(+p.amount||0),0));
@@ -1106,7 +1106,7 @@ function det(st,ro,part){part=part||DT||'info';if(ro&&part==='daily')part='info'
   const chips=`<div class="chips">${[['info','البيانات الشخصية'],['data','السجلات والجداول'],['prev','الاشتراكات السابقة'],ro?['addsess','➕ إضافة حصة']:['daily','التقارير اليومية']].map(c=>`<button class="chp${part===c[0]?' on':''}" onclick="dtab('${c[0]}')">${c[1]}</button>`).join('')}</div>`;
   let body='';
   if(part==='info'){const wa=(st.phone?`<a class="b2" href="https://wa.me/${wnum(st.phone)}" target="_blank" rel="noopener">💬 تواصل مع الطالب</a>`:'')+(ro&&st.phone?`<button class="b2" onclick="admLink('${esc(st.id)}')">📲 إرسال رابط الموقع للطالب</button>`:'')+(ro?`<button class="b2" onclick="moveFlow('${esc(st.id)}')">🔀 نقل الطالب إلى معلم آخر</button>`:'');
-    body=`<div class="panel">${R.map(r=>r[2]?`<div class="kv" role="button" tabindex="0" style="cursor:pointer" onclick="${r[2]}" onkeydown="if(event.key==='Enter')${r[2]}"><span>${r[0]}</span><b>${esc(r[1])||'—'} <small style="display:block;color:#5f7147;font-weight:700">💬 اضغط لإعداد رسالة واتساب</small></b></div>`:`<div class="kv"><span>${r[0]}</span><b>${esc(r[1])||'—'}</b></div>`).join('')}</div><div class="acts">${wa}${ro?`<button class="b2" onclick="admEditP('${esc(st.id)}')">✏️ تعديل البيانات الشخصية</button><label class="tgl" style="width:100%;margin-top:6px"><span><b>السماح للطالب بالدفع</b><small>${st.payOff?'مُعطَّل: لا يظهر للطالب زر التجديد، ويتجدّد اشتراكه تلقائيًا عند انتهائه.':'مفعّل: يظهر للطالب زر تجديد الاشتراك عند اقتراب الانتهاء.'}</small></span><input type="checkbox" ${st.payOff?'':'checked'} onchange="admPayTog('${esc(st.id)}',this.checked)" aria-label="السماح للطالب بالدفع"></label>`:`<button class="b2" onclick="sheet(cur)">✏️ تعديل بيانات الطالب</button>${rqOk(st)?`<small class="sv" style="display:block;width:100%">⏳ طلب التجديد بانتظار موافقة الإدارة، وسيتحدّث السجل تلقائيًا بعد الموافقة.</small>`:`<small class="sv" style="display:block;width:100%">🔒 التجديد يتم بموافقة الإدارة بعد أن يرسل الطالب طلبه، ويتحدّث سجله لديك تلقائيًا.</small>`}`}${(ro&&av)?`<button class="b2" style="color:#5f7147" onclick="renewS('${esc(st.id)}')">🔄 تجديد الاشتراك</button>`:''}${(!ro||av)?`<button class="b2 dng" onclick="confirmDeleteStudent('${esc(st.id)}')">🗑️ حذف الطالب</button>`:''}</div>${histH}${(ro&&(st.transfers||[]).length)?`<h3>سجل النقل</h3><div class="panel">${st.transfers.map(x=>`<div class="kv"><span>${esc(x.date)}</span><b>${esc(x.fromName||'—')} ← ${esc(x.toName||'—')}</b></div>`).join('')}</div>`:''}`}
+    body=`<div class="panel">${R.map(r=>r[2]?`<div class="kv" role="button" tabindex="0" style="cursor:pointer" onclick="${r[2]}" onkeydown="if(event.key==='Enter')${r[2]}"><span>${r[0]}</span><b>${esc(r[1])||'—'} <small style="display:block;color:#5f7147;font-weight:700">💬 اضغط لإعداد رسالة واتساب</small></b></div>`:`<div class="kv"><span>${r[0]}</span><b>${esc(r[1])||'—'}</b></div>`).join('')}</div><div class="acts">${wa}${ro?`<button class="b2" onclick="admEditP('${esc(st.id)}')">✏️ تعديل البيانات الشخصية</button><label class="tgl" style="width:100%;margin-top:6px"><span><b>السماح للطالب بالدفع</b><small>${st.payOff?'مُعطَّل: لا يظهر للطالب زر التجديد، ويتجدّد اشتراكه تلقائيًا عند انتهائه.':'مفعّل: يظهر للطالب زر تجديد الاشتراك عند اقتراب الانتهاء.'}</small></span><input type="checkbox" ${st.payOff?'':'checked'} onchange="admPayTog('${esc(st.id)}',this.checked)" aria-label="السماح للطالب بالدفع"></label>`:`<button class="b2" onclick="sheet(cur)">✏️ تعديل بيانات الطالب</button>${rqOk(st)?`<small class="sv" style="display:block;width:100%">⏳ طلب التجديد بانتظار موافقة الإدارة، وسيتحدّث السجل تلقائيًا بعد الموافقة.</small>`:`<small class="sv" style="display:block;width:100%">🔒 التجديد يتم بموافقة الإدارة بعد أن يرسل الطالب طلبه، ويتحدّث سجله لديك تلقائيًا.</small>`}`}${(ro&&av)?`<button class="b2" style="color:#5f7147" onclick="renewS('${esc(st.id)}')">🔄 تجديد الاشتراك</button>`:''}${(!ro||av)?`<button class="b2 dng" onclick="confirmDeleteStudent('${esc(st.id)}')">🗑️ حذف الطالب</button>`:''}</div>${histH}${(ro&&(st.transfers||[]).filter(x=>!x.free).length)?`<h3>سجل النقل</h3><div class="panel">${st.transfers.filter(x=>!x.free).map(x=>`<div class="kv"><span>${esc(x.date)}</span><b>${esc(x.fromName||'—')} ← ${esc(x.toName||'—')}</b></div>`).join('')}</div>`:''}`}
   else if(part==='data'||part==='prev'){const sk=ro?'a_sess':'sess',isP=part==='prev',base=isP?prevSess(st):curSess(st),num=new Map();base.forEach((x,k)=>num.set(x,k+1));
     const idx=new Map(st.sessions.map((x,i)=>[x,i]));let list=base,pvSel='',pvH='';
     if(isP){const ms=[...new Set(base.map(x=>(x.date||'').slice(0,7)).filter(Boolean))].sort().reverse();pvSel=ms.includes(PVM)?PVM:(ms[0]||'');
@@ -1499,6 +1499,8 @@ function abIsAbs(t){return['غياب الطالب','غياب الطالب بدو
 function abNew(x){return x.pol===1&&(x.date||'')>=abFrom()}
 function mkOk(x){if(x.st==='غياب الطالب')return true;if(!abNew(x))return false;if(x.exc)return true;const t=x.st;if(t==='غياب الطالب بعذر')return x.ap==='approved';return t==='غياب المعلم بعذر'||t==='غياب المعلم بدون عذر'||t==='إلغاء من الإدارة'}
 function payable(x){return x.st==='مكتملة'}
+/* فترات الدراسة المجانية: تُخزَّن في transfers بعلامة free، والحصص بعد إعادة السماح بالدفع تُحتسب من يوم التفعيل */
+function freeAt(s,d){const P=(s.transfers||[]).filter(x=>x&&x.free);let open=false;for(const p of P){if(!p.to)open=true;if(d>=p.from&&(!p.to||d<p.to))return true}return !!s.payOff&&!open}
 function abElig(s){return(s.sessions||[]).filter(x=>mkOk(x)&&!x.mk)}
 function abLocked(x,v){if(x.st==='غياب الطالب')return (!!x.mk||x.pol===1)&&v!==x.st;return abNew(x)&&abIsAbs(x.st)&&v!==x.st}
 function abMark(s,x){if(x.st==='غياب الطالب'){x.pol=1;x.id=x.id||('a'+Date.now().toString(36)+Math.random().toString(36).slice(2,5));(s.abLog=s.abLog||[]).push({sid:x.id,date:x.date,act:'تسجيل: غياب الطالب',at:new Date().toISOString()});return}if((x.date||'')<abFrom()||!abIsAbs(x.st))return;x.pol=1;x.id=x.id||('a'+Date.now().toString(36)+Math.random().toString(36).slice(2,5));if(x.st==='غياب الطالب بعذر'){if(!x.ap)x.ap='pending'}else if(x.ap==='pending')delete x.ap;(s.abLog=s.abLog||[]).push({sid:x.id,date:x.date,act:'تسجيل: '+x.st,at:new Date().toISOString()})}
@@ -1540,7 +1542,7 @@ async function admAddSess(id,btn){const src=S.students[id];if(!src)return;const 
   if(!d)return toast('اختر تاريخ الحصة');if(!t)return toast('اختر وقت الحصة');
   if(btn)btn.disabled=true;const s=nm(JSON.parse(JSON.stringify(src)));s.sessions.push({date:d,time:t,st:'مجدولة',kind:k,pkg:s.pkg,notes:n});s.updatedAt=Date.now();
   await put('students',id,s);toast('تمت إضافة الحصة ✓');ra()}
-async function admPayTog(id,on){const src=S.students[id];if(!src)return;const s=nm(JSON.parse(JSON.stringify(src)));s.payOff=!on;s.updatedAt=Date.now();await put('students',id,s);toast(on?'تم السماح للطالب بالدفع ✓':'تم إيقاف الدفع: يتجدّد اشتراكه تلقائيًا ✓');ra()}
+async function admPayTog(id,on){const src=S.students[id];if(!src)return;const s=nm(JSON.parse(JSON.stringify(src)));s.payOff=!on;{const T=(s.transfers||[]).slice(),t0=today();if(s.payOff){if(!src.payOff&&!T.some(x=>x&&x.free&&!x.to))T.push({free:1,from:t0,to:''})}else{const o=T.find(x=>x&&x.free&&!x.to);if(o)o.to=t0;else if(src.payOff)T.push({free:1,from:'0000-00-00',to:t0})}s.transfers=T}s.updatedAt=Date.now();await put('students',id,s);toast(on?'تم السماح للطالب بالدفع ✓':'تم إيقاف الدفع: يتجدّد اشتراكه تلقائيًا ✓');ra()}
 var RNW={};
 async function approveRN(id){if(RNW[id])return;const st=S.students[id];if(!st)return;if(!confirm('الموافقة على تجديد اشتراك '+st.name+'؟ سيُحدَّث اشتراكها وتُنشأ حصص الشهر الجديد تلقائيًا.'))return;RNW[id]=1;
   try{const r=await rq('rpc/approve_renewal',{method:'POST',body:JSON.stringify({p_code:ADM_CODE,p_id:id})});
@@ -2333,6 +2335,32 @@ tr.r-abs td:first-child{background:#d29a1f;color:#fff;font-weight:800;text-align
 .tools>.sv,.tm>.sv{color:#eaf2dc!important;text-shadow:0 1px 2px rgba(0,0,0,.5),0 2px 10px rgba(0,8,30,.6)}
 tr.r-sch select[data-f="st"]{background:#e6f1ff;color:#17497f;border-color:#a9c9f3;font-weight:700}
 tr.r-done select[data-f="st"]{background:#dff3e6;color:#1d6a3c;border-color:#8fcfa6;font-weight:700}
+
+/* ===== وضوح النصوص الجانبية (الفرعية) ===== */
+html:root,html:root .stu,html:root #adm{--mut:#46553a;--mu:#46553a}
+html.dk:root,html.dk:root .stu,html.dk:root #adm{--mut:#dbe7c8;--mu:#dbe7c8}
+.sv,label,.kv span,.cd small,.stat small,.pk small,.srw .who small,.alr .at small,.dayh small,.tg,.acr span,.mrow .mv{font-weight:600}
+.sv{font-size:14.5px;line-height:1.75}
+label{font-size:15px}
+.kv span,.cd small,.stat small,.pk small,.srw .who small,.alr .at small,.acr span{font-size:14px}
+.dayh small{font-size:13.5px}
+small{font-size:max(1em,13px)}
+.panel small[style*="5f7147"],.alr .wab,.ctb{color:#3d4b32!important}
+html.dk .panel small[style*="5f7147"],html.dk .alr .wab,html.dk .ctb{color:#e4efd3!important}
+/* النصوص الفرعية الموضوعة مباشرة فوق خلفية السماء */
+.acts .sv,.acts>small,main>small,.tm>small{color:#f4f9ea!important;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.6),0 2px 10px rgba(0,10,30,.7)}
+/* مفتاح «السماح بالدفع» وأمثاله: بطاقة واضحة بنص داكن/فاتح حسب الوضع */
+.acts .tgl{display:flex;align-items:center;gap:12px;cursor:pointer;background:rgba(255,255,255,.93);border:1px solid rgba(255,255,255,.7);border-radius:16px;padding:12px 14px;color:#27311f;box-shadow:0 4px 18px rgba(0,20,60,.15)}
+.acts .tgl span{flex:1}
+.acts .tgl b{display:block;color:#27311f;font-size:16px;font-weight:800}
+.acts .tgl small{display:block;margin-top:3px;color:#46553a;font-size:14px;font-weight:600;line-height:1.7}
+html.dk .acts .tgl{background:rgba(22,34,29,.94);border-color:rgba(255,255,255,.16);color:#eef5e2}
+html.dk .acts .tgl b{color:#f4f9ea}
+html.dk .acts .tgl small{color:#dbe7c8}
+.acts .tgl input{appearance:none;-webkit-appearance:none;flex:none;width:50px;height:30px;padding:0;margin:0;border-radius:16px;border:0;background:#aab8a2;position:relative;cursor:pointer;transition:background .2s}
+.acts .tgl input::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3);transition:transform .2s}
+.acts .tgl input:checked{background:#55663f}
+[dir=rtl] .acts .tgl input:checked::after{transform:translateX(-20px)}
 </style>
 <script id="rt-nav3-js">
 (function(){
